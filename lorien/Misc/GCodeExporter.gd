@@ -1,4 +1,4 @@
-class_name SvgExporter
+class_name GCodeExporter
 extends Reference
 
 # TODOs
@@ -8,7 +8,7 @@ extends Reference
 const EDGE_MARGIN := 0.025
 
 # -------------------------------------------------------------------------------------------------
-func export_svg(strokes: Array, background: Color, path: String) -> void:
+func export_gcode(strokes: Array, path: String) -> void:
 	var start_time := OS.get_ticks_msec()
 	
 	# Open file
@@ -31,12 +31,11 @@ func export_svg(strokes: Array, background: Color, path: String) -> void:
 	size += margin_size*2.0
 	var origin := min_dim - margin_size
 	
-	# Write svg to file
-	_svg_start(file, origin, size)
-	_svg_rect(file, origin, size, background)
+	# Write gcode to file
+	_gcode_start(file, origin, size)
 	for stroke in strokes:
-		_svg_polyline(file, stroke)
-	_svg_end(file)
+		_gcode_polyline(file, stroke)
+	_gcode_end(file)
 	
 	# Flush and close the file
 #	file.flush()
@@ -44,30 +43,20 @@ func export_svg(strokes: Array, background: Color, path: String) -> void:
 	print("Exported %s in %d ms" % [path, (OS.get_ticks_msec() - start_time)])
 
 # -------------------------------------------------------------------------------------------------
-func _svg_start(file: File, origin: Vector2, size: Vector2) -> void:
-	var params := [origin.x, origin.y, size.x, size.y]
-	var svg := "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"%.1f %.1f %.1f %.1f\">\n" % params
-	file.store_string(svg)
+func _gcode_start(file: File, origin: Vector2, size: Vector2) -> void:
+	file.store_string("G90\n")
 
 # -------------------------------------------------------------------------------------------------
-func _svg_end(file: File) -> void:
-	file.store_string("</svg>") 
+func _gcode_end(file: File) -> void:
+	file.store_string("") 
 
 # -------------------------------------------------------------------------------------------------
-func _svg_rect(file: File, origin: Vector2, size: Vector2, color: Color) -> void:
-	var params := [origin.x, origin.y, size.x, size.y, color.to_html(false)]
-	var rect := "<rect x=\"%.1f\" y=\"%.1f\" width=\"%.1f\" height=\"%.1f\" fill=\"#%s\" />\n" % params
-	file.store_string(rect)
-
-# -------------------------------------------------------------------------------------------------
-func _svg_polyline(file: File, stroke: BrushStroke) -> void:
-	file.store_string("<polyline points=\"")
+func _gcode_polyline(file: File, stroke: BrushStroke) -> void:
+	# Stroke: Color, Size, [Points]
+	file.store_string("G0 X%.1f Y%.1f\n" % [stroke.points[0].x / 10.0, stroke.points[0].y / 10.0])
 	var idx := 0
 	var point_count := stroke.points.size()
 	for point in stroke.points:
-		if idx < point_count-1:
-			file.store_string("%.1f %.1f," % [point.x, point.y])
-		else:
-			file.store_string("%.1f %.1f" % [point.x, point.y])
+		file.store_string("G1 X%.1f Y%.1f\n" % [point.x / 10.0, point.y / 10.0])
 		idx += 1
-	file.store_string("\" style=\"fill:none;stroke:#%s;stroke-width:2\"/>\n" % stroke.color.to_html(false))
+	file.store_string("\n")

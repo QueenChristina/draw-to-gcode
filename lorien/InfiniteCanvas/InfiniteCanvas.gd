@@ -49,7 +49,7 @@ func _ready():
 	_camera.connect("zoom_changed", self, "_on_zoom_changed")
 	_camera.connect("position_changed", self, "_on_camera_moved")
 	_viewport.size = OS.window_size
-
+	
 # -------------------------------------------------------------------------------------------------
 func _unhandled_key_input(event: InputEventKey) -> void:
 	_process_event(event)

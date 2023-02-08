@@ -483,6 +483,11 @@ func _on_export_confirmed(path: String):
 				var background := _canvas.get_background_color()
 				var svg := SvgExporter.new()
 				svg.export_svg(project.strokes, background, path)
+		"txt":
+			var project: Project = ProjectManager.get_active_project()
+			if project != null:
+				var gcode := GCodeExporter.new()
+				gcode.export_gcode(project.strokes, path)
 		_:
 			printerr("Unsupported format")
 

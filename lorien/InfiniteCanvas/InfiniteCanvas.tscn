@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://InfiniteCanvas/InfiniteCanvas.gd" type="Script" id=1]
 [ext_resource path="res://InfiniteCanvas/PanZoomCamera.gd" type="Script" id=2]
@@ -15,6 +15,7 @@
 [ext_resource path="res://InfiniteCanvas/Tools/CircleTool.gd" type="Script" id=13]
 [ext_resource path="res://InfiniteCanvas/Tools/EraserTool.gd" type="Script" id=14]
 [ext_resource path="res://InfiniteCanvas/DebugDraw.gd" type="Script" id=15]
+[ext_resource path="res://InfiniteCanvas/Guides/Platform.gd" type="Script" id=16]
 
 [sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 10 )
@@ -24,6 +25,9 @@ shader_param/background_color = null
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="BrushTool" type="Node" parent="."]
 script = ExtResource( 5 )
@@ -60,6 +64,33 @@ handle_input_locally = false
 hdr = false
 usage = 0
 render_target_update_mode = 3
+
+[node name="CenterPoint" type="Node2D" parent="Viewport"]
+position = Vector2( -20, 0 )
+
+[node name="Line2D" type="Line2D" parent="Viewport/CenterPoint"]
+points = PoolVector2Array( 0, 0, 40, 0 )
+width = 5.0
+default_color = Color( 0.4, 0.501961, 1, 1 )
+antialiased = true
+
+[node name="Line2D2" type="Line2D" parent="Viewport/CenterPoint"]
+position = Vector2( 20, -20 )
+rotation = 1.5708
+points = PoolVector2Array( 0, 0, 40, 0 )
+width = 5.0
+default_color = Color( 0.4, 0.501961, 1, 1 )
+antialiased = true
+
+[node name="VisibilityNotifier2D" type="VisibilityNotifier2D" parent="Viewport/CenterPoint"]
+rect = Rect2( 0, -20, 40, 40 )
+
+[node name="Platform" type="Node2D" parent="Viewport"]
+script = ExtResource( 16 )
+
+[node name="Line2D" type="Line2D" parent="Viewport/Platform"]
+points = PoolVector2Array( -206.894, -178.601, 188.665, -182.165, 189.556, 204.485, -203.33, 204.485, -207.785, -175.037 )
+width = 3.0
 
 [node name="Camera2D" type="Camera2D" parent="Viewport"]
 anchor_mode = 0
