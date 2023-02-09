@@ -1,6 +1,8 @@
 <img src="https://raw.githubusercontent.com/mbrlabs/Lorien/main/images/lorien.png" align="left"/>
 
-# Lorien
+# 2D Drawing to GCode
+
+## Based on Lorien, 2D Drawing Software Made By MBRLabs
 <p>
     <a href="https://github.com/mbrlabs/Lorien/actions">
         <img src="https://github.com/mbrlabs/Lorien/workflows/build/badge.svg" alt="Build Passing" />
