@@ -8,8 +8,10 @@ var loaded := false
 
 var filepath: String
 var meta_data: Dictionary
-var strokes: Array # Array<BrushStroke>
+var strokes: Array # Array<BrushStroke> # Current layer strokes [TODO: reference layers[curr_layer]
 
+var curr_layer : int # Current layer we are on, as index of layers
+var layers : Array  = [[]] # Array<Array<BrushStroke>> # Array of strokes
 # -------------------------------------------------------------------------------------------------
 func _init():
 	undo_redo = UndoRedo.new()

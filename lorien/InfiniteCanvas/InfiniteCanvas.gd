@@ -13,7 +13,10 @@ onready var _circle_tool: CircleTool = $CircleTool
 onready var _eraser_tool: EraserTool = $EraserTool
 onready var _selection_tool: SelectionTool = $SelectionTool
 onready var _active_tool: CanvasTool = _brush_tool
+# Current layer, called Strokes Parent (all brushmarks in layer Strokes)
 onready var _strokes_parent: Node2D = $Viewport/Strokes
+# All layers
+var _strokes_parents = [_strokes_parent]
 onready var _camera: Camera2D = $Viewport/Camera2D
 onready var _viewport: Viewport = $Viewport
 onready var _grid: InfiniteCanvasGrid = $Viewport/Grid

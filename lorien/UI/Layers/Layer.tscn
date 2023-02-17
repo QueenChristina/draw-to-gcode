@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://UI/Layers/Layer.gd" type="Script" id=1]
+
+[sub_resource type="OpenSimplexNoise" id=1]
+
+[sub_resource type="NoiseTexture" id=2]
+width = 32
+height = 32
+noise = SubResource( 1 )
+
+[node name="Layer" type="HBoxContainer"]
+margin_right = 246.0
+margin_bottom = 38.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="."]
+margin_right = 221.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+toggle_mode = true
+text = "Layer 0"
+icon = SubResource( 2 )
+
+[node name="Settings" type="Button" parent="."]
+margin_left = 225.0
+margin_right = 246.0
+margin_bottom = 38.0
+text = "#"
+
+[connection signal="pressed" from="Button" to="." method="_on_LayerButton_pressed"]
