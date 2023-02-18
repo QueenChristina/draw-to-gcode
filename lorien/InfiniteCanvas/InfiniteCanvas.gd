@@ -290,9 +290,6 @@ func use_project(project: Project) -> void:
 	
 # -------------------------------------------------------------------------------------------------
 func undo_last_stroke(undo_layer : int) -> void:
-#	print(_current_project.strokes_layer_history)
-
-#	var undo_layer = _current_project.strokes_layer_history.pop_back()
 	var _past_strokes_parent = _layers_container.get_child(undo_layer)
 	var undo_strokes = _current_project.layers[undo_layer]
 		
@@ -308,9 +305,6 @@ func undo_last_stroke(undo_layer : int) -> void:
 		else:
 			print_debug("ERROR! Attempted to undo stroke in layer ", _past_strokes_parent, " with no strokes left.")
 			print("Layers: ", _current_project.layers)
-		
-#	print("Current strokes: ")
-#	print(_current_project.layers)
 
 # -------------------------------------------------------------------------------------------------
 func set_brush_size(size: int) -> void:
@@ -402,8 +396,26 @@ func _on_add_layer(index):
 	_layers_container.add_child(new_strokes_layer)
 	_layers_container.move_child(new_strokes_layer, index)
 	
-func _on_delete_layer(index):
-	_layers_container.remove_child(_layers_container.get_child(index))
+func _on_delete_layer(index, selected_index):
+	# Unparent strokes
+	var strokes = _layers_container.get_child(index)
+	for stroke in strokes.get_children():
+		strokes.remove_child(stroke)
+	# Delete layer at index
+	_layers_container.remove_child(strokes)
+	strokes.queue_free()
+	# Reselect _strokes_parent if needed
+	_strokes_parent = _layers_container.get_child(selected_index)
+	
+func _on_undo_delete_layer(index, strokes, strokes_layer):
+#	_layers_container.add_child(strokes_layer)
+#	_layers_container.move_child(strokes_layer, index)
+	_on_add_layer(index)
+	
+	# Re-add strokes
+	print("UNDO DELETE layer: Re-add strokes ", strokes)
+	for stroke in strokes:
+		_layers_container.get_child(index).add_child(stroke)
 	
 func _on_swap_layer(index1, index2):
 	_layers_container.move_child(_layers_container.get_child(index1), index2)

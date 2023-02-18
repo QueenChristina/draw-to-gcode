@@ -2,14 +2,16 @@ extends PanelContainer
 
 const LAYER = preload("res://UI/Layers/Layer.tscn")
 
+onready var _canvas = get_parent().get_node("InfiniteCanvas") # TODO: better way referene
 onready var _layer_box = $VBoxContainer2/LayersVBox
 var layer_button_group : ButtonGroup
 onready var curr_layer = $VBoxContainer2/LayersVBox/Layer
 
 signal layers_swap(layer1, layer2) # Indices of layer swap
 signal add_layer(index)
-signal delete_layer(index)
+signal delete_layer(index, selected_index)
 signal set_active_layer(index)
+signal undo_delete_layer(index, strokes)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -49,13 +51,25 @@ func _on_delete_layer(index):
 	if _layer_box.get_child_count() > 1:
 		var active_project: Project = ProjectManager.get_active_project()
 		active_project.layers.remove(index)
-		_layer_box.remove_child(_layer_box.get_child(_layer_box.get_child_count() - 1 - index))
+		var layer = _layer_box.get_child(_layer_box.get_child_count() - 1 - index)
+		_layer_box.remove_child(layer)
+		var need_reselection = curr_layer == layer
+		layer.queue_free()
 		
-		emit_signal("delete_layer", index)
+		var selected_index = index
+		# Select existing layer intead
+		if need_reselection:
+			var below_index = min(_layer_box.get_child_count() - 1, index)
+			_layer_box.get_child(below_index).layer_button.pressed = true	
+			curr_layer = _layer_box.get_child(below_index)
+			active_project.curr_layer = below_index
+			selected_index = below_index
+		
+		emit_signal("delete_layer", index, selected_index)
 	else:
 		print("Must have at least 1 layer. Cannot delete.")
 
-func _undo_delete_layer(index):
+func _undo_delete_layer(index, strokes, strokes_layer):
 	# (code taken from add_layer. TODO: refactor)
 	var layer = LAYER.instance()
 	
@@ -70,7 +84,7 @@ func _undo_delete_layer(index):
 	layer.connect("switch_layers", self, "_on_switch_layers")
 	
 	# Emit signal to re-add SAME layer as before
-#	emit_signal("undo_delete_layer", index) # TODO
+	emit_signal("undo_delete_layer", index, strokes, strokes_layer)
 
 func _on_DeleteLayer_pressed():
 	# Delete current layer
@@ -80,18 +94,19 @@ func _on_DeleteLayer_pressed():
 	# SO instead make unique functions: add_layer must add and delete_layer must delete the SAME LAYER --> safe as reference
 	var active_project: Project = ProjectManager.get_active_project()
 	active_project.undo_redo.create_action("Add Layer")
-	active_project.undo_redo.add_undo_method(self, "_on_add_layer", index)
-#	active_project.undo_redo.add_undo_method(self, "_undo_delete_layer", index)
-	# TODO: Save deleted layer as reference?
-	active_project.undo_redo.add_undo_property(active_project, "layers", active_project.layers)
+#	active_project.undo_redo.add_undo_method(self, "_on_add_layer", index)
+	var strokes_layer = _canvas._layers_container.get_child(index) # TODO: better way of referencing than this? Maybe just delete this. make new layer.
+	active_project.undo_redo.add_undo_method(self, "_undo_delete_layer", index, active_project.layers[index], strokes_layer)
+	active_project.undo_redo.add_undo_reference(strokes_layer)
+	active_project.undo_redo.add_undo_property(active_project, "layers", active_project.layers) # TODO: What this does?
 	active_project.undo_redo.add_do_method(self, "_on_delete_layer", index)
 	active_project.undo_redo.commit_action()
 	
-	if _layer_box.get_child_count() > 1:
-		# Select existing layer intead
-		var below_index = min(_layer_box.get_child_count() - 1, index)
-		_layer_box.get_child(below_index).layer_button.pressed = true	
-		curr_layer = _layer_box.get_child(below_index)
+#	if _layer_box.get_child_count() > 1:
+#		# Select existing layer intead
+#		var below_index = min(_layer_box.get_child_count() - 1, index)
+#		_layer_box.get_child(below_index).layer_button.pressed = true	
+#		curr_layer = _layer_box.get_child(below_index)
 
 func _on_switch_layers(node):
 	# Find which add layer pressed/on - NOTE: layer count is bottom-up, so inverted
