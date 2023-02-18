@@ -6,6 +6,11 @@ onready var _layer_box = $VBoxContainer2/LayersVBox
 var layer_button_group : ButtonGroup
 onready var curr_layer = $VBoxContainer2/LayersVBox/Layer
 
+signal layers_swap(layer1, layer2) # Indices of layer swap
+signal add_layer(index)
+signal delete_layer(index)
+signal set_active_layer(index)
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	curr_layer.connect("switch_layers", self, "_on_switch_layers")
@@ -22,11 +27,10 @@ func _on_AddLayer_pressed():
 	
 	var active_project: Project = ProjectManager.get_active_project()
 	layer.text = "Layer " + str(active_project.layers.size())
-	active_project.layers.append([active_project.layers.size()])
+	active_project.layers.append([])
 	layer.connect("switch_layers", self, "_on_switch_layers")
-
-#	print("Current project layers: ")
-#	print(active_project.layers)
+	
+	emit_signal("add_layer", 0)
 
 func _on_DeleteLayer_pressed():
 	var index_to_del = curr_layer.get_index()
@@ -40,9 +44,8 @@ func _on_DeleteLayer_pressed():
 		var below_index = min(_layer_box.get_child_count() - 1, index_to_del)
 		_layer_box.get_child(below_index).layer_button.pressed = true	
 		curr_layer = _layer_box.get_child(below_index)
-#
-#		print("Current project layers: ")
-#		print(active_project.layers)
+		
+		emit_signal("delete_layer", index_to_del)
 	else:
 		print("Must have at least 1 layer. Cannot delete.")
 
@@ -51,7 +54,13 @@ func _on_switch_layers(node):
 	var curr_layer_index = _layer_box.get_child_count() - node.get_index() - 1
 	print("Switch to layer " + str(curr_layer_index))
 	
+	var active_project: Project = ProjectManager.get_active_project()
+	active_project.curr_layer = curr_layer_index
+	active_project.strokes = active_project.layers[curr_layer_index]
 	curr_layer = node
+	
+	emit_signal("set_active_layer", node.get_index())
+	print("Layers: ", active_project.layers)
 
 # Shift current layer up and down
 func _on_ShiftUp_pressed():
@@ -59,10 +68,14 @@ func _on_ShiftUp_pressed():
 	_layer_box.move_child(curr_layer, new_pos)
 
 	var active_project: Project = ProjectManager.get_active_project()
-	var old_pos = _layer_box.get_child_count() - new_pos - 2
-	var temp_layer_strokes = active_project.layers[old_pos].duplicate()
-	active_project.layers.remove(old_pos)
-	active_project.layers.insert(min(_layer_box.get_child_count() - 1, _layer_box.get_child_count() - new_pos - 1), temp_layer_strokes)
+	var old_index = _layer_box.get_child_count() - new_pos - 2
+	var temp_layer_strokes = active_project.layers[old_index].duplicate()
+	active_project.layers.remove(old_index)
+	var new_index = min(_layer_box.get_child_count() - 1, _layer_box.get_child_count() - new_pos - 1)
+	active_project.layers.insert(new_index, temp_layer_strokes)
+	
+#	emit_signal("layers_swap", old_index, new_index)
+	emit_signal("layers_swap", _layer_box.get_child_count() - 1 - old_index, _layer_box.get_child_count() - 1 - new_index)
 	
 #	print("Moved to pos " + str(_layer_box.get_child_count() - new_pos - 1))
 #	print("Current project layers: ")
@@ -73,11 +86,13 @@ func _on_ShiftDown_pressed():
 	_layer_box.move_child(curr_layer, new_pos)
 	
 	var active_project: Project = ProjectManager.get_active_project()
-	var old_pos = _layer_box.get_child_count() - new_pos 
-	var temp_layer_strokes = active_project.layers[old_pos].duplicate()
-	active_project.layers.remove(old_pos)
-	active_project.layers.insert(max(0, _layer_box.get_child_count() - new_pos - 1), temp_layer_strokes)
+	var old_index = _layer_box.get_child_count() - new_pos 
+	var temp_layer_strokes = active_project.layers[old_index].duplicate()
+	active_project.layers.remove(old_index)
+	var new_index = max(0, _layer_box.get_child_count() - new_pos - 1)
+	active_project.layers.insert(new_index, temp_layer_strokes)
 	
+	emit_signal("layers_swap", _layer_box.get_child_count() - 1 - old_index, _layer_box.get_child_count() - 1 - new_index)
 #	print("Moved to pos " + str(_layer_box.get_child_count() - new_pos - 1))
 #	print("Current project layers: ")
 #	print(active_project.layers)

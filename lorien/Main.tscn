@@ -95,10 +95,10 @@ margin_bottom = 202.0
 custom_styles/panel = SubResource( 3 )
 
 [node name="ColorPicker" type="ColorPicker" parent="BackgroundColorPickerPopup/PanelContainer"]
-margin_left = 56.0
-margin_top = 56.0
-margin_right = 365.0
-margin_bottom = 460.0
+margin_left = 92.0
+margin_top = 92.0
+margin_right = 401.0
+margin_bottom = 496.0
 edit_alpha = false
 presets_enabled = false
 presets_visible = false
@@ -253,6 +253,10 @@ __meta__ = {
 
 [connection signal="mouse_entered" from="InfiniteCanvas" to="." method="_on_InfiniteCanvas_mouse_entered"]
 [connection signal="mouse_exited" from="InfiniteCanvas" to="." method="_on_InfiniteCanvas_mouse_exited"]
+[connection signal="add_layer" from="LayerBar" to="InfiniteCanvas" method="_on_add_layer"]
+[connection signal="delete_layer" from="LayerBar" to="InfiniteCanvas" method="_on_delete_layer"]
+[connection signal="layers_swap" from="LayerBar" to="InfiniteCanvas" method="_on_swap_layer"]
+[connection signal="set_active_layer" from="LayerBar" to="InfiniteCanvas" method="_on_set_active_layer"]
 [connection signal="closed" from="BrushColorPicker" to="." method="_on_BrushColorPicker_closed"]
 [connection signal="color_changed" from="BrushColorPicker" to="." method="_on_BrushColorPicker_color_changed"]
 [connection signal="new_palette_created" from="NewPaletteDialog" to="." method="_on_NewPaletteDialog_new_palette_created"]

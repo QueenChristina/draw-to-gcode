@@ -32,6 +32,7 @@ func _process(delta: float) -> void:
 # ------------------------------------------------------------------------------------------------
 func _stroke_intersects_circle(stroke: BrushStroke, circle_position: Vector2) -> bool:
 	# Check if the cursor is inside bounding box; if it's not, there is no way we are intersecting the stroke
+	_update_bounding_boxes() # Update to current layer bounding boxes
 	var bounding_box: Rect2 = _bounding_box_cache[stroke]
 	if !bounding_box.has_point(_last_mouse_position):
 		return false
@@ -50,7 +51,15 @@ func _stroke_intersects_circle(stroke: BrushStroke, circle_position: Vector2) ->
 
 # -------------------------------------------------------------------------------------------------
 func _remove_stroke(brush_position: Vector2) -> void:
+	# Remove only strokes on this layer AND visible in camera
+	var project: Project = ProjectManager.get_active_project()
+	var layer_strokes = project.layers[project.curr_layer]
+	var visible_layer_strokes = []
 	for stroke in _canvas.get_strokes_in_camera_frustrum():
+		if stroke in layer_strokes:
+			visible_layer_strokes.append(stroke)
+	
+	for stroke in visible_layer_strokes:
 		if !_removed_strokes.has(stroke) && _stroke_intersects_circle(stroke, brush_position):
 			_removed_strokes.append(stroke)
 		
@@ -62,7 +71,7 @@ func _add_undoredo_action_for_erased_strokes() -> void:
 		for stroke in _removed_strokes:
 			_removed_strokes.erase(stroke)
 			project.undo_redo.add_do_method(_canvas, "_do_delete_stroke", stroke)
-			project.undo_redo.add_undo_method(_canvas, "_undo_delete_stroke", stroke)
+			project.undo_redo.add_undo_method(_canvas, "_undo_delete_stroke", stroke, project.curr_layer)
 		project.undo_redo.commit_action()
 		project.dirty = true
 

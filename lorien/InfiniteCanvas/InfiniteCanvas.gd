@@ -14,9 +14,8 @@ onready var _eraser_tool: EraserTool = $EraserTool
 onready var _selection_tool: SelectionTool = $SelectionTool
 onready var _active_tool: CanvasTool = _brush_tool
 # Current layer, called Strokes Parent (all brushmarks in layer Strokes)
-onready var _strokes_parent: Node2D = $Viewport/Strokes
-# All layers
-var _strokes_parents = [_strokes_parent]
+onready var _layers_container : Node2D = $Viewport/Layers # container of layers, which is strokes
+onready var _strokes_parent: Node2D = $Viewport/Layers/Strokes # Current layer of strokes
 onready var _camera: Camera2D = $Viewport/Camera2D
 onready var _viewport: Viewport = $Viewport
 onready var _grid: InfiniteCanvasGrid = $Viewport/Grid
@@ -191,12 +190,14 @@ func start_stroke() -> void:
 	_optimizer.reset()
 	
 # -------------------------------------------------------------------------------------------------
-func add_stroke(stroke: BrushStroke) -> void:
+func add_stroke(stroke: BrushStroke, _layer: int) -> void:
 	if _current_project != null:
 		_current_project.strokes.append(stroke)
 		_strokes_parent.add_child(stroke)
 		info.point_count += stroke.points.size()
 		info.stroke_count += 1
+		
+#		_current_project.strokes_layer_history.append(_current_project.curr_layer)
 
 # -------------------------------------------------------------------------------------------------
 func add_stroke_point(point: Vector2, pressure: float = 1.0) -> void:
@@ -240,13 +241,15 @@ func end_stroke() -> void:
 			_strokes_parent.remove_child(_current_stroke)
 			
 			_current_project.undo_redo.create_action("Stroke")
-			_current_project.undo_redo.add_undo_method(self, "undo_last_stroke")
+			_current_project.undo_redo.add_undo_method(self, "undo_last_stroke", _current_project.curr_layer)
 			_current_project.undo_redo.add_undo_reference(_current_stroke)
 			_current_project.undo_redo.add_do_method(_strokes_parent, "add_child", _current_stroke)
 			_current_project.undo_redo.add_do_property(info, "stroke_count", info.stroke_count + 1)
 			_current_project.undo_redo.add_do_property(info, "point_count", info.point_count + _current_stroke.points.size())
 			_current_project.undo_redo.add_do_method(_current_project, "add_stroke", _current_stroke)
 			_current_project.undo_redo.commit_action()
+			
+#			_current_project.strokes_layer_history.append(_current_project.curr_layer)
 		
 		_current_stroke = null
 
@@ -256,10 +259,11 @@ func add_strokes(strokes: Array) -> void:
 	var point_count := 0
 	for stroke in strokes:
 		point_count += stroke.points.size()
-		_current_project.undo_redo.add_undo_method(self, "undo_last_stroke")
+		_current_project.undo_redo.add_undo_method(self, "undo_last_stroke", _current_project.curr_layer)
 		_current_project.undo_redo.add_undo_reference(stroke)
 		_current_project.undo_redo.add_do_method(_strokes_parent, "add_child", stroke)
 		_current_project.undo_redo.add_do_method(_current_project, "add_stroke", stroke)
+		
 	_current_project.undo_redo.add_do_property(info, "stroke_count", info.stroke_count + strokes.size())
 	_current_project.undo_redo.add_do_property(info, "point_count", info.point_count + point_count)
 	_current_project.undo_redo.commit_action()
@@ -286,13 +290,29 @@ func use_project(project: Project) -> void:
 	_grid.update()
 	
 # -------------------------------------------------------------------------------------------------
-func undo_last_stroke() -> void:
-	if _current_stroke == null && !_current_project.strokes.empty():
-		var stroke = _strokes_parent.get_child(_strokes_parent.get_child_count() - 1)
-		_strokes_parent.remove_child(stroke)
-		_current_project.remove_last_stroke()
-		info.point_count -= stroke.points.size()
-		info.stroke_count -= 1
+func undo_last_stroke(undo_layer : int) -> void:
+#	print(_current_project.strokes_layer_history)
+
+#	var undo_layer = _current_project.strokes_layer_history.pop_back()
+	var _past_strokes_parent = _layers_container.get_child(_layers_container.get_child_count() - 1 - undo_layer)
+	var undo_strokes = _current_project.layers[undo_layer]
+		
+	print("Access stroke parent (child order) ", _layers_container.get_child_count() - 1 - undo_layer)
+	print("Get undo layer (array order, same as layer name) " + str(undo_layer))
+	
+	if _current_stroke == null && !undo_strokes.empty():
+		if _past_strokes_parent.get_child_count() - 1 >= 0:
+			var stroke = _past_strokes_parent.get_child(_past_strokes_parent.get_child_count() - 1)
+			_past_strokes_parent.remove_child(stroke)
+			_current_project.remove_last_stroke()
+			info.point_count -= stroke.points.size()
+			info.stroke_count -= 1
+		else:
+			print("ERROR! Attempted to undo stroke in layer " + _past_strokes_parent + " with no strokes left.")
+			print("Layers: ", _current_project.layers)
+		
+#	print("Current strokes: ")
+#	print(_current_project.layers)
 
 # -------------------------------------------------------------------------------------------------
 func set_brush_size(size: int) -> void:
@@ -331,9 +351,11 @@ func _delete_selected_strokes() -> void:
 	if !strokes.empty():
 		_current_project.undo_redo.create_action("Delete Selection")
 		for stroke in strokes:
-			_current_project.undo_redo.add_do_method(self, "_do_delete_stroke", stroke)
+			_current_project.undo_redo.add_do_method(self, "_do_delete_stroke", stroke, _current_project.curr_layer)
 			_current_project.undo_redo.add_undo_reference(stroke)
-			_current_project.undo_redo.add_undo_method(self, "_undo_delete_stroke", stroke)
+			_current_project.undo_redo.add_undo_method(self, "_undo_delete_stroke", stroke, _current_project.curr_layer)
+			
+#			_current_project.strokes_layer_history.append(_current_project.curr_layer)
 		_selection_tool.deselect_all_strokes()
 		_current_project.undo_redo.commit_action()
 		_current_project.dirty = true
@@ -345,15 +367,25 @@ func _do_delete_stroke(stroke: BrushStroke) -> void:
 	_strokes_parent.remove_child(stroke)
 	info.point_count -= stroke.points.size()
 	info.stroke_count -= 1
+	
+#	_current_project.add_stroke(_current_project.stroke_delete_layer_history.append(_current_project.curr_layer))
 
 # FIXME: this adds strokes at the back and does not preserve stroke order; not sure how to do that except saving before
 # and after versions of the stroke arrays which is a nogo.
 # -------------------------------------------------------------------------------------------------
-func _undo_delete_stroke(stroke: BrushStroke) -> void:
-	_current_project.strokes.append(stroke)
+func _undo_delete_stroke(stroke: BrushStroke, undo_layer : int) -> void:
+#	var undo_layer = _current_project.stroke_delete_layer_history.pop_back()
+	var _past_strokes_parent = _layers_container.get_child(_layers_container.get_child_count() - 1 - undo_layer)
+	var undo_strokes = _current_project.layers[undo_layer]
+		
+	undo_strokes.append(stroke)
 	_strokes_parent.add_child(stroke)
 	info.point_count += stroke.points.size()
 	info.stroke_count += 1
+	
+	print("Current strokes: ")
+	print(_current_project.layers)
+	
 
 # -------------------------------------------------------------------------------------------------
 func _on_window_resized() -> void:
@@ -370,3 +402,31 @@ func set_canvas_scale(scale: float) -> void:
 # -------------------------------------------------------------------------------------------------
 func get_canvas_scale() -> float:
 	return _scale
+
+# --------------------------------------------------------------------------------------------------
+# Layer Manipulation
+func _on_add_layer(index):
+	var new_strokes_layer = Node2D.new()
+	_layers_container.add_child(new_strokes_layer)
+	_layers_container.move_child(new_strokes_layer, index)
+	
+	print("Current strokes: ")
+	print(_current_project.layers)
+	
+func _on_delete_layer(index):
+	_layers_container.remove_child(_layers_container.get_child(index))
+	
+	print("Current strokes: ")
+	print(_current_project.layers)
+	
+func _on_swap_layer(index1, index2):
+	_layers_container.move_child(_layers_container.get_child(index1), index2)
+	
+	print("Current strokes: ")
+	print(_current_project.layers)
+
+# Set which strokes layer to draw on actively
+func _on_set_active_layer(index):
+	_strokes_parent = _layers_container.get_child(index)
+	
+#	print("Set active layer to: ", _layers_container.get_child(index))

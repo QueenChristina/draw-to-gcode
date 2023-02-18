@@ -2,6 +2,8 @@ class_name Project
 
 var id: int # this is used at runtime only and will not be persisted; project ids are not garanteed to be the same between restarts
 var undo_redo: UndoRedo
+var strokes_layer_history : Array # Array<int> of which layer each stroke was on, by stroke
+var stroke_delete_layer_history : Array # Array<int> of which layer each stroke was on, by deleted stroke
 
 var dirty := false
 var loaded := false
@@ -10,11 +12,13 @@ var filepath: String
 var meta_data: Dictionary
 var strokes: Array # Array<BrushStroke> # Current layer strokes [TODO: reference layers[curr_layer]
 
-var curr_layer : int # Current layer we are on, as index of layers
+var curr_layer : int = 0 # Current layer we are on, as index of layers
 var layers : Array  = [[]] # Array<Array<BrushStroke>> # Array of strokes
 # -------------------------------------------------------------------------------------------------
 func _init():
 	undo_redo = UndoRedo.new()
+	
+	strokes = layers[0]
 
 # -------------------------------------------------------------------------------------------------
 func _notification(what):
