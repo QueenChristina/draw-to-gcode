@@ -293,11 +293,10 @@ func undo_last_stroke(undo_layer : int) -> void:
 #	print(_current_project.strokes_layer_history)
 
 #	var undo_layer = _current_project.strokes_layer_history.pop_back()
-	var _past_strokes_parent = _layers_container.get_child(_layers_container.get_child_count() - 1 - undo_layer)
+	var _past_strokes_parent = _layers_container.get_child(undo_layer)
 	var undo_strokes = _current_project.layers[undo_layer]
 		
-	print("UNDO: Access stroke parent (child order) ", _layers_container.get_child_count() - 1 - undo_layer)
-	print("Get undo layer (array order, same as layer name) " + str(undo_layer))
+	print("UNDO STROKE: layer (array order, same as layer name) " + str(undo_layer))
 	
 	if _current_stroke == null && !undo_strokes.empty():
 		if _past_strokes_parent.get_child_count() - 1 >= 0:
