@@ -160,6 +160,7 @@ func get_strokes_in_camera_frustrum() -> Array:
 
 # -------------------------------------------------------------------------------------------------
 func get_all_strokes() -> Array:
+	# All strokes on current active layer only. TODO: did layers break anything?
 	return _current_project.strokes
 
 # -------------------------------------------------------------------------------------------------
@@ -249,8 +250,6 @@ func end_stroke() -> void:
 			_current_project.undo_redo.add_do_method(_current_project, "add_stroke", _current_stroke)
 			_current_project.undo_redo.commit_action()
 			
-#			_current_project.strokes_layer_history.append(_current_project.curr_layer)
-		
 		_current_stroke = null
 
 # -------------------------------------------------------------------------------------------------
@@ -297,7 +296,7 @@ func undo_last_stroke(undo_layer : int) -> void:
 	var _past_strokes_parent = _layers_container.get_child(_layers_container.get_child_count() - 1 - undo_layer)
 	var undo_strokes = _current_project.layers[undo_layer]
 		
-	print("Access stroke parent (child order) ", _layers_container.get_child_count() - 1 - undo_layer)
+	print("UNDO: Access stroke parent (child order) ", _layers_container.get_child_count() - 1 - undo_layer)
 	print("Get undo layer (array order, same as layer name) " + str(undo_layer))
 	
 	if _current_stroke == null && !undo_strokes.empty():
@@ -308,7 +307,7 @@ func undo_last_stroke(undo_layer : int) -> void:
 			info.point_count -= stroke.points.size()
 			info.stroke_count -= 1
 		else:
-			print("ERROR! Attempted to undo stroke in layer " + _past_strokes_parent + " with no strokes left.")
+			print_debug("ERROR! Attempted to undo stroke in layer ", _past_strokes_parent, " with no strokes left.")
 			print("Layers: ", _current_project.layers)
 		
 #	print("Current strokes: ")
@@ -354,8 +353,6 @@ func _delete_selected_strokes() -> void:
 			_current_project.undo_redo.add_do_method(self, "_do_delete_stroke", stroke, _current_project.curr_layer)
 			_current_project.undo_redo.add_undo_reference(stroke)
 			_current_project.undo_redo.add_undo_method(self, "_undo_delete_stroke", stroke, _current_project.curr_layer)
-			
-#			_current_project.strokes_layer_history.append(_current_project.curr_layer)
 		_selection_tool.deselect_all_strokes()
 		_current_project.undo_redo.commit_action()
 		_current_project.dirty = true
@@ -374,7 +371,6 @@ func _do_delete_stroke(stroke: BrushStroke) -> void:
 # and after versions of the stroke arrays which is a nogo.
 # -------------------------------------------------------------------------------------------------
 func _undo_delete_stroke(stroke: BrushStroke, undo_layer : int) -> void:
-#	var undo_layer = _current_project.stroke_delete_layer_history.pop_back()
 	var _past_strokes_parent = _layers_container.get_child(_layers_container.get_child_count() - 1 - undo_layer)
 	var undo_strokes = _current_project.layers[undo_layer]
 		
@@ -382,9 +378,6 @@ func _undo_delete_stroke(stroke: BrushStroke, undo_layer : int) -> void:
 	_strokes_parent.add_child(stroke)
 	info.point_count += stroke.points.size()
 	info.stroke_count += 1
-	
-	print("Current strokes: ")
-	print(_current_project.layers)
 	
 
 # -------------------------------------------------------------------------------------------------
@@ -404,29 +397,18 @@ func get_canvas_scale() -> float:
 	return _scale
 
 # --------------------------------------------------------------------------------------------------
-# Layer Manipulation
+# Layer Manipulation - NOTE: node order is bottom layer is FIRST child, so this should match order of array, unlike layer order
 func _on_add_layer(index):
 	var new_strokes_layer = Node2D.new()
 	_layers_container.add_child(new_strokes_layer)
 	_layers_container.move_child(new_strokes_layer, index)
 	
-	print("Current strokes: ")
-	print(_current_project.layers)
-	
 func _on_delete_layer(index):
 	_layers_container.remove_child(_layers_container.get_child(index))
 	
-	print("Current strokes: ")
-	print(_current_project.layers)
-	
 func _on_swap_layer(index1, index2):
 	_layers_container.move_child(_layers_container.get_child(index1), index2)
-	
-	print("Current strokes: ")
-	print(_current_project.layers)
 
 # Set which strokes layer to draw on actively
 func _on_set_active_layer(index):
 	_strokes_parent = _layers_container.get_child(index)
-	
-#	print("Set active layer to: ", _layers_container.get_child(index))

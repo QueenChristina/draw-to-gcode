@@ -13,7 +13,7 @@ var meta_data: Dictionary
 var strokes: Array # Array<BrushStroke> # Current layer strokes [TODO: reference layers[curr_layer]
 
 var curr_layer : int = 0 # Current layer we are on, as index of layers
-var layers : Array  = [[]] # Array<Array<BrushStroke>> # Array of strokes
+var layers : Array  = [[]] # Array<Array<BrushStroke>> # Array of strokes, 0 = bottom-most layer
 # -------------------------------------------------------------------------------------------------
 func _init():
 	undo_redo = UndoRedo.new()
