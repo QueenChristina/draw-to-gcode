@@ -33,7 +33,11 @@ func clear() -> void:
 
 # -------------------------------------------------------------------------------------------------
 func add_stroke(stroke: BrushStroke) -> void:
+#	print("From ", layers)
 	strokes.append(stroke)
+	# TODO: fix all references to strokes not updating layers
+	layers[curr_layer] = strokes
+#	print("Changed to ", layers)
 	dirty = true
 
 # -------------------------------------------------------------------------------------------------

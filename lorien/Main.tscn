@@ -17,7 +17,7 @@
 [ext_resource path="res://UI/Dialogs/DeletePaletteDialog.tscn" type="PackedScene" id=15]
 [ext_resource path="res://UI/Layers/LayerBar.tscn" type="PackedScene" id=16]
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.207843, 0.211765, 0.227451, 1 )
 corner_radius_top_left = 1
 corner_radius_top_right = 1
@@ -92,13 +92,13 @@ margin_left = -154.5
 margin_top = -202.0
 margin_right = 154.5
 margin_bottom = 202.0
-custom_styles/panel = SubResource( 3 )
+custom_styles/panel = SubResource( 1 )
 
 [node name="ColorPicker" type="ColorPicker" parent="BackgroundColorPickerPopup/PanelContainer"]
-margin_left = 116.0
-margin_top = 116.0
-margin_right = 425.0
-margin_bottom = 520.0
+margin_left = 128.0
+margin_top = 128.0
+margin_right = 437.0
+margin_bottom = 532.0
 edit_alpha = false
 presets_enabled = false
 presets_visible = false

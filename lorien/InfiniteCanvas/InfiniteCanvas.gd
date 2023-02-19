@@ -161,7 +161,8 @@ func get_strokes_in_camera_frustrum() -> Array:
 # -------------------------------------------------------------------------------------------------
 func get_all_strokes() -> Array:
 	# All strokes on current active layer only. TODO: did layers break anything?
-	return _current_project.strokes
+#	return _current_project.strokes # TODO: fix references to strokes
+	return _current_project.layers[_current_project.curr_layer]
 
 # -------------------------------------------------------------------------------------------------
 func enable() -> void:
@@ -193,13 +194,11 @@ func start_stroke() -> void:
 # -------------------------------------------------------------------------------------------------
 func add_stroke(stroke: BrushStroke, _layer: int) -> void:
 	if _current_project != null:
-		_current_project.strokes.append(stroke)
+#		_current_project.strokes.append(stroke) # Done in Project.gd
 		_strokes_parent.add_child(stroke)
 		info.point_count += stroke.points.size()
 		info.stroke_count += 1
 		
-#		_current_project.strokes_layer_history.append(_current_project.curr_layer)
-
 # -------------------------------------------------------------------------------------------------
 func add_stroke_point(point: Vector2, pressure: float = 1.0) -> void:
 	_current_stroke.add_point(point, pressure)
@@ -352,14 +351,15 @@ func _delete_selected_strokes() -> void:
 
 # -------------------------------------------------------------------------------------------------
 func _do_delete_stroke(stroke: BrushStroke) -> void:
-	var index := _current_project.strokes.find(stroke)
-	_current_project.strokes.remove(index)
+	var index = _current_project.layers[_current_project.curr_layer].find(stroke)
+	_current_project.layers[_current_project.curr_layer].remove(index)
 	_strokes_parent.remove_child(stroke)
 	info.point_count -= stroke.points.size()
 	info.stroke_count -= 1
 	
-#	_current_project.add_stroke(_current_project.stroke_delete_layer_history.append(_current_project.curr_layer))
-
+	# TODO: investigate why changing project.strokes doesn't change project.layers -> fix references to strokes
+	_current_project.strokes = _current_project.layers[_current_project.curr_layer]
+	
 # FIXME: this adds strokes at the back and does not preserve stroke order; not sure how to do that except saving before
 # and after versions of the stroke arrays which is a nogo.
 # -------------------------------------------------------------------------------------------------
@@ -395,6 +395,7 @@ func _on_add_layer(index):
 	var new_strokes_layer = Node2D.new()
 	_layers_container.add_child(new_strokes_layer)
 	_layers_container.move_child(new_strokes_layer, index)
+	print("ADDED LAYERS ", index)
 	
 func _on_delete_layer(index, selected_index):
 	# Unparent strokes
@@ -407,13 +408,9 @@ func _on_delete_layer(index, selected_index):
 	# Reselect _strokes_parent if needed
 	_strokes_parent = _layers_container.get_child(selected_index)
 	
-func _on_undo_delete_layer(index, strokes, strokes_layer):
-#	_layers_container.add_child(strokes_layer)
-#	_layers_container.move_child(strokes_layer, index)
-	_on_add_layer(index)
-	
-	# Re-add strokes
-	print("UNDO DELETE layer: Re-add strokes ", strokes)
+func _on_undo_delete_layer(index, strokes):
+	print("READDING STROKES ", strokes)
+	# Re-add strokes - ASSUMES ALREADY ADDED LAYER
 	for stroke in strokes:
 		_layers_container.get_child(index).add_child(stroke)
 	

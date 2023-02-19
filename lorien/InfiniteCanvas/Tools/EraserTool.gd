@@ -53,6 +53,8 @@ func _stroke_intersects_circle(stroke: BrushStroke, circle_position: Vector2) ->
 func _remove_stroke(brush_position: Vector2) -> void:
 	# Remove only strokes on this layer AND visible in camera
 	var project: Project = ProjectManager.get_active_project()
+#	var layer_strokes = project.layers[project.curr_layer]
+#	print("Layers: ", project.layers)
 	var layer_strokes = project.layers[project.curr_layer]
 	var visible_layer_strokes = []
 	for stroke in _canvas.get_strokes_in_camera_frustrum():

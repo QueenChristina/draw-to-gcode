@@ -69,44 +69,17 @@ func _on_delete_layer(index):
 	else:
 		print("Must have at least 1 layer. Cannot delete.")
 
-func _undo_delete_layer(index, strokes, strokes_layer):
-	# (code taken from add_layer. TODO: refactor)
-	var layer = LAYER.instance()
-	
-	var child_index = _layer_box.get_child_count() - index
-	_layer_box.add_child(layer)
-	_layer_box.move_child(layer, child_index)
-	layer.layer_button.group = layer_button_group
-	
-	var active_project: Project = ProjectManager.get_active_project()
-	layer.text = "Layer " + str(index)
-	active_project.layers.insert(index, [])
-	layer.connect("switch_layers", self, "_on_switch_layers")
-	
-	# Emit signal to re-add SAME layer as before
-	emit_signal("undo_delete_layer", index, strokes, strokes_layer)
-
 func _on_DeleteLayer_pressed():
 	# Delete current layer
 	var index = _layer_box.get_child_count() - 1 - curr_layer.get_index()
 	
-	# TODO: RE-ADD STROKES - IDEA: already built-in to re-add strokes in correct order
-	# SO instead make unique functions: add_layer must add and delete_layer must delete the SAME LAYER --> safe as reference
 	var active_project: Project = ProjectManager.get_active_project()
 	active_project.undo_redo.create_action("Add Layer")
-#	active_project.undo_redo.add_undo_method(self, "_on_add_layer", index)
-	var strokes_layer = _canvas._layers_container.get_child(index) # TODO: better way of referencing than this? Maybe just delete this. make new layer.
-	active_project.undo_redo.add_undo_method(self, "_undo_delete_layer", index, active_project.layers[index], strokes_layer)
-	active_project.undo_redo.add_undo_reference(strokes_layer)
+	active_project.undo_redo.add_undo_method(self, "_on_add_layer", index)
+	active_project.undo_redo.add_undo_method(self, "emit_signal", "undo_delete_layer", index, active_project.layers[index])
 	active_project.undo_redo.add_undo_property(active_project, "layers", active_project.layers) # TODO: What this does?
 	active_project.undo_redo.add_do_method(self, "_on_delete_layer", index)
 	active_project.undo_redo.commit_action()
-	
-#	if _layer_box.get_child_count() > 1:
-#		# Select existing layer intead
-#		var below_index = min(_layer_box.get_child_count() - 1, index)
-#		_layer_box.get_child(below_index).layer_button.pressed = true	
-#		curr_layer = _layer_box.get_child(below_index)
 
 func _on_switch_layers(node):
 	# Find which add layer pressed/on - NOTE: layer count is bottom-up, so inverted
@@ -133,6 +106,7 @@ func _on_ShiftUp_pressed():
 	active_project.layers.insert(new_index, temp_layer_strokes)
 	
 	emit_signal("layers_swap", old_index, new_index)
+	active_project.curr_layer = new_index
 
 func _on_ShiftDown_pressed():
 	var new_pos = min(_layer_box.get_child_count() - 1, curr_layer.get_index() + 1)
@@ -146,3 +120,4 @@ func _on_ShiftDown_pressed():
 	active_project.layers.insert(new_index, temp_layer_strokes)
 	
 	emit_signal("layers_swap", old_index, new_index)
+	active_project.curr_layer = new_index
