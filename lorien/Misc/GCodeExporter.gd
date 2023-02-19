@@ -8,7 +8,7 @@ extends Reference
 const EDGE_MARGIN := 0.025
 
 # -------------------------------------------------------------------------------------------------
-func export_gcode(strokes: Array, path: String) -> void:
+func export_gcode(layers: Array, path: String) -> void:
 	var start_time := OS.get_ticks_msec()
 	
 	# Open file
@@ -21,11 +21,12 @@ func export_gcode(strokes: Array, path: String) -> void:
 	# Calculate total canvas dimensions
 	var max_dim := BrushStroke.MIN_VECTOR2
 	var min_dim := BrushStroke.MAX_VECTOR2
-	for stroke in strokes:
-		min_dim.x = min(min_dim.x, stroke.top_left_pos.x)
-		min_dim.y = min(min_dim.y, stroke.top_left_pos.y)
-		max_dim.x = max(max_dim.x, stroke.bottom_right_pos.x)
-		max_dim.y = max(max_dim.y, stroke.bottom_right_pos.y)
+	for layer in layers:
+		for stroke in layer:
+			min_dim.x = min(min_dim.x, stroke.top_left_pos.x)
+			min_dim.y = min(min_dim.y, stroke.top_left_pos.y)
+			max_dim.x = max(max_dim.x, stroke.bottom_right_pos.x)
+			max_dim.y = max(max_dim.y, stroke.bottom_right_pos.y)
 	var size := max_dim - min_dim
 	var margin_size := size * EDGE_MARGIN
 	size += margin_size*2.0
@@ -33,8 +34,11 @@ func export_gcode(strokes: Array, path: String) -> void:
 	
 	# Write gcode to file
 	_gcode_start(file, origin, size)
-	for stroke in strokes:
-		_gcode_polyline(file, stroke)
+	for layer in layers:
+		for stroke in layer:
+			_gcode_polyline(file, stroke)
+		# Move up a bit for each layer by size of layer (TODO) + TODO: which axis, A or Z, depends on material
+		file.store_string("G0 Z%.1f\n" % [0.25])
 	_gcode_end(file)
 	
 	# Flush and close the file
@@ -53,10 +57,11 @@ func _gcode_end(file: File) -> void:
 # -------------------------------------------------------------------------------------------------
 func _gcode_polyline(file: File, stroke: BrushStroke) -> void:
 	# Stroke: Color, Size, [Points]
-	file.store_string("G0 X%.1f Y%.1f\n" % [stroke.points[0].x / 10.0, stroke.points[0].y / 10.0])
+	# Negate x to flip - from image coordinates to real coordinates
+	file.store_string("G0 X%.1f Y%.1f\n" % [-1 * stroke.points[0].x / 10.0, stroke.points[0].y / 10.0])
 	var idx := 0
 	var point_count := stroke.points.size()
 	for point in stroke.points:
-		file.store_string("G1 X%.1f Y%.1f\n" % [point.x / 10.0, point.y / 10.0])
+		file.store_string("G1 X%.1f Y%.1f\n" % [-1 * point.x / 10.0, point.y / 10.0])
 		idx += 1
 	file.store_string("\n")

@@ -17,7 +17,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Hide" type="Button" parent="."]
+margin_right = 20.0
+margin_bottom = 38.0
+text = "*"
+
 [node name="Button" type="Button" parent="."]
+margin_left = 24.0
 margin_right = 221.0
 margin_bottom = 38.0
 size_flags_horizontal = 3
@@ -31,4 +37,5 @@ margin_right = 246.0
 margin_bottom = 38.0
 text = "#"
 
+[connection signal="pressed" from="Hide" to="." method="_on_Hide_pressed"]
 [connection signal="pressed" from="Button" to="." method="_on_LayerButton_pressed"]

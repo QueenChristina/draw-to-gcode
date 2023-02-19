@@ -22,13 +22,12 @@ func make_dict(canvas: InfiniteCanvas) -> Dictionary:
 func apply_from_dict(meta_data: Dictionary, canvas: InfiniteCanvas) -> void:
 	var cam: Camera2D = canvas.get_camera()
 	
-	var new_cam_zoom_str: String = meta_data.get(CAMERA_ZOOM, "1.0")
-#	var new_cam_offset_x_str: String = meta_data.get(CAMERA_OFFSET_X, "0.0")
-#	var new_cam_offset_y_str: String = meta_data.get(CAMERA_OFFSET_Y, "0.0")
+	# TODO: set zoom level based on platform size
+	var new_cam_zoom_str: String = meta_data.get(CAMERA_ZOOM, "0.5")
 	# Default to center of screen to be (0,0); not top left to be (0, 0)
 	# TODO: Set custom origin location in settings
-	var new_cam_offset_x_str: String = meta_data.get(CAMERA_OFFSET_X, "%.1f" % (-get_viewport().get_size().x / 2.0))
-	var new_cam_offset_y_str: String = meta_data.get(CAMERA_OFFSET_Y, "%.1f" % (-get_viewport().get_size().y / 2.0))
+	var new_cam_offset_x_str: String = meta_data.get(CAMERA_OFFSET_X, "%.1f" % (-get_viewport().get_size().x / 4.0))
+	var new_cam_offset_y_str: String = meta_data.get(CAMERA_OFFSET_Y, "%.1f" % (-get_viewport().get_size().y / 4.0))
 	var new_canvas_color: String = meta_data.get(CANVAS_COLOR, Config.DEFAULT_CANVAS_COLOR.to_html())
 	
 	cam.offset = Vector2(float(new_cam_offset_x_str), float(new_cam_offset_y_str))

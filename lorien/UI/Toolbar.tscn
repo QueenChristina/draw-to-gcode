@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=24 format=2]
 
 [ext_resource path="res://Assets/Icons/save_file.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Icons/open_file.png" type="Texture" id=2]
@@ -19,6 +19,7 @@
 [ext_resource path="res://Assets/Icons/grid.png" type="Texture" id=17]
 [ext_resource path="res://Assets/Icons/fullscreen.png" type="Texture" id=18]
 [ext_resource path="res://Assets/Icons/circle_tool.png" type="Texture" id=19]
+[ext_resource path="res://Assets/Icons/layers.png" type="Texture" id=20]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -315,9 +316,9 @@ __meta__ = {
 }
 
 [node name="BackgroundColorButton" type="TextureButton" parent="Console/Right"]
-margin_left = 868.0
+margin_left = 838.0
 margin_top = 12.0
-margin_right = 884.0
+margin_right = 854.0
 margin_bottom = 28.0
 hint_tooltip = "TOOLBAR_TOOLTIP_CANVAS_COLOR"
 size_flags_horizontal = 4
@@ -329,9 +330,9 @@ hover_tint = Color( 0.662745, 0.945098, 0.87451, 1 )
 pressed_tint = Color( 0.572549, 1, 0.894118, 1 )
 
 [node name="GridButton" type="TextureButton" parent="Console/Right"]
-margin_left = 896.0
+margin_left = 866.0
 margin_top = 12.0
-margin_right = 912.0
+margin_right = 882.0
 margin_bottom = 28.0
 hint_tooltip = "TOOLBAR_TOOLTIP_GRID"
 size_flags_horizontal = 4
@@ -345,6 +346,21 @@ hover_tint = Color( 0.662745, 0.945098, 0.87451, 1 )
 pressed_tint = Color( 0.572549, 1, 0.894118, 1 )
 
 [node name="FullscreenButton" type="TextureButton" parent="Console/Right"]
+margin_left = 894.0
+margin_top = 11.0
+margin_right = 912.0
+margin_bottom = 29.0
+hint_tooltip = "TOOLBAR_FULLSCREEN_TOGGLE"
+size_flags_horizontal = 4
+size_flags_vertical = 4
+toggle_mode = true
+action_mode = 0
+texture_normal = ExtResource( 18 )
+script = ExtResource( 13 )
+hover_tint = Color( 0.662745, 0.945098, 0.87451, 1 )
+pressed_tint = Color( 0.572549, 1, 0.894118, 1 )
+
+[node name="LayersButton" type="TextureButton" parent="Console/Right"]
 margin_left = 924.0
 margin_top = 11.0
 margin_right = 942.0
@@ -353,8 +369,9 @@ hint_tooltip = "TOOLBAR_FULLSCREEN_TOGGLE"
 size_flags_horizontal = 4
 size_flags_vertical = 4
 toggle_mode = true
+pressed = true
 action_mode = 0
-texture_normal = ExtResource( 18 )
+texture_normal = ExtResource( 20 )
 script = ExtResource( 13 )
 hover_tint = Color( 0.662745, 0.945098, 0.87451, 1 )
 pressed_tint = Color( 0.572549, 1, 0.894118, 1 )
@@ -382,3 +399,4 @@ custom_styles/separator = SubResource( 1 )
 [connection signal="pressed" from="Console/Right/BackgroundColorButton" to="." method="_on_BackgroundColorButton_pressed"]
 [connection signal="toggled" from="Console/Right/GridButton" to="." method="_on_GridButton_toggled"]
 [connection signal="toggled" from="Console/Right/FullscreenButton" to="." method="_on_FullscreenButton_toggled"]
+[connection signal="toggled" from="Console/Right/LayersButton" to="." method="_on_LayersButton_toggled"]

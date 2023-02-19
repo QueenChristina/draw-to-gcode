@@ -431,3 +431,38 @@ func _on_swap_layer(index1, index2):
 # Set which strokes layer to draw on actively
 func _on_set_active_layer(index):
 	_strokes_parent = _layers_container.get_child(index)
+	# TODO: project.strokes is not updated, so check not breaking 
+	
+	# Make all other layers lighter. TODO: hide if too far away + settings for color modulate
+	for layer in _layers_container.get_children():
+		layer.modulate = Color(1, 1, 1, 0.08)
+	
+		if layer.get_index() == index:
+			layer.modulate = Color(1, 1, 1, 1)
+		elif abs(layer.get_index() - index) <= 1:
+			layer.modulate = Color(1, 1, 1, 0.25)
+
+func _on_layer_visibility_changed(index, is_visible):
+	_layers_container.get_child(index).visible = is_visible
+
+func _on_copy_layer(from_index, to_index):
+	# Copy strokes from_index to_index
+	for stroke in _layers_container.get_child(from_index).get_children():
+		var dup := _duplicate_stroke(stroke, Vector2(0, 0))
+		_layers_container.get_child(to_index).add_child(dup)
+		_current_project.layers[to_index].append(dup)
+		
+		info.point_count += stroke.points.size()
+		info.stroke_count += 1
+
+# ------------------------------------------------------------------------------------------------
+# (COPIED FROM SELECTIONTOOL.gd) TODO: refactor into a Utils.gd
+func _duplicate_stroke(stroke: BrushStroke, offset: Vector2) -> BrushStroke:	
+	var dup: BrushStroke = BRUSH_STROKE.instance()
+	dup.global_position = stroke.global_position
+	dup.size = stroke.size
+	dup.color = stroke.color
+	dup.pressures = stroke.pressures.duplicate()
+	for point in stroke.points:
+		dup.points.append(point + offset)
+	return dup

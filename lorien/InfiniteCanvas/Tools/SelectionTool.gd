@@ -121,7 +121,15 @@ func tool_event(event: InputEvent) -> void:
 # ------------------------------------------------------------------------------------------------
 func compute_selection(start_pos: Vector2, end_pos: Vector2) -> void:
 	var selection_rect : Rect2 = Utils.calculate_rect(start_pos, end_pos)
+	
+	var project: Project = ProjectManager.get_active_project()
+	var layer_strokes = project.layers[project.curr_layer]
+	var visible_layer_strokes = []
 	for stroke in _canvas.get_strokes_in_camera_frustrum():
+		if stroke in layer_strokes:
+			visible_layer_strokes.append(stroke)
+	
+	for stroke in visible_layer_strokes:
 		var bounding_box: Rect2 = _bounding_box_cache[stroke]
 		if selection_rect.intersects(bounding_box):
 			for point in stroke.points:

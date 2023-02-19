@@ -12,10 +12,13 @@ signal add_layer(index)
 signal delete_layer(index, selected_index)
 signal set_active_layer(index)
 signal undo_delete_layer(index, strokes)
+signal layer_visibility_changed(index, is_visible)
+signal copy_layer(from_index, to_index)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	curr_layer.connect("switch_layers", self, "_on_switch_layers")
+	curr_layer.connect("layer_visibility_changed", self, "_on_layer_visibility_changed")
 	layer_button_group = ButtonGroup.new()
 	curr_layer.layer_button.group = layer_button_group
 	curr_layer.layer_button.pressed = true
@@ -42,6 +45,7 @@ func _on_add_layer(index):
 	layer.text = "Layer " + str(active_project.layers.size())
 	active_project.layers.insert(index, [])
 	layer.connect("switch_layers", self, "_on_switch_layers")
+	layer.connect("layer_visibility_changed", self, "_on_layer_visibility_changed")
 	
 	# Communicate with canvas layer
 	emit_signal("add_layer", index)
@@ -90,7 +94,8 @@ func _on_DeleteLayer_pressed():
 	var index = _layer_box.get_child_count() - 1 - curr_layer.get_index()
 	
 	var active_project: Project = ProjectManager.get_active_project()
-	active_project.undo_redo.create_action("Add Layer")
+	active_project.undo_redo.create_action("Delete Layer")
+	# TODO: save layer information eg., visibility
 	active_project.undo_redo.add_undo_method(self, "_on_add_layer", index)
 	active_project.undo_redo.add_undo_method(self, "emit_signal", "undo_delete_layer", index, active_project.layers[index])
 	active_project.undo_redo.add_undo_property(active_project, "layers", active_project.layers) # TODO: What this does?
@@ -100,7 +105,7 @@ func _on_DeleteLayer_pressed():
 func _on_switch_layers(node):
 	# Find which add layer pressed/on - NOTE: layer count is bottom-up, so inverted
 	var curr_layer_index = _layer_box.get_child_count() - node.get_index() - 1
-	print("Switch to layer " + str(curr_layer_index))
+#	print("Switch to layer " + str(curr_layer_index))
 	
 	var active_project: Project = ProjectManager.get_active_project()
 	active_project.curr_layer = curr_layer_index
@@ -108,6 +113,9 @@ func _on_switch_layers(node):
 	curr_layer = node
 	
 	emit_signal("set_active_layer", curr_layer_index)
+	
+func _on_layer_visibility_changed(node, is_layer_visible):
+	emit_signal("layer_visibility_changed", _layer_box.get_child_count() - 1 - node.get_index(), is_layer_visible)
 
 # Shift current layer up and down
 func _on_ShiftUp_pressed():
@@ -137,3 +145,23 @@ func _on_ShiftDown_pressed():
 	
 	emit_signal("layers_swap", old_index, new_index)
 	active_project.curr_layer = new_index
+
+func _on_Toolbar_layers_menu_toggle(visible):
+	self.visible = visible
+
+func _on_DuplicateLayer_pressed():
+	var active_project: Project = ProjectManager.get_active_project()
+	var index = min(active_project.layers.size(), _layer_box.get_child_count() - curr_layer.get_index())
+
+	active_project.undo_redo.create_action("Duplicate Layer")
+	active_project.undo_redo.add_undo_method(self, "_on_delete_layer", index)
+	active_project.undo_redo.add_do_method(self, "_on_add_layer", index)
+	active_project.undo_redo.add_do_method(self, "_on_copy_layer", _layer_box.get_child_count() - 1 - curr_layer.get_index(), index)
+	active_project.undo_redo.commit_action()
+	
+# Copy layer information from_index to_index
+func _on_copy_layer(from_index, to_index):
+	# Assumes layer already exists; will OVERWRITE layer information
+	emit_signal("copy_layer", from_index, to_index)
+	
+

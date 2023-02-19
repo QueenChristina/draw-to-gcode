@@ -87,9 +87,10 @@ rect = Rect2( 0, -20, 40, 40 )
 
 [node name="Platform" type="Node2D" parent="Viewport"]
 script = ExtResource( 16 )
+rect_size = Vector2( 200, 200 )
 
 [node name="Line2D" type="Line2D" parent="Viewport/Platform"]
-points = PoolVector2Array( -206.894, -178.601, 188.665, -182.165, 189.556, 204.485, -203.33, 204.485, -207.785, -175.037 )
+points = PoolVector2Array( -101.5, -100, 100, -100, 100, 100, -100, 100, -100, -101.5 )
 width = 3.0
 
 [node name="Camera2D" type="Camera2D" parent="Viewport"]

@@ -9,6 +9,7 @@ signal undo_action
 signal redo_action
 signal toggle_brush_color_picker
 signal grid_enabled(enabled)
+signal layers_menu_toggle(visible)
 signal brush_size_changed(size)
 signal canvas_background_changed(color)
 signal tool_changed(t)
@@ -177,6 +178,10 @@ func _on_GridButton_toggled(toggled: bool):
 # -------------------------------------------------------------------------------------------------
 func _on_FullscreenButton_toggled(button_pressed):
 	OS.set_window_fullscreen(button_pressed)
+
+# -------------------------------------------------------------------------------------------------
+func _on_LayersButton_toggled(toggled: bool):
+	emit_signal("layers_menu_toggle", toggled)
 
 # -------------------------------------------------------------------------------------------------
 func _change_active_tool_button(btn: TextureButton) -> void:

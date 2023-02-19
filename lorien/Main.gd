@@ -487,13 +487,15 @@ func _on_export_confirmed(path: String):
 			var project: Project = ProjectManager.get_active_project()
 			if project != null:
 				var gcode := GCodeExporter.new()
-				gcode.export_gcode(project.strokes, path)
+				gcode.export_gcode(project.layers, path)
 		_:
 			printerr("Unsupported format")
 
 # --------------------------------------------------------------------------------------------------
 func _export_svg() -> void:
-	_export_dialog.filters = ["*.svg ; Scalable Vector graphics"]
+	_export_dialog.filters = ["*.svg ; Scalable Vector graphics", "*.txt ; GCode as Text File"]
+	# TODO: fix file extension text replacement when click on another extension
+	# https://github.com/godotengine/godot/issues/38195
 	_export_dialog.current_file = "lorien.svg"
 	_export_dialog.popup()
 
