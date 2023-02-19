@@ -32,6 +32,7 @@ TOOLBAR_TOOLTIP_BRUSH_SIZE      Brush Size
 TOOLBAR_TOOLTIP_CANVAS_COLOR    Canvas Color
 TOOLBAR_TOOLTIP_GRID 			Show Grid
 TOOLBAR_FULLSCREEN_TOGGLE       Toggle fullscreen
+TOOLBAR_LAYER_MENU_TOGGLE      Toggle Layer Menu
 
 # -----------------------------------------------------------------------------
 # Color Palette Picker
