@@ -12,6 +12,7 @@ var strokes: Array # Array<BrushStroke> # Current layer strokes [TODO: reference
 
 var curr_layer : int = 0 setget set_curr_layer # Current layer we are on, as index of layers
 var layers : Array  = [[]] # Array<Array<BrushStroke>> # Array of strokes, 0 = bottom-most layer
+var layers_info : Array = [{"dup_amount" : 1}] # Array<Dict{dup_amount: #, etc.}>
 # -------------------------------------------------------------------------------------------------
 func _init():
 	undo_redo = UndoRedo.new()
@@ -61,3 +62,11 @@ func _to_string() -> String:
 func set_curr_layer(layer_index):
 	curr_layer = layer_index
 	strokes = layers[curr_layer]
+	
+func add_layer(index, layer_strokes, dups_amount = 1):
+	layers.insert(index, layer_strokes)
+	layers_info.insert(index, {"dup_amount" : dups_amount})
+	
+func remove_layer(index):
+	layers.remove(index)
+	layers_info.remove(index)

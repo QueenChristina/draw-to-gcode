@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://UI/Layers/Layer.gd" type="Script" id=1]
 [ext_resource path="res://UI/Components/FlatTextureButton.gd" type="Script" id=2]
@@ -12,6 +12,23 @@ width = 32
 height = 32
 noise = SubResource( 1 )
 
+[sub_resource type="Theme" id=3]
+LineEdit/colors/clear_button_color = Color( 0.88, 0.88, 0.88, 1 )
+LineEdit/colors/clear_button_color_pressed = Color( 1, 1, 1, 1 )
+LineEdit/colors/cursor_color = Color( 0.94, 0.94, 0.94, 1 )
+LineEdit/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
+LineEdit/colors/font_color_selected = Color( 0, 0, 0, 1 )
+LineEdit/colors/font_color_uneditable = Color( 0.88, 0.88, 0.88, 0.5 )
+LineEdit/colors/selection_color = Color( 0.49, 0.49, 0.49, 1 )
+LineEdit/constants/minimum_spaces = 6
+LineEdit/fonts/font = null
+LineEdit/icons/clear = null
+LineEdit/styles/focus = null
+LineEdit/styles/normal = null
+LineEdit/styles/read_only = null
+SpinBox/icons/ = null
+SpinBox/icons/updown = null
+
 [node name="Layer" type="HBoxContainer"]
 margin_right = 246.0
 margin_bottom = 38.0
@@ -24,6 +41,7 @@ __meta__ = {
 margin_right = 24.0
 margin_bottom = 38.0
 rect_min_size = Vector2( 24, 0 )
+hint_tooltip = "Layer Visibility"
 toggle_mode = true
 texture_normal = ExtResource( 3 )
 texture_pressed = ExtResource( 4 )
@@ -35,18 +53,27 @@ pressed_tint = Color( 0.392157, 0.901961, 1, 1 )
 
 [node name="Button" type="Button" parent="."]
 margin_left = 28.0
-margin_right = 221.0
+margin_right = 192.0
 margin_bottom = 38.0
 size_flags_horizontal = 3
 toggle_mode = true
 text = "Layer 0"
 icon = SubResource( 2 )
 
-[node name="Settings" type="Button" parent="."]
-margin_left = 225.0
+[node name="DuplicateAmountEdit" type="SpinBox" parent="."]
+margin_left = 196.0
 margin_right = 246.0
 margin_bottom = 38.0
-text = "#"
+rect_min_size = Vector2( 30, 0 )
+hint_tooltip = "Repeat Layer"
+size_flags_vertical = 3
+theme = SubResource( 3 )
+min_value = 1.0
+max_value = 999.0
+value = 1.0
+rounded = true
+align = 1
 
 [connection signal="pressed" from="Hide" to="." method="_on_Hide_pressed"]
 [connection signal="pressed" from="Button" to="." method="_on_LayerButton_pressed"]
+[connection signal="value_changed" from="DuplicateAmountEdit" to="." method="_on_DuplicateAmountEdit_value_changed"]

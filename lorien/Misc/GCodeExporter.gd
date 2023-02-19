@@ -8,7 +8,7 @@ extends Reference
 const EDGE_MARGIN := 0.025
 
 # -------------------------------------------------------------------------------------------------
-func export_gcode(layers: Array, path: String) -> void:
+func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	var start_time := OS.get_ticks_msec()
 	
 	# Open file
@@ -33,13 +33,19 @@ func export_gcode(layers: Array, path: String) -> void:
 	var origin := min_dim - margin_size
 	
 	# Write gcode to file
+	var layer_count = 0
 	_gcode_start(file, origin, size)
-	for layer in layers:
-		for stroke in layer:
-			_gcode_polyline(file, stroke)
-		# Move up a bit for each layer by size of layer (TODO) + TODO: which axis, A or Z, depends on material
-		file.store_string("G0 Z%.1f\n" % [0.25])
+	for i in range(layers.size()):
+		for _j in range(layers_info[i].dup_amount): # Repeat this layer by dup_amount of times
+			for stroke in layers[i]:
+				_gcode_polyline(file, stroke)
+			# Move up a bit for each layer by size of layer (TODO) + TODO: which axis, A or Z, depends on material
+			file.store_string("G91\n")
+			file.store_string("G0 Z%.1f\n" % [0.25])
+			file.store_string("G90\n") # TODO: CONVERT ALL COORDINATES TO RELATIVE
+			layer_count += 1
 	_gcode_end(file)
+	print("EXPORTED ", layer_count, " layers.")
 	
 	# Flush and close the file
 #	file.flush()

@@ -487,7 +487,7 @@ func _on_export_confirmed(path: String):
 			var project: Project = ProjectManager.get_active_project()
 			if project != null:
 				var gcode := GCodeExporter.new()
-				gcode.export_gcode(project.layers, path)
+				gcode.export_gcode(project.layers, project.layers_info, path)
 		_:
 			printerr("Unsupported format")
 

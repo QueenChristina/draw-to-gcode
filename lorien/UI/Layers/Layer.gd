@@ -5,9 +5,11 @@ export var text = "Layer 0" setget set_layer_text
 var is_layer_visible = true
 
 onready var layer_button = $Button
+onready var dup_edit = $DuplicateAmountEdit
 
 signal switch_layers(node)
 signal layer_visibility_changed(node, is_layer_visible)
+signal dups_amount_changed(node, value)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -31,9 +33,7 @@ func _on_Hide_pressed():
 func toggle_layer_visibility():
 	is_layer_visible = !is_layer_visible
 	emit_signal("layer_visibility_changed", self, is_layer_visible)
-	
-#	# TODO: change icon 
-#	if is_layer_visible:
-#		$Hide.text = "*"
-#	else:
-#		$Hide.text = "-"
+
+func _on_DuplicateAmountEdit_value_changed(value):
+	# TODO: undo redo
+	emit_signal("dups_amount_changed", self, value)

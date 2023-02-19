@@ -447,12 +447,19 @@ __meta__ = {
 margin_right = 260.0
 margin_bottom = 977.0
 
-[node name="LayersVBox" type="VBoxContainer" parent="VBoxContainer2"]
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer2"]
 margin_right = 260.0
 margin_bottom = 943.0
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Layer" parent="VBoxContainer2/LayersVBox" instance=ExtResource( 2 )]
+[node name="LayersVBox" type="VBoxContainer" parent="VBoxContainer2/ScrollContainer"]
+margin_right = 260.0
+margin_bottom = 943.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Layer" parent="VBoxContainer2/ScrollContainer/LayersVBox" instance=ExtResource( 2 )]
 margin_right = 260.0
 margin_bottom = 40.0
 
