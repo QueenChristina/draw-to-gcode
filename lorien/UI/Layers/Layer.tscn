@@ -1,6 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://UI/Layers/Layer.gd" type="Script" id=1]
+[ext_resource path="res://UI/Components/FlatTextureButton.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Icons/show_layer.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Icons/hide_layer.png" type="Texture" id=4]
 
 [sub_resource type="OpenSimplexNoise" id=1]
 
@@ -17,13 +20,21 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Hide" type="Button" parent="."]
-margin_right = 20.0
+[node name="Hide" type="TextureButton" parent="."]
+margin_right = 24.0
 margin_bottom = 38.0
-text = "*"
+rect_min_size = Vector2( 24, 0 )
+toggle_mode = true
+texture_normal = ExtResource( 3 )
+texture_pressed = ExtResource( 4 )
+expand = true
+stretch_mode = 5
+script = ExtResource( 2 )
+hover_tint = Color( 0.745098, 0.992157, 1, 1 )
+pressed_tint = Color( 0.392157, 0.901961, 1, 1 )
 
 [node name="Button" type="Button" parent="."]
-margin_left = 24.0
+margin_left = 28.0
 margin_right = 221.0
 margin_bottom = 38.0
 size_flags_horizontal = 3

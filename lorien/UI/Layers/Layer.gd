@@ -32,8 +32,8 @@ func toggle_layer_visibility():
 	is_layer_visible = !is_layer_visible
 	emit_signal("layer_visibility_changed", self, is_layer_visible)
 	
-	# TODO: change icon 
-	if is_layer_visible:
-		$Hide.text = "*"
-	else:
-		$Hide.text = "-"
+#	# TODO: change icon 
+#	if is_layer_visible:
+#		$Hide.text = "*"
+#	else:
+#		$Hide.text = "-"
