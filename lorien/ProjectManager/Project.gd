@@ -10,7 +10,7 @@ var filepath: String
 var meta_data: Dictionary
 var strokes: Array # Array<BrushStroke> # Current layer strokes [TODO: reference layers[curr_layer]
 
-var curr_layer : int = 0 # Current layer we are on, as index of layers
+var curr_layer : int = 0 setget set_curr_layer # Current layer we are on, as index of layers
 var layers : Array  = [[]] # Array<Array<BrushStroke>> # Array of strokes, 0 = bottom-most layer
 # -------------------------------------------------------------------------------------------------
 func _init():
@@ -32,19 +32,22 @@ func clear() -> void:
 	strokes.clear()
 
 # -------------------------------------------------------------------------------------------------
-func add_stroke(stroke: BrushStroke) -> void:
+func add_stroke(stroke: BrushStroke, layer_index = curr_layer) -> void:
 #	print("From ", layers)
-	strokes.append(stroke)
-	# TODO: fix all references to strokes not updating layers
-	layers[curr_layer] = strokes
+	layers[layer_index].append(stroke)
+	# TODO: fix all references to strokes not updating layers, and do not repeat
+	if layer_index == curr_layer:
+		strokes = layers[layer_index]
 #	print("Changed to ", layers)
 	dirty = true
 
 # -------------------------------------------------------------------------------------------------
-func remove_last_stroke() -> void:
-	if !strokes.empty():
-		strokes.pop_back()
-
+func remove_last_stroke(layer_index = curr_layer) -> void:
+	if !layers[layer_index].empty():
+		layers[layer_index].pop_back()
+	if layer_index == curr_layer:
+		strokes = layers[layer_index]
+	
 # -------------------------------------------------------------------------------------------------
 func get_filename() -> String:
 	if filepath.empty():
@@ -54,3 +57,7 @@ func get_filename() -> String:
 # -------------------------------------------------------------------------------------------------
 func _to_string() -> String:
 	return "%s: id: %d, loaded: %s, dirty: %s" % [filepath, id, loaded, dirty]
+
+func set_curr_layer(layer_index):
+	curr_layer = layer_index
+	strokes = layers[curr_layer]

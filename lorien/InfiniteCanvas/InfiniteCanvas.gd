@@ -194,7 +194,9 @@ func start_stroke() -> void:
 # -------------------------------------------------------------------------------------------------
 func add_stroke(stroke: BrushStroke, _layer: int) -> void:
 	if _current_project != null:
-#		_current_project.strokes.append(stroke) # Done in Project.gd
+		_current_project.layers[_layer].append(stroke) # TODO: make sure not repeat with in Project.gd. 
+		if _current_project.curr_layer == _layer:
+			_current_project.strokes = _current_project.layers[_layer]
 		_strokes_parent.add_child(stroke)
 		info.point_count += stroke.points.size()
 		info.stroke_count += 1
@@ -243,10 +245,11 @@ func end_stroke() -> void:
 			_current_project.undo_redo.create_action("Stroke")
 			_current_project.undo_redo.add_undo_method(self, "undo_last_stroke", _current_project.curr_layer)
 			_current_project.undo_redo.add_undo_reference(_current_stroke)
-			_current_project.undo_redo.add_do_method(_strokes_parent, "add_child", _current_stroke)
+#			_current_project.undo_redo.add_do_method(_strokes_parent, "add_child", _current_stroke) # FIX
+			_current_project.undo_redo.add_do_method(self, "add_stroke_to_layer", _current_stroke, _current_project.curr_layer) 
 			_current_project.undo_redo.add_do_property(info, "stroke_count", info.stroke_count + 1)
 			_current_project.undo_redo.add_do_property(info, "point_count", info.point_count + _current_stroke.points.size())
-			_current_project.undo_redo.add_do_method(_current_project, "add_stroke", _current_stroke)
+			_current_project.undo_redo.add_do_method(_current_project, "add_stroke", _current_stroke, _current_project.curr_layer)
 			_current_project.undo_redo.commit_action()
 			
 		_current_stroke = null
@@ -259,13 +262,17 @@ func add_strokes(strokes: Array) -> void:
 		point_count += stroke.points.size()
 		_current_project.undo_redo.add_undo_method(self, "undo_last_stroke", _current_project.curr_layer)
 		_current_project.undo_redo.add_undo_reference(stroke)
-		_current_project.undo_redo.add_do_method(_strokes_parent, "add_child", stroke)
+#		_current_project.undo_redo.add_do_method(_strokes_parent, "add_child", stroke)
+		_current_project.undo_redo.add_do_method(self, "add_stroke_to_layer", stroke, _current_project.curr_layer) 
 		_current_project.undo_redo.add_do_method(_current_project, "add_stroke", stroke)
 		
 	_current_project.undo_redo.add_do_property(info, "stroke_count", info.stroke_count + strokes.size())
 	_current_project.undo_redo.add_do_property(info, "point_count", info.point_count + point_count)
 	_current_project.undo_redo.commit_action()
 
+func add_stroke_to_layer(stroke, index):
+	_layers_container.get_child(index).add_child(stroke)
+	
 # -------------------------------------------------------------------------------------------------
 func use_project(project: Project) -> void:
 	# Cleanup old data
@@ -298,7 +305,7 @@ func undo_last_stroke(undo_layer : int) -> void:
 		if _past_strokes_parent.get_child_count() - 1 >= 0:
 			var stroke = _past_strokes_parent.get_child(_past_strokes_parent.get_child_count() - 1)
 			_past_strokes_parent.remove_child(stroke)
-			_current_project.remove_last_stroke()
+			_current_project.remove_last_stroke(undo_layer)
 			info.point_count -= stroke.points.size()
 			info.stroke_count -= 1
 		else:
@@ -409,10 +416,12 @@ func _on_delete_layer(index, selected_index):
 	_strokes_parent = _layers_container.get_child(selected_index)
 	
 func _on_undo_delete_layer(index, strokes):
-	print("READDING STROKES ", strokes)
+	print("RE-ADDING STROKES ", strokes, " at ", index)
 	# Re-add strokes - ASSUMES ALREADY ADDED LAYER
 	for stroke in strokes:
 		_layers_container.get_child(index).add_child(stroke)
+	# Also re-add to project layers
+	_current_project.layers[index].append_array(strokes)
 	
 func _on_swap_layer(index1, index2):
 	_layers_container.move_child(_layers_container.get_child(index1), index2)

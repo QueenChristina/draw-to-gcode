@@ -22,7 +22,7 @@ func _ready():
 
 func _on_AddLayer_pressed():
 	var active_project: Project = ProjectManager.get_active_project()
-	var index = active_project.layers.size()
+	var index = min(active_project.layers.size(), _layer_box.get_child_count() - curr_layer.get_index())
 
 	active_project.undo_redo.create_action("Add Layer")
 	active_project.undo_redo.add_undo_method(self, "_on_delete_layer", index)
@@ -39,16 +39,19 @@ func _on_add_layer(index):
 	layer.layer_button.group = layer_button_group
 	
 	var active_project: Project = ProjectManager.get_active_project()
-	layer.text = "Layer " + str(index)
+	layer.text = "Layer " + str(active_project.layers.size())
 	active_project.layers.insert(index, [])
 	layer.connect("switch_layers", self, "_on_switch_layers")
 	
 	# Communicate with canvas layer
 	emit_signal("add_layer", index)
 
-# Delete layer at index based on project.layers array; re-selection NOT handeled
+# Delete layer at index based on project.layers array; handles re-selection
 func _on_delete_layer(index):
 	if _layer_box.get_child_count() > 1:
+		# Select current layer index (starting from bottom = 0) by default
+		var selected_index = _layer_box.get_child_count() - 1 - curr_layer.get_index()
+		
 		var active_project: Project = ProjectManager.get_active_project()
 		active_project.layers.remove(index)
 		var layer = _layer_box.get_child(_layer_box.get_child_count() - 1 - index)
@@ -56,12 +59,14 @@ func _on_delete_layer(index):
 		var need_reselection = curr_layer == layer
 		layer.queue_free()
 		
-		var selected_index = index
+		# Make sure to select top layer or lower now that we have one less layer
+		selected_index = min(selected_index, _layer_box.get_child_count() - 1)
+		
 		# Select existing layer intead
 		if need_reselection:
 			var below_index = min(_layer_box.get_child_count() - 1, index)
-			_layer_box.get_child(below_index).layer_button.pressed = true	
-			curr_layer = _layer_box.get_child(below_index)
+			_layer_box.get_child(_layer_box.get_child_count() - 1 - below_index).layer_button.pressed = true	
+			curr_layer = _layer_box.get_child(_layer_box.get_child_count() - 1 - below_index)
 			active_project.curr_layer = below_index
 			selected_index = below_index
 		
