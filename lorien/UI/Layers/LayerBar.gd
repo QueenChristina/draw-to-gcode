@@ -45,6 +45,19 @@ func _on_add_layer(index):
 	
 	# Communicate with canvas layer
 	emit_signal("add_layer", index)
+	
+	# Select new layer
+	select_layer(index) 
+
+# Select new layer; index based on projects.layers array; inverse of children order
+func select_layer(index):
+	# Highlight correct layer
+	_layer_box.get_child(_layer_box.get_child_count() - 1 - index).layer_button.pressed = true	
+	curr_layer = _layer_box.get_child(_layer_box.get_child_count() - 1 - index)
+	# Project data
+	var active_project: Project = ProjectManager.get_active_project()
+	active_project.curr_layer = index
+	emit_signal("set_active_layer", index)
 
 # Delete layer at index based on project.layers array; handles re-selection
 func _on_delete_layer(index):
@@ -59,18 +72,16 @@ func _on_delete_layer(index):
 		var need_reselection = curr_layer == layer
 		layer.queue_free()
 		
+		emit_signal("delete_layer", index)
+		
 		# Make sure to select top layer or lower now that we have one less layer
 		selected_index = min(selected_index, _layer_box.get_child_count() - 1)
 		
 		# Select existing layer intead
 		if need_reselection:
 			var below_index = min(_layer_box.get_child_count() - 1, index)
-			_layer_box.get_child(_layer_box.get_child_count() - 1 - below_index).layer_button.pressed = true	
-			curr_layer = _layer_box.get_child(_layer_box.get_child_count() - 1 - below_index)
-			active_project.curr_layer = below_index
 			selected_index = below_index
-		
-		emit_signal("delete_layer", index, selected_index)
+		select_layer(selected_index)
 	else:
 		print("Must have at least 1 layer. Cannot delete.")
 

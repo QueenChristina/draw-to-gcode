@@ -404,7 +404,7 @@ func _on_add_layer(index):
 	_layers_container.move_child(new_strokes_layer, index)
 	print("ADDED LAYERS ", index)
 	
-func _on_delete_layer(index, selected_index):
+func _on_delete_layer(index):
 	# Unparent strokes
 	var strokes = _layers_container.get_child(index)
 	for stroke in strokes.get_children():
@@ -412,8 +412,6 @@ func _on_delete_layer(index, selected_index):
 	# Delete layer at index
 	_layers_container.remove_child(strokes)
 	strokes.queue_free()
-	# Reselect _strokes_parent if needed
-	_strokes_parent = _layers_container.get_child(selected_index)
 	
 func _on_undo_delete_layer(index, strokes):
 	print("RE-ADDING STROKES ", strokes, " at ", index)
