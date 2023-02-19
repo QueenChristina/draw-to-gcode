@@ -72,7 +72,7 @@ func _add_undoredo_action_for_erased_strokes() -> void:
 		project.undo_redo.create_action("Erase Stroke")
 		for stroke in _removed_strokes:
 			_removed_strokes.erase(stroke)
-			project.undo_redo.add_do_method(_canvas, "_do_delete_stroke", stroke)
+			project.undo_redo.add_do_method(_canvas, "_do_delete_stroke", stroke, project.curr_layer)
 			project.undo_redo.add_undo_method(_canvas, "_undo_delete_stroke", stroke, project.curr_layer)
 		project.undo_redo.commit_action()
 		project.dirty = true

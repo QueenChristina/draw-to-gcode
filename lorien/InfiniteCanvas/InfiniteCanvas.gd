@@ -310,7 +310,11 @@ func undo_last_stroke(undo_layer : int) -> void:
 			info.stroke_count -= 1
 		else:
 			print_debug("ERROR! Attempted to undo stroke in layer ", _past_strokes_parent, " with no strokes left.")
-			print("Layers: ", _current_project.layers)
+			print("Layers: ")
+			var ind = 0
+			for layer in _current_project.layers:
+				print("Layer ", ind, " has strokes: ", layer.size())
+				ind += 1
 
 # -------------------------------------------------------------------------------------------------
 func set_brush_size(size: int) -> void:
@@ -357,10 +361,12 @@ func _delete_selected_strokes() -> void:
 		_current_project.dirty = true
 
 # -------------------------------------------------------------------------------------------------
-func _do_delete_stroke(stroke: BrushStroke) -> void:
-	var index = _current_project.layers[_current_project.curr_layer].find(stroke)
-	_current_project.layers[_current_project.curr_layer].remove(index)
-	_strokes_parent.remove_child(stroke)
+func _do_delete_stroke(stroke: BrushStroke, layer_index) -> void:
+	var index = _current_project.layers[layer_index].find(stroke)
+	_current_project.layers[layer_index].remove(index)
+	# TODO: strokes_parent or this?
+	var past_strokes_parent = _layers_container.get_child(layer_index)
+	past_strokes_parent.remove_child(stroke)
 	info.point_count -= stroke.points.size()
 	info.stroke_count -= 1
 	
@@ -371,11 +377,11 @@ func _do_delete_stroke(stroke: BrushStroke) -> void:
 # and after versions of the stroke arrays which is a nogo.
 # -------------------------------------------------------------------------------------------------
 func _undo_delete_stroke(stroke: BrushStroke, undo_layer : int) -> void:
-	var _past_strokes_parent = _layers_container.get_child(_layers_container.get_child_count() - 1 - undo_layer)
+	var _past_strokes_parent = _layers_container.get_child(undo_layer)
 	var undo_strokes = _current_project.layers[undo_layer]
 		
 	undo_strokes.append(stroke)
-	_strokes_parent.add_child(stroke)
+	_past_strokes_parent.add_child(stroke)
 	info.point_count += stroke.points.size()
 	info.stroke_count += 1
 	
@@ -402,7 +408,6 @@ func _on_add_layer(index):
 	var new_strokes_layer = Node2D.new()
 	_layers_container.add_child(new_strokes_layer)
 	_layers_container.move_child(new_strokes_layer, index)
-	print("ADDED LAYERS ", index)
 	
 func _on_delete_layer(index):
 	# Unparent strokes
@@ -414,7 +419,6 @@ func _on_delete_layer(index):
 	strokes.queue_free()
 	
 func _on_undo_delete_layer(index, strokes):
-	print("RE-ADDING STROKES ", strokes, " at ", index)
 	# Re-add strokes - ASSUMES ALREADY ADDED LAYER
 	for stroke in strokes:
 		_layers_container.get_child(index).add_child(stroke)
