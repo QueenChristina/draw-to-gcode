@@ -13,6 +13,7 @@ const UI_SCALE_CUSTOM_INDEX := 1
 
 # -------------------------------------------------------------------------------------------------
 signal ui_scale_changed
+signal platform_size_changed
 
 # -------------------------------------------------------------------------------------------------
 onready var _tab_container: TabContainer = $MarginContainer/TabContainer
@@ -35,6 +36,10 @@ onready var _brush_rounding_options: OptionButton = $MarginContainer/TabContaine
 onready var _ui_scale_options: OptionButton = $MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer/UIScaleOptions
 onready var _ui_scale: SpinBox = $MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer/UIScale
 
+onready var _platform_width : SpinBox = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer/Width
+onready var _platform_height : SpinBox = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer/Height
+onready var _layer_height : SpinBox = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/LayerHeight/Height
+onready var _unit : OptionButton = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/Units/OptionButton
 # -------------------------------------------------------------------------------------------------
 func _ready():
 	_set_values()
@@ -47,6 +52,7 @@ func _apply_language() -> void:
 	_tab_container.set_tab_title(1, tr("SETTINGS_APPEARANCE"))
 	_tab_container.set_tab_title(2, tr("SETTINGS_RENDERING"))
 	_tab_container.set_tab_title(3, tr("SETTINGS_KEYBINDINGS"))
+	# TODO: apply tab title for bioprinting
 
 # -------------------------------------------------------------------------------------------------
 func _set_values() -> void:
@@ -61,6 +67,10 @@ func _set_values() -> void:
 	var pressure_sensitivity = Settings.get_value(Settings.GENERAL_PRESSURE_SENSITIVITY, Config.DEFAULT_PRESSURE_SENSITIVITY)
 	var ui_scale_mode = Settings.get_value(Settings.APPEARANCE_UI_SCALE_MODE, Config.DEFAULT_UI_SCALE_MODE)
 	var ui_scale = Settings.get_value(Settings.APPEARANCE_UI_SCALE, Config.DEFAULT_UI_SCALE)
+	
+	var platform_size = Settings.get_value(Settings.PLATFORM_SIZE, Config.DEFAULT_PLATORM_SIZE)
+	var layer_height = Settings.get_value(Settings.LAYER_HEIGHT, Config.DEFAULT_LAYER_HEIGHT)
+	var unit = Settings.get_value(Settings.UNIT, Config.DEFAULT_UNIT)
 	
 	match theme:
 		Types.UITheme.DARK: _theme.selected = THEME_DARK_INDEX
@@ -86,7 +96,18 @@ func _set_values() -> void:
 	_foreground_fps.value = foreground_fps
 	_background_fps.value = background_fps
 	_ui_scale.value = ui_scale
+	
+	_platform_height.value = platform_size.y
+	_platform_width.value = platform_size.x
+	_layer_height.value = layer_height
+	select_item_from_text(_unit, unit)
 
+func select_item_from_text(ob: OptionButton, item_text: String) -> void:
+	for i in ob.get_item_count():
+		if ob.get_item_text(i) == item_text:
+			ob.select(i)
+			break
+			
 # -------------------------------------------------------------------------------------------------
 func _set_rounding():
 	_brush_rounding_options.selected = Settings.get_value(Settings.RENDERING_BRUSH_ROUNDING, Config.DEFAULT_BRUSH_ROUNDING)
@@ -219,3 +240,19 @@ func _on_UIScale_value_changed(value: float):
 		Settings.set_value(Settings.APPEARANCE_UI_SCALE, value)
 		emit_signal("ui_scale_changed")
 		popup_centered()
+
+
+func _on_Unit_item_selected(index):
+	print("SELECTED UNIT ITEM ", index, _unit.get_item_text(index))
+	Settings.set_value(Settings.UNIT, _unit.get_item_text(index))
+
+func _on_PlatformWidth_value_changed(value):
+	Settings.set_value(Settings.PLATFORM_SIZE, Vector2(value, _platform_height.value))
+	emit_signal("platform_size_changed")
+	
+func _on_PlatformHeight_value_changed(value):
+	Settings.set_value(Settings.PLATFORM_SIZE, Vector2(_platform_width.value, value))
+	emit_signal("platform_size_changed")
+	
+func _on_LayerHeight_value_changed(value):
+	Settings.set_value(Settings.LAYER_HEIGHT, value)

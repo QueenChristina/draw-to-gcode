@@ -70,9 +70,12 @@ func _ready():
 	_export_dialog.connect("file_selected", self, "_on_export_confirmed")
 	
 	_settings_dialog.connect("ui_scale_changed", self, "_on_scale_changed")
+	_settings_dialog.connect("platform_size_changed", self, "_on_platform_size_changed")
 	
 	# Initialize scale
 	_on_scale_changed()
+	# Initialize print bed size
+	_on_platform_size_changed()
 	
 	# Create the default project
 	_create_active_default_project()
@@ -571,3 +574,10 @@ func _get_general_ui_scale() -> float:
 	elif smallest_dimension >= 1700:
 		return Config.DEFAULT_UI_SCALE * 1.5
 	return Config.DEFAULT_UI_SCALE
+	
+# ------------------------
+# Size of print bed changed
+func _on_platform_size_changed() -> void:
+	var platform_size : Vector2 = Settings.get_value(Settings.PLATFORM_SIZE, Config.DEFAULT_PLATORM_SIZE)
+
+	_canvas.set_platform_size(platform_size)

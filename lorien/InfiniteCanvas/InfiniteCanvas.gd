@@ -19,6 +19,7 @@ onready var _strokes_parent: Node2D = $Viewport/Layers/Strokes # Current layer o
 onready var _camera: Camera2D = $Viewport/Camera2D
 onready var _viewport: Viewport = $Viewport
 onready var _grid: InfiniteCanvasGrid = $Viewport/Grid
+onready var _platform : Node2D = $Viewport/Platform
 
 var info := Types.CanvasInfo.new()
 var _is_enabled := false
@@ -473,3 +474,7 @@ func _duplicate_stroke(stroke: BrushStroke, offset: Vector2) -> BrushStroke:
 	for point in stroke.points:
 		dup.points.append(point + offset)
 	return dup
+	
+# ------------
+func set_platform_size(platform_size : Vector2):
+	_platform.rect_size = platform_size

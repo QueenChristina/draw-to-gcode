@@ -24,3 +24,6 @@ const DEFAULT_BRUSH_ROUNDING		:= Types.BrushRoundingType.ROUNDED
 const DEFAULT_UI_SCALE_MODE 		:= Types.UIScale.AUTO
 const DEFAULT_UI_SCALE  			:= 1.0
 const DEFAULT_GRID_SIZE 			:= 10.0
+const DEFAULT_PLATORM_SIZE			:= Vector2(200, 200)
+const DEFAULT_UNIT					:= "mm"
+const DEFAULT_LAYER_HEIGHT			:= 0.25

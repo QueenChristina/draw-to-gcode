@@ -16,7 +16,9 @@ const RENDERING_FOREGROUND_FPS			:= "rendering_foreground_fps"
 const RENDERING_BACKGROUND_FPS			:= "rendering_background_fps"
 const RENDERING_BRUSH_ROUNDING			:= "rendering_brush_rounding"
 const COLOR_PALETTE_UUID_LAST_USED		:= "color_palette_uuid_last_used"
-
+const UNIT 								:= "unit"
+const PLATFORM_SIZE						:= "platform_size"
+const LAYER_HEIGHT						:= "layer_height"
 # -------------------------------------------------------------------------------------------------
 var _config_file := ConfigFile.new()
 var _i18n := I18nParser.new()

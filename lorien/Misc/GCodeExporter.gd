@@ -37,7 +37,8 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	
 	# Write gcode to file
 	var layer_count = 0
-	var layer_height = 0.25
+	var layer_height = Settings.get_value(Settings.LAYER_HEIGHT, Config.DEFAULT_LAYER_HEIGHT)
+	var unit = Settings.get_value(Settings.UNIT, Config.DEFAULT_UNIT)
 	var first_axis = "Z" 
 	if layers[0].size() > 0:
 		first_axis = layers[0][0].axis
@@ -45,7 +46,10 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	var axis_order = ["Z", "A"]
 		
 	# Start file with setting units to mm and set current X,Y as origin
-	file.store_string("G91\nG21\nG92 X0.0 Y0.0\nG90\n")
+	if unit.to_lower() == "inch":
+		file.store_string("G91\nG20\nG92 X0.0 Y0.0\nG90\n")
+	else:
+		file.store_string("G91\nG21\nG92 X0.0 Y0.0\nG90\n")
 		
 #	_gcode_start(file, origin, size, first_axis)
 	for i in range(layers.size()):

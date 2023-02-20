@@ -13,7 +13,6 @@
 [sub_resource type="StyleBoxEmpty" id=3]
 
 [node name="SettingsDialog" type="WindowDialog"]
-visible = true
 margin_right = 520.0
 margin_bottom = 250.0
 rect_min_size = Vector2( 520, 270 )
@@ -46,7 +45,6 @@ __meta__ = {
 }
 
 [node name="General" type="Control" parent="MarginContainer/TabContainer"]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 27.0
@@ -61,8 +59,8 @@ __meta__ = {
 [node name="HSeparator3" type="HSeparator" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_right = 496.0
 margin_bottom = 12.0
-custom_constants/separation = 12
 custom_styles/separator = SubResource( 1 )
+custom_constants/separation = 12
 
 [node name="PressureSensitivity" type="HBoxContainer" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_top = 16.0
@@ -194,8 +192,8 @@ text = "English"
 margin_top = 169.0
 margin_right = 496.0
 margin_bottom = 181.0
-custom_constants/separation = 12
 custom_styles/separator = SubResource( 3 )
+custom_constants/separation = 12
 
 [node name="RestartLabel" type="Label" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 visible = false
@@ -222,8 +220,8 @@ __meta__ = {
 [node name="HSeparator3" type="HSeparator" parent="MarginContainer/TabContainer/Appearance/VBoxContainer"]
 margin_right = 496.0
 margin_bottom = 12.0
-custom_constants/separation = 12
 custom_styles/separator = SubResource( 1 )
+custom_constants/separation = 12
 
 [node name="Theme" type="HBoxContainer" parent="MarginContainer/TabContainer/Appearance/VBoxContainer"]
 margin_top = 16.0
@@ -256,21 +254,21 @@ margin_bottom = 70.0
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale"]
 margin_top = 4.0
-margin_right = 246.0
+margin_right = 218.0
 margin_bottom = 21.0
 size_flags_horizontal = 3
 size_flags_vertical = 6
 text = "SETTINGS_UI_SCALE"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale"]
-margin_left = 250.0
+margin_left = 222.0
 margin_right = 496.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="UIScaleOptions" type="OptionButton" parent="MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer"]
-margin_right = 121.0
+margin_right = 198.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -279,8 +277,8 @@ items = [ "SETTINGS_UI_SCALE_AUTO", null, false, 0, null, "SETTINGS_UI_SCALE_CUS
 selected = 0
 
 [node name="UIScale" type="SpinBox" parent="MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer"]
-margin_left = 125.0
-margin_right = 246.0
+margin_left = 202.0
+margin_right = 274.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -294,8 +292,8 @@ script = ExtResource( 3 )
 margin_top = 74.0
 margin_right = 496.0
 margin_bottom = 86.0
-custom_constants/separation = 12
 custom_styles/separator = SubResource( 1 )
+custom_constants/separation = 12
 
 [node name="RestartLabel" type="Label" parent="MarginContainer/TabContainer/Appearance/VBoxContainer"]
 visible = false
@@ -319,8 +317,8 @@ anchor_bottom = 1.0
 [node name="HSeparator3" type="HSeparator" parent="MarginContainer/TabContainer/Rendering/VBoxContainer"]
 margin_right = 496.0
 margin_bottom = 12.0
-custom_constants/separation = 12
 custom_styles/separator = SubResource( 1 )
+custom_constants/separation = 12
 
 [node name="AntiAliasing" type="HBoxContainer" parent="MarginContainer/TabContainer/Rendering/VBoxContainer"]
 margin_top = 16.0
@@ -423,8 +421,8 @@ allow_greater = true
 margin_top = 124.0
 margin_right = 496.0
 margin_bottom = 136.0
-custom_constants/separation = 12
 custom_styles/separator = SubResource( 1 )
+custom_constants/separation = 12
 
 [node name="RestartLabel" type="Label" parent="MarginContainer/TabContainer/Rendering/VBoxContainer"]
 visible = false
@@ -436,6 +434,7 @@ text = "SETTINGS_RESTART_NOTICE"
 align = 1
 
 [node name="Keybindings" type="Control" parent="MarginContainer/TabContainer"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 27.0
@@ -459,6 +458,115 @@ popup_exclusive = true
 window_title = "KEYBINDING_DIALOG_REBIND_WINDOW_NAME"
 dialog_autowrap = true
 
+[node name="Bioprinting" type="Control" parent="MarginContainer/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 27.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/TabContainer/Bioprinting"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_right = 496.0
+margin_bottom = 4.0
+
+[node name="Units" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_top = 8.0
+margin_right = 496.0
+margin_bottom = 33.0
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Units"]
+margin_top = 4.0
+margin_right = 444.0
+margin_bottom = 21.0
+size_flags_horizontal = 3
+text = "Units"
+
+[node name="OptionButton" type="OptionButton" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Units"]
+margin_left = 448.0
+margin_right = 496.0
+margin_bottom = 25.0
+text = "mm"
+items = [ "mm", null, false, 0, null, "inch", null, false, 1, null ]
+selected = 0
+
+[node name="PrintBedSize" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_top = 37.0
+margin_right = 496.0
+margin_bottom = 58.0
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize"]
+margin_top = 2.0
+margin_right = 250.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Platform Size"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize"]
+margin_left = 254.0
+margin_right = 496.0
+margin_bottom = 21.0
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer"]
+margin_top = 2.0
+margin_right = 40.0
+margin_bottom = 19.0
+text = "Width"
+
+[node name="Width" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer"]
+margin_left = 44.0
+margin_right = 116.0
+margin_bottom = 21.0
+min_value = 1.0
+max_value = 2000.0
+value = 1.0
+align = 1
+
+[node name="Label2" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer"]
+margin_left = 120.0
+margin_top = 2.0
+margin_right = 166.0
+margin_bottom = 19.0
+text = "Height"
+
+[node name="Height" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer"]
+margin_left = 170.0
+margin_right = 242.0
+margin_bottom = 21.0
+min_value = 1.0
+max_value = 2000.0
+value = 1.0
+align = 1
+
+[node name="LayerHeight" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_top = 62.0
+margin_right = 496.0
+margin_bottom = 83.0
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/LayerHeight"]
+margin_top = 2.0
+margin_right = 420.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Layer Height"
+
+[node name="Height" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/LayerHeight"]
+margin_left = 424.0
+margin_right = 496.0
+margin_bottom = 21.0
+min_value = 0.01
+step = 0.01
+value = 0.25
+allow_greater = true
+align = 1
+
 [connection signal="value_changed" from="MarginContainer/TabContainer/General/VBoxContainer/PressureSensitivity/PressureSensitivity" to="." method="_on_PressureSensitivity_value_changed"]
 [connection signal="value_changed" from="MarginContainer/TabContainer/General/VBoxContainer/DefaultBrushSize/DefaultBrushSize" to="." method="_on_DefaultBrushSize_value_changed"]
 [connection signal="color_changed" from="MarginContainer/TabContainer/General/VBoxContainer/DefaultCanvasColor/DefaultCanvasColor" to="." method="_on_DefaultCanvasColor_color_changed"]
@@ -473,3 +581,7 @@ dialog_autowrap = true
 [connection signal="value_changed" from="MarginContainer/TabContainer/Rendering/VBoxContainer/TargetFramerate/TargetFramerate" to="." method="_on_Target_Fps_Foreground_changed"]
 [connection signal="value_changed" from="MarginContainer/TabContainer/Rendering/VBoxContainer/BackgroundFramerate/BackgroundFramerate" to="." method="_on_Target_Fps_Background_changed"]
 [connection signal="confirmed" from="MarginContainer/TabContainer/Keybindings/AddKeyDialog/ConfirmRebind" to="MarginContainer/TabContainer/Keybindings/AddKeyDialog" method="_on_ConfirmRebind_confirmed"]
+[connection signal="item_selected" from="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Units/OptionButton" to="." method="_on_Unit_item_selected"]
+[connection signal="value_changed" from="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer/Width" to="." method="_on_PlatformWidth_value_changed"]
+[connection signal="value_changed" from="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer/Height" to="." method="_on_PlatformHeight_value_changed"]
+[connection signal="value_changed" from="MarginContainer/TabContainer/Bioprinting/VBoxContainer/LayerHeight/Height" to="." method="_on_LayerHeight_value_changed"]
