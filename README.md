@@ -1,8 +1,28 @@
-<img src="https://raw.githubusercontent.com/mbrlabs/Lorien/main/images/lorien.png" align="left"/>
-
 # 2D Drawing to GCode
 
 ## Based on Lorien, 2D Drawing Software Made By MBRLabs
+
+## Features
+Make drawings over multiple layers and with multiple materials, and convert it into GCode.
+- Layer system with undo-redo capatibility
+- Converts each layer into GCode, stacked on top of each other
+- Can set amount of times a layer is duplicated (stacked) in GCode
+- Onion skin feature to allow you to trace over past and future layers
+- Custom settings for printing, such as guide for size of print-bed, set units, and set layer height
+
+## Roadmap
+- Undo-redo with duplicate layer amount
+- Undo-redo with layer name
+- Set and save layer name
+- Better default palette
+- More axes (not just Z or A) and custom ordering
+- Extrusion amount based on pressure sensitivity; or just export extrusion amount + GCode support for offsets between axis
+
+<img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/gcode-demo.jpg" align="center"/>
+<img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/layers-demo.jpg" align="center"/>
+
+## About the original software
+<img src="https://raw.githubusercontent.com/mbrlabs/Lorien/main/images/lorien.png" align="left"/>
 <p>
     <a href="https://github.com/mbrlabs/Lorien/actions">
         <img src="https://github.com/mbrlabs/Lorien/workflows/build/badge.svg" alt="Build Passing" />
