@@ -4,6 +4,7 @@
 
 ## Features
 Make drawings over multiple layers and with multiple materials, and convert it into GCode.
+- Vector layers
 - Layer system with undo-redo capatibility
 - Converts each layer into GCode, stacked on top of each other
 - Can set amount of times a layer is duplicated (stacked) in GCode
@@ -15,8 +16,15 @@ Make drawings over multiple layers and with multiple materials, and convert it i
 - Undo-redo with layer name
 - Set and save layer name
 - Better default palette
-- More axes (not just Z or A) and custom ordering
-- Extrusion amount based on pressure sensitivity; or just export extrusion amount + GCode support for offsets between axis
+- Multimaterial support: More axes (not just Z or A), add offset between axes, and custom ordering
+- Extrusion amount based on pressure sensitivity; or just export extrusion amount
+- Fill polygons with lattice structure
+- Import images such as bitmap and svg types
+- Support raster layer
+- Convert vector to raster layer, or handle when lines overlap on the same layer
+- Editable points in vector layers
+- Grid snap and ruler
+- Default brush/line width size to match real scale/width size (default of 2.5 mm width)
 
 <img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/gcode-demo.jpg" align="center"/>
 <img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/layers-demo.jpg" align="center"/>
