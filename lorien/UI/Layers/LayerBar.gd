@@ -14,6 +14,7 @@ signal set_active_layer(index)
 signal undo_delete_layer(index, strokes)
 signal layer_visibility_changed(index, is_visible)
 signal copy_layer(from_index, to_index)
+signal toggle_onion_skin(enabled)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -187,3 +188,6 @@ func _on_dups_amount_changed(node, value):
 	var active_project: Project = ProjectManager.get_active_project()
 	
 	active_project.layers_info[index].dup_amount = value
+
+func _on_OnionSkin_toggled(enabled):
+	emit_signal("toggle_onion_skin", enabled)

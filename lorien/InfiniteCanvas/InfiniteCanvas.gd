@@ -35,6 +35,7 @@ var _player_enabled := false
 var _colliders_enabled := false
 var _optimizer: BrushStrokeOptimizer
 var _scale := Config.DEFAULT_UI_SCALE
+var _onion_skin_enabled = true # TODO: setting to save?
 
 # -------------------------------------------------------------------------------------------------
 func _ready():
@@ -435,20 +436,33 @@ func _on_undo_delete_layer(index, strokes):
 	
 func _on_swap_layer(index1, index2):
 	_layers_container.move_child(_layers_container.get_child(index1), index2)
+	
+	modulate_layers_opacity(_strokes_parent.get_index())
 
 # Set which strokes layer to draw on actively
 func _on_set_active_layer(index):
 	_strokes_parent = _layers_container.get_child(index)
 	# TODO: project.strokes is not updated, so check not breaking 
 	
-	# Make all other layers lighter. TODO: hide if too far away + settings for color modulate
-	for layer in _layers_container.get_children():
-		layer.modulate = Color(1, 1, 1, 0.08)
+	modulate_layers_opacity(index)
 	
-		if layer.get_index() == index:
-			layer.modulate = Color(1, 1, 1, 1)
-		elif abs(layer.get_index() - index) <= 1:
-			layer.modulate = Color(1, 1, 1, 0.25)
+func modulate_layers_opacity(index):
+	# Make all other layers lighter. TODO: hide if too far away + settings for color modulate
+	if _onion_skin_enabled:
+		for layer in _layers_container.get_children():
+			layer.modulate = Color(1, 1, 1, 0.08)
+		
+			if layer.get_index() == index:
+				layer.modulate = Color(1, 1, 1, 1)
+			elif abs(layer.get_index() - index) <= 1:
+				layer.modulate = Color(1, 1, 1, 0.25)
+	else:
+		for layer in _layers_container.get_children():
+			# Hide all other layers if not enabled onion skin
+			layer.modulate = Color(1, 1, 1, 0)
+			
+			if layer.get_index() == index:
+				layer.modulate = Color(1, 1, 1, 1)
 
 func _on_layer_visibility_changed(index, is_visible):
 	_layers_container.get_child(index).visible = is_visible
@@ -478,3 +492,8 @@ func _duplicate_stroke(stroke: BrushStroke, offset: Vector2) -> BrushStroke:
 # ------------
 func set_platform_size(platform_size : Vector2):
 	_platform.rect_size = platform_size
+
+func _on_toggle_onion_skin(enabled):
+	_onion_skin_enabled = enabled
+	
+	modulate_layers_opacity(_strokes_parent.get_index())

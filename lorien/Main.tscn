@@ -95,10 +95,10 @@ margin_bottom = 202.0
 custom_styles/panel = SubResource( 1 )
 
 [node name="ColorPicker" type="ColorPicker" parent="BackgroundColorPickerPopup/PanelContainer"]
-margin_left = 232.0
-margin_top = 232.0
-margin_right = 541.0
-margin_bottom = 636.0
+margin_left = 240.0
+margin_top = 240.0
+margin_right = 549.0
+margin_bottom = 644.0
 edit_alpha = false
 presets_enabled = false
 presets_visible = false
@@ -259,6 +259,7 @@ __meta__ = {
 [connection signal="layer_visibility_changed" from="LayerBar" to="InfiniteCanvas" method="_on_layer_visibility_changed"]
 [connection signal="layers_swap" from="LayerBar" to="InfiniteCanvas" method="_on_swap_layer"]
 [connection signal="set_active_layer" from="LayerBar" to="InfiniteCanvas" method="_on_set_active_layer"]
+[connection signal="toggle_onion_skin" from="LayerBar" to="InfiniteCanvas" method="_on_toggle_onion_skin"]
 [connection signal="undo_delete_layer" from="LayerBar" to="InfiniteCanvas" method="_on_undo_delete_layer"]
 [connection signal="closed" from="BrushColorPicker" to="." method="_on_BrushColorPicker_closed"]
 [connection signal="color_changed" from="BrushColorPicker" to="." method="_on_BrushColorPicker_color_changed"]
