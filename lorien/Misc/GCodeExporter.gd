@@ -3,6 +3,7 @@ extends Reference
 
 # TODOs
 # - Stroke width / pressue data
+var curr_point_abs = Vector2(0, 0) # Current point of nozzle in absolute coordinates, X, Y values only
 
 # -------------------------------------------------------------------------------------------------
 const EDGE_MARGIN := 0.025
@@ -32,6 +33,8 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	size += margin_size*2.0
 	var origin := min_dim - margin_size
 	
+	curr_point_abs = Vector2(0, 0)
+	
 	# Write gcode to file
 	var layer_count = 0
 	_gcode_start(file, origin, size)
@@ -39,10 +42,9 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 		for _j in range(layers_info[i].dup_amount): # Repeat this layer by dup_amount of times
 			for stroke in layers[i]:
 				_gcode_polyline(file, stroke)
-			# Move up a bit for each layer by size of layer (TODO) + TODO: which axis, A or Z, depends on material
-			file.store_string("G91\n")
-			file.store_string("G0 Z%.1f\n" % [0.25])
-			file.store_string("G90\n") # TODO: CONVERT ALL COORDINATES TO RELATIVE
+			# Move up a bit for each layer by size of layer, assuming relative coord
+			# TODO: which axis, A or Z, depends on material
+			file.store_string("G0 Z%.2f\n" % [0.25])
 			layer_count += 1
 	_gcode_end(file)
 	print("EXPORTED ", layer_count, " layers.")
@@ -54,7 +56,8 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 
 # -------------------------------------------------------------------------------------------------
 func _gcode_start(file: File, origin: Vector2, size: Vector2) -> void:
-	file.store_string("G90\n")
+	# TODO: which axis? Z or A
+	file.store_string("G90\nG0 Z0\nG91\n")
 
 # -------------------------------------------------------------------------------------------------
 func _gcode_end(file: File) -> void:
@@ -63,11 +66,17 @@ func _gcode_end(file: File) -> void:
 # -------------------------------------------------------------------------------------------------
 func _gcode_polyline(file: File, stroke: BrushStroke) -> void:
 	# Stroke: Color, Size, [Points]
+	var rel_offset = stroke.points[0] - curr_point_abs
 	# Negate x to flip - from image coordinates to real coordinates
-	file.store_string("G0 X%.1f Y%.1f\n" % [-1 * stroke.points[0].x / 10.0, stroke.points[0].y / 10.0])
+	file.store_string("G0 X%.2f Y%.2f\n" % [-1 * rel_offset.x / 10.0, rel_offset.y / 10.0])
+	curr_point_abs = stroke.points[0]
 	var idx := 0
 	var point_count := stroke.points.size()
-	for point in stroke.points:
-		file.store_string("G1 X%.1f Y%.1f\n" % [-1 * point.x / 10.0, point.y / 10.0])
-		idx += 1
+	for i in range(stroke.points.size()):
+		if i != 0:
+			var point = stroke.points[i]
+			rel_offset = point - curr_point_abs
+			curr_point_abs = point
+			file.store_string("G1 X%.2f Y%.2f\n" % [-1 * rel_offset.x / 10.0, rel_offset.y / 10.0])
+			idx += 1
 	file.store_string("\n")
