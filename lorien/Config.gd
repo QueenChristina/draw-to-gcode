@@ -13,6 +13,7 @@ const MIN_PALETTE_SIZE 				:= 1
 const MIN_WINDOW_SIZE				:= Vector2(320, 256)
 const DEFAULT_CANVAS_COLOR 			:= Color("202124")
 const DEFAULT_BRUSH_COLOR 			:= Color.white
+const DEFAULT_BRUSH_AXIS			:= "Z"
 const DEFAULT_BRUSH_SIZE			:= 12
 const DEFAULT_PRESSURE_SENSITIVITY  := 1.5
 const DEFAULT_AA_MODE				:= Types.AAMode.TEXTURE_FILL

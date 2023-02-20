@@ -37,16 +37,52 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	
 	# Write gcode to file
 	var layer_count = 0
-	_gcode_start(file, origin, size)
+	var layer_height = 0.25
+	var first_axis = "Z" 
+	if layers[0].size() > 0:
+		first_axis = layers[0][0].axis
+	# TODO: order of axis printing per layer
+	var axis_order = ["Z", "A"]
+		
+	# Start file with setting units to mm and set current X,Y as origin
+	file.store_string("G91\nG21\nG92 X0.0 Y0.0\nG90\n")
+		
+#	_gcode_start(file, origin, size, first_axis)
 	for i in range(layers.size()):
 		for _j in range(layers_info[i].dup_amount): # Repeat this layer by dup_amount of times
+			
+			# Preprocessing - separate by axis in layer
+			var strokes_by_axis = {} # For a single layer
 			for stroke in layers[i]:
-				_gcode_polyline(file, stroke)
+				if not strokes_by_axis.has(stroke.axis):
+					strokes_by_axis[stroke.axis] = []
+				strokes_by_axis[stroke.axis].append(stroke)
+			
+			for axis in axis_order:
+				# Draw each stroke in layer, of the same axis first
+				if axis in strokes_by_axis:
+					# TODO: Ensure nozzle in correct layer height + OFFSET X,Y depending on space between
+					#  + possibly move nozzle up/down so not collide
+					# Set axis. TODO: set extrusion rate
+					file.store_string(axis + ";Set current extruder axis to " + axis + " \n")
+					# This line may be duplicate for first_axis
+					file.store_string("G90\nG0 " + axis + str(layer_count * layer_height) + "\nG91\n")
+					
+					# Draw each stroke
+					for stroke in strokes_by_axis[axis]:
+						_gcode_polyline(file, stroke)
+			
+			# End layer
 			# Move up a bit for each layer by size of layer, assuming relative coord
-			# TODO: which axis, A or Z, depends on material
-			file.store_string("G0 Z%.2f\n" % [0.25])
+			file.store_string("G0")
+			
+			for axis in axis_order:
+#				file.store_string(" %s%.2f" % [axis, 0.25]) # Move to layer height
+				file.store_string(" %s%.2f" % [axis, 3 * layer_height]) # Move above layer height so not get in the way
+			file.store_string("\n")
+			
 			layer_count += 1
-	_gcode_end(file)
+	_gcode_end(file, axis_order, layer_height)
 	print("EXPORTED ", layer_count, " layers.")
 	
 	# Flush and close the file
@@ -55,13 +91,14 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	print("Exported %s in %d ms" % [path, (OS.get_ticks_msec() - start_time)])
 
 # -------------------------------------------------------------------------------------------------
-func _gcode_start(file: File, origin: Vector2, size: Vector2) -> void:
-	# TODO: which axis? Z or A
-	file.store_string("G90\nG0 Z0\nG91\n")
+func _gcode_start(file: File, origin: Vector2, size: Vector2, first_axis : String) -> void:
+	file.store_string("G90\nG0 " + first_axis + "0\nG91\n")
 
 # -------------------------------------------------------------------------------------------------
-func _gcode_end(file: File) -> void:
-	file.store_string("") 
+func _gcode_end(file: File, axis_order: Array, layer_height: float) -> void:
+	# Move all nozzles up slightly so out of the way
+	for axis in axis_order:
+		file.store_string("G0 " + axis + str(3 * layer_height) + "\n") 
 
 # -------------------------------------------------------------------------------------------------
 func _gcode_polyline(file: File, stroke: BrushStroke) -> void:

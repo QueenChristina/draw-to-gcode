@@ -18,6 +18,7 @@ const MIN_VECTOR2 := -MAX_VECTOR2
 onready var _line2d: Line2D = $Line2D
 onready var _visibility_notifier: VisibilityNotifier2D = $VisibilityNotifier2D
 var color: Color setget set_color, get_color
+var axis : String
 var size: int
 var points: Array # Array<Vector2>
 var pressures: Array # Array<float>

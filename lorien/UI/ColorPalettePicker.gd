@@ -50,6 +50,11 @@ func get_active_color() -> Color:
 	if _active_palette_button != null:
 		return _active_palette_button.color
 	return Color.white
+	
+func get_active_axis() -> String:
+	if _active_palette_button != null:
+		return _active_palette_button.axis
+	return "Z"
 
 # -------------------------------------------------------------------------------------------------
 func get_active_color_index() -> int:
@@ -85,10 +90,12 @@ func _create_buttons(palette: Palette) -> void:
 	
 	# Add new ones
 	var index := 0
-	for color in palette.colors:
+	for i in range(palette.colors.size()):
+		var color = palette.colors[i]
 		var button: PaletteButton = PALETTE_BUTTON.instance()
 		_color_grid.add_child(button)
 		button.color = color
+		button.axis = palette.axes[i]
 		button.connect("pressed", self, "_on_platte_button_pressed", [button, index])
 		index += 1
 	
@@ -106,7 +113,7 @@ func _activate_palette_button(button: PaletteButton, color_index: int) -> void:
 # -------------------------------------------------------------------------------------------------
 func _on_platte_button_pressed(button: PaletteButton, index: int) -> void:
 	_activate_palette_button(button, index)
-	emit_signal("color_changed", button.color)
+	emit_signal("color_changed", button.color, button.axis)
 
 # -------------------------------------------------------------------------------------------------
 func _on_PaletteSelectionButton_item_selected(index: int) -> void:

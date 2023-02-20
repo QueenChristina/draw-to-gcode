@@ -7,9 +7,11 @@ signal pressed
 # -------------------------------------------------------------------------------------------------
 onready var _color_texture: TextureRect = $Color
 onready var _selection_texture: TextureRect = $Selection
+onready var _axis_label : Label = $Label
 
 var selected := false setget set_selected
 var color := Color.white setget set_color
+var axis = "Z" setget set_axis # Print information - Z or A axis, etc.
 
 # -------------------------------------------------------------------------------------------------
 func _ready() -> void:
@@ -53,3 +55,10 @@ func _on_PaletteButton_mouse_entered() -> void:
 # -------------------------------------------------------------------------------------------------
 func _on_PaletteButton_mouse_exited() -> void:
 	_selection_texture.modulate = _get_selection_color() if selected else color
+
+func set_axis(val):
+	if val:
+		axis = val
+		_axis_label.text = val
+	else:
+		print_debug("ERROR! Attempted to set axis as null in palette button.")

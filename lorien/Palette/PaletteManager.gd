@@ -6,6 +6,7 @@ const UUID_LENGTH := 32
 const UUID_DEFAULT_PALETTE := "defaultpalette"
 const KEY_NAME := "name"
 const KEY_COLORS := "colors"
+const KEY_AXES := "axes"
 
 # -------------------------------------------------------------------------------------------------
 class PaletteSorter:
@@ -35,6 +36,7 @@ func save() -> bool:
 		if !p.builtin:
 			file.set_value(p.uuid, KEY_NAME, p.name)
 			file.set_value(p.uuid, KEY_COLORS, p.colors)
+			file.set_value(p.uuid, KEY_AXES, p.axes)
 	return file.save(Config.PALETTES_PATH) == OK
 	
 # -------------------------------------------------------------------------------------------------
@@ -44,6 +46,7 @@ func create_custom_palette(palette_name: String) -> Palette:
 	palette.builtin = false
 	palette.uuid = Utils.generate_uuid(UUID_LENGTH)
 	palette.colors = PoolColorArray([Color.white, Color.black])
+	palette.axes = ["Z", "A"]
 	palettes.append(palette)
 	_sort()
 	
@@ -55,6 +58,7 @@ func duplicate_palette(palette: Palette, new_palette_name: String) -> Palette:
 	new_palette.name = new_palette_name
 	new_palette.builtin = false
 	new_palette.colors = palette.colors # TODO: make sure this is passed by-value
+	new_palette.axes = palette.axes # TODO: make sure this is passed by-value
 	palettes.append(new_palette)
 	_sort()
 	
@@ -126,7 +130,12 @@ func _load_palettes() -> bool:
 		palette.uuid = uuid
 		palette.name = file.get_value(uuid, KEY_NAME)
 		palette.colors = file.get_value(uuid, KEY_COLORS)
-		if palette.colors != null && palette.name != null:
+		var default_axes = []
+		if palette.colors != null:
+			for c in palette.colors:
+				default_axes.append("Z")
+		palette.axes = file.get_value(uuid, KEY_AXES, default_axes)
+		if palette.colors != null && palette.name != null && palette.axes != null:
 			palettes.append(palette)
 			
 	return true

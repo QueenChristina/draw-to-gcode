@@ -324,6 +324,9 @@ func _toggle_fullscreen():
 # -------------------------------------------------------------------------------------------------
 func _on_brush_color_changed(color: Color) -> void:
 	_canvas.set_brush_color(color)
+	
+func _on_brush_axis_changed(axis: String) -> void:
+	_canvas.set_brush_axis(axis)
 
 # -------------------------------------------------------------------------------------------------
 func _on_brush_size_changed(size: int) -> void:
@@ -504,9 +507,10 @@ func _on_toggle_brush_color_picker() -> void:
 	_brush_color_picker.toggle()
 
 # --------------------------------------------------------------------------------------------------
-func _on_BrushColorPicker_color_changed(color: Color) -> void:
+func _on_BrushColorPicker_color_changed(color: Color, axis: String) -> void:
 	_toolbar.set_brush_color(color)
 	_canvas.set_brush_color(color)
+	_canvas.set_brush_axis(axis)
 
 # --------------------------------------------------------------------------------------------------
 func _on_BrushColorPicker_closed() -> void:
@@ -524,6 +528,7 @@ func _update_brush_color() -> void:
 	_brush_color_picker.update_palettes(color_index)
 	_toolbar.set_brush_color(_brush_color_picker.get_active_color())
 	_canvas.set_brush_color(_brush_color_picker.get_active_color())
+	_canvas.set_brush_axis(_brush_color_picker.get_active_axis())
 
 # --------------------------------------------------------------------------------------------------
 func _on_EditPaletteDialog_palette_changed() -> void:

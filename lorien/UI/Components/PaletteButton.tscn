@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Assets/Textures/palette_button_outline.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Textures/palette_button.png" type="Texture" id=2]
 [ext_resource path="res://UI/Components/PaletteButton.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Fonts/font_big_bold.tres" type="DynamicFont" id=4]
 
 [node name="PaletteButton" type="Control"]
 anchor_right = 1.0
@@ -41,6 +42,15 @@ stretch_mode = 4
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Label" type="Label" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = ExtResource( 4 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Z"
+align = 1
+valign = 1
 
 [connection signal="gui_input" from="." to="." method="_on_PaletteButton_gui_input"]
 [connection signal="mouse_entered" from="." to="." method="_on_PaletteButton_mouse_entered"]

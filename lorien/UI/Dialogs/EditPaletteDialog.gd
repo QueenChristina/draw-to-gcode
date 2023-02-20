@@ -11,6 +11,7 @@ signal palette_changed
 onready var _name_line_edit: LineEdit = $MarginContainer/HBoxContainer/VBoxContainer/NameLineEdit
 onready var _color_picker: ColorPicker = $MarginContainer/HBoxContainer/ColorPicker
 onready var _color_grid: GridContainer = $MarginContainer/HBoxContainer/VBoxContainer/ColorGrid
+onready var _axis_line_edit : LineEdit = $MarginContainer/HBoxContainer/VBoxContainer/AxisLineEdit
 
 var _palette: Palette
 var _active_button: PaletteButton = null
@@ -32,10 +33,12 @@ func setup(palette: Palette, color_index: int) -> void:
 	
 	# Fill color grid
 	var index := 0
-	for color in palette.colors:
+	for i in range(palette.colors.size()):
+		var color = palette.colors[i]
 		var button: PaletteButton = PALETTE_BUTTON.instance()
 		_color_grid.add_child(button)
 		button.color = color
+		button.axis = palette.axes[i]
 		button.connect("pressed", self, "_on_platte_button_pressed", [button, index])
 		index += 1
 	
@@ -55,6 +58,7 @@ func _on_platte_button_pressed(button: PaletteButton, index: int) -> void:
 	button.selected = true
 	_active_button = button
 	_color_picker.color = button.color
+	_axis_line_edit.text = button.axis
 	_active_button_index = index
 	_disable_color_picker_callback = true
 	
@@ -89,12 +93,15 @@ func _on_AddColorButton_pressed() -> void:
 		for c in _palette.colors:
 			arr.append(c)
 		arr.append(new_color)
+		_palette.axes.append(_axis_line_edit.text)
 		_palette.colors = PoolColorArray(arr)
 		
 		# Add the color button
 		var button: PaletteButton = PALETTE_BUTTON.instance()
 		_color_grid.add_child(button)
 		button.color = new_color
+		if _axis_line_edit.text != "":
+			button.axis = _axis_line_edit.text
 		button.connect("pressed", self, "_on_platte_button_pressed", [button, _color_grid.get_child_count() - 1])
 		_on_platte_button_pressed(button, _color_grid.get_child_count() - 1)
 	
@@ -105,10 +112,13 @@ func _on_RemoveColorButton_pressed() -> void:
 		
 		# Create a new color array with the color removed
 		var arr := []
+		var axes := []
 		var index := 0
-		for c in _palette.colors:
+		for i in range(_palette.colors.size()):
+			var c = _palette.colors[i]
 			if index != _active_button_index:
 				arr.append(c)
+				axes.append(_palette.axes[i])
 			index += 1
 		_palette.colors = PoolColorArray(arr)
 
@@ -116,3 +126,9 @@ func _on_RemoveColorButton_pressed() -> void:
 		_active_button_index = min(_active_button_index, _color_grid.get_child_count() - 1)
 		_active_button = _color_grid.get_child(_active_button_index)
 		_on_platte_button_pressed(_active_button, _color_grid.get_child_count() - 1)
+
+func _on_AxisLineEdit_text_changed(new_text):
+	if new_text != "" and _active_button != null:
+		_palette_edited = true
+		_active_button.axis = new_text
+		_palette.axes[_active_button_index] = new_text

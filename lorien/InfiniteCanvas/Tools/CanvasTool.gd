@@ -27,6 +27,9 @@ func tool_event(event: InputEvent) -> void:
 func _on_brush_color_changed(color: Color) -> void:
 	pass
 
+func _on_brush_axis_changed(axis: String) -> void:
+	pass
+
 # -------------------------------------------------------------------------------------------------
 func _on_brush_size_changed(size: int) -> void:
 	_cursor.change_size(size)

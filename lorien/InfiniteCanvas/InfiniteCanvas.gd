@@ -24,6 +24,7 @@ var info := Types.CanvasInfo.new()
 var _is_enabled := false
 var _background_color: Color
 var _brush_color := Config.DEFAULT_BRUSH_COLOR
+var _brush_axis := Config.DEFAULT_BRUSH_AXIS
 var _brush_size := Config.DEFAULT_BRUSH_SIZE setget set_brush_size
 var _current_stroke: BrushStroke
 var _current_project: Project
@@ -187,6 +188,7 @@ func start_stroke() -> void:
 	_current_stroke = BRUSH_STROKE.instance()
 	_current_stroke.size = _brush_size
 	_current_stroke.color = _brush_color
+	_current_stroke.axis = _brush_axis
 	
 	_strokes_parent.add_child(_current_stroke)
 	_optimizer.reset()
@@ -327,6 +329,11 @@ func set_brush_color(color: Color) -> void:
 	_brush_color = color
 	if _active_tool != null:
 		_active_tool._on_brush_color_changed(_brush_color)
+		
+func set_brush_axis(axis: String) -> void:
+	_brush_axis = axis
+	if _active_tool != null:
+		_active_tool._on_brush_axis_changed(axis)
 
 # -------------------------------------------------------------------------------------------------
 func get_camera_zoom() -> float:
