@@ -280,8 +280,10 @@ func add_stroke_to_layer(stroke, index):
 # -------------------------------------------------------------------------------------------------
 func use_project(project: Project) -> void:
 	# Cleanup old data
-	for stroke in _strokes_parent.get_children():
-		_strokes_parent.remove_child(stroke)
+	# Remove ALL layers
+	for layer in _layers_container.get_children():
+		_layers_container.remove_child(layer)
+		layer.queue_free()
 	info.point_count = 0
 	info.stroke_count = 0
 	
@@ -291,11 +293,18 @@ func use_project(project: Project) -> void:
 	
 	# Add new data
 	_current_project = project
-	for stroke in _current_project.strokes:
-		_strokes_parent.add_child(stroke)
-		info.stroke_count += 1
-		info.point_count += stroke.points.size()
-	
+	for i in range(_current_project.layers.size()):
+		var layer = _current_project.layers[i]
+		_on_add_layer(i)
+		var dups_amt = _current_project.layers_info[i].dup_amount
+		
+		for stroke in layer:
+			if stroke.get_parent():
+				stroke.get_parent().remove_child(stroke)
+			_layers_container.get_child(i).add_child(stroke)
+			info.stroke_count += 1
+			info.point_count += stroke.points.size()
+	_on_set_active_layer(0)
 	_grid.update()
 	
 # -------------------------------------------------------------------------------------------------

@@ -18,6 +18,7 @@ onready var _background_color_picker: ColorPicker = $BackgroundColorPickerPopup/
 onready var _new_palette_dialog: NewPaletteDialog = $NewPaletteDialog
 onready var _delete_palette_dialog: DeletePaletteDialog = $DeletePaletteDialog
 onready var _edit_palette_dialog: EditPaletteDialog = $EditPaletteDialog
+onready var _layerbar := $LayerBar
 
 var _ui_visible := true 
 var _player_enabled := false
@@ -237,6 +238,8 @@ func _make_project_active(project: Project) -> void:
 	if !_menubar.has_tab(project):
 		_menubar.make_tab(project)
 	_menubar.set_tab_active(project)
+	
+	_layerbar.make_layers(project)
 	
 	# TODO: find a better way to apply the color to the picker
 	var default_canvas_color = Config.DEFAULT_CANVAS_COLOR.to_html()

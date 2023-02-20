@@ -25,6 +25,19 @@ func _ready():
 	curr_layer.layer_button.group = layer_button_group
 	curr_layer.layer_button.pressed = true
 
+# Make layers from the given project
+func make_layers(project, clear_layers = true):
+	# Clear layers from menu
+	for layer in _layer_box.get_children():
+		_layer_box.remove_child(layer)
+		if clear_layers:
+			layer.queue_free()
+		
+	# Generate layers to menu
+	for i in range(project.layers.size()):
+		_add_layer_to_menu(i, "Layer " + str(i), project.layers_info[i].dup_amount)
+	select_layer(0)
+	
 func _on_AddLayer_pressed():
 	var active_project: Project = ProjectManager.get_active_project()
 	var index = min(active_project.layers.size(), _layer_box.get_child_count() - curr_layer.get_index())
@@ -34,8 +47,8 @@ func _on_AddLayer_pressed():
 	active_project.undo_redo.add_do_method(self, "_on_add_layer", index) # Re-add layer to the "top"/end of array, which is at this index
 	active_project.undo_redo.commit_action()
 
-# Add layer at index based on project.layers array
-func _on_add_layer(index):
+# Add layer to menu only
+func _add_layer_to_menu(index, name, dup_amount = 1):
 	var layer = LAYER.instance()
 	
 	var child_index = _layer_box.get_child_count() - index
@@ -44,11 +57,17 @@ func _on_add_layer(index):
 	layer.layer_button.group = layer_button_group
 	
 	var active_project: Project = ProjectManager.get_active_project()
-	layer.text = "Layer " + str(active_project.layers.size())
-	active_project.add_layer(index, [])
+	layer.text = name
+	layer.dup_edit.value = dup_amount
 	layer.connect("switch_layers", self, "_on_switch_layers")
 	layer.connect("layer_visibility_changed", self, "_on_layer_visibility_changed")
 	layer.connect("dups_amount_changed", self, "_on_dups_amount_changed")
+
+# Add layer at index based on project.layers array; modifies project array too
+func _on_add_layer(index):
+	var active_project: Project = ProjectManager.get_active_project()
+	_add_layer_to_menu(index, "Layer " + str(active_project.layers.size()))
+	active_project.add_layer(index, [])
 	
 	# Communicate with canvas layer
 	emit_signal("add_layer", index)
