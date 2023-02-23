@@ -16,15 +16,18 @@ Make drawings over multiple layers and with multiple materials, and convert it i
 - Undo-redo with layer name
 - Set and save layer name
 - Better default palette
+- Better settings: custom onion skin settings (modulate color of above/below layers, opacity, number of layers visible), set color of printbed platform outline
+- Export GCode settings on export as extra dialog, not in settings
 - Multimaterial support: More axes (not just Z or A), add offset between axes, and custom ordering
 - Extrusion amount based on pressure sensitivity; or just export extrusion amount
-- Fill polygons with lattice structure
+- Fill polygons with lattice structure and option to trace outline
 - Import images such as bitmap and svg types
 - Support raster layer
-- Convert vector to raster layer, or handle when lines overlap on the same layer
-- Editable points in vector layers
+- Convert vector to raster layer, and/or handle when lines overlap on the same layer
+- Editable points, filled polygons, and lines (settings for width, color/material, etc.) in vector layers
 - Grid snap and ruler
 - Default brush/line width size to match real scale/width size (default of 2.5 mm width)
+- Solutions for embedded printing eg., allow for lines that are not parallel to XY plane to be traced (such as along Z-axis)
 
 <img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/gcode-demo.jpg" align="center"/>
 <img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/layers-demo.jpg" align="center"/>
