@@ -493,6 +493,7 @@ func _duplicate_stroke(stroke: BrushStroke, offset: Vector2) -> BrushStroke:
 	dup.global_position = stroke.global_position
 	dup.size = stroke.size
 	dup.color = stroke.color
+	dup.axis = stroke.axis
 	dup.pressures = stroke.pressures.duplicate()
 	for point in stroke.points:
 		dup.points.append(point + offset)
