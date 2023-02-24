@@ -51,6 +51,9 @@ static func save_project(project: Project) -> void:
 			file.store_8(stroke.color.g8)
 			file.store_8(stroke.color.b8)
 			
+			# Axis
+			file.store_pascal_string(stroke.axis)
+			
 			# Brush size
 			file.store_16(int(stroke.size))
 			
@@ -125,6 +128,9 @@ static func load_project(project: Project) -> void:
 					var b := file.get_8()
 					brush_stroke.color = Color(r/255.0, g/255.0, b/255.0, 1.0)
 					
+					# Axis
+					brush_stroke.axis = file.get_pascal_string()
+			
 					# Brush size
 					brush_stroke.size = file.get_16()
 						

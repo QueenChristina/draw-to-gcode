@@ -44,7 +44,10 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 		first_axis = layers[0][0].axis
 	# TODO: order of axis printing per layer
 	var axis_order = ["Z", "A"]
-		
+	var axis_extruder = {"Z" : "C", "A" : "B"}
+	var axis_offset = {"Z" : Vector2(0, 0), "A" : Vector2(33, 0)} # Per axis_order
+	var last_axis = "Z" # The last axis used
+	
 	# Start file with setting units to mm and set current X,Y as origin
 	if unit.to_lower() == "inch":
 		file.store_string("G91\nG20\nG92 X0.0 Y0.0\nG90\n")
@@ -67,9 +70,16 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 				if axis in strokes_by_axis:
 					# TODO: Ensure nozzle in correct layer height + OFFSET X,Y depending on space between
 					#  + possibly move nozzle up/down so not collide
-					# Set axis. TODO: set extrusion rate
-					file.store_string(axis + ";Set current extruder axis to " + axis + " \n")
-					# This line may be duplicate for first_axis
+					# Translate to new nozzle (axis) - untranslate back to origin, then translate to new nozzle; take negative as image coordinates is flipped of real coordinates
+					var offset = -1 * (axis_offset.get(axis, Vector2(0, 0)) - axis_offset.get(last_axis, Vector2(0, 0)))
+					if offset != Vector2(0, 0):
+						file.store_string("G0 X%.2f Y%.2f ;Translate to nozzle of %s axis\n" % [offset.x, offset.y, axis])
+					last_axis = axis
+					# Set axis extruder. TODO: set extrusion rate
+					# TODO: this is for if process in python file after -- delete this later if process here
+					var extruder = axis_extruder[axis]
+					file.store_string(extruder + ";Set current extruder axis to " + extruder + " \n")
+					# Move axis to correct layer height. This line may be duplicate for first_axis
 					file.store_string("G90\nG0 " + axis + str(layer_count * layer_height) + "\nG91\n")
 					
 					# Draw each stroke
