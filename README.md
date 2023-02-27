@@ -12,6 +12,7 @@ Make drawings over multiple layers and with multiple materials, and convert it i
 - Custom settings for printing, such as guide for size of print-bed, set units, and set layer height
 
 ## Roadmap
+- Support multiple nozzles to move synchronously
 - Undo-redo with duplicate layer amount
 - Undo-redo with layer name
 - Set and save layer name
@@ -29,6 +30,9 @@ Make drawings over multiple layers and with multiple materials, and convert it i
 - Default brush/line width size to match real scale/width size (default of 2.5 mm width)
 - Solutions for embedded printing eg., allow for lines that are not parallel to XY plane to be traced (such as along Z-axis)
 - Error handling for opening projects of the incorrect version / failure to open projects on launch
+- Support language localization for the new features
+- Pan and Zoom tools (as tools, not shortcuts)
+- Support for touch (export to App store)
 
 <img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/gcode-demo.jpg" align="center"/>
 <img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/layers-demo.jpg" align="center"/>
