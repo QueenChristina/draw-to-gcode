@@ -283,7 +283,9 @@ func use_project(project: Project) -> void:
 	# Remove ALL layers
 	for layer in _layers_container.get_children():
 		_layers_container.remove_child(layer)
-		layer.queue_free()
+		# Not queue_free-ing it in case you switch back to this project
+		# TODO: handle orphans?
+#		layer.queue_free()
 	info.point_count = 0
 	info.stroke_count = 0
 	
@@ -299,7 +301,7 @@ func use_project(project: Project) -> void:
 		var dups_amt = _current_project.layers_info[i].dup_amount
 		
 		for stroke in layer:
-			if stroke.get_parent():
+			if stroke != null and stroke.get_parent():
 				stroke.get_parent().remove_child(stroke)
 			_layers_container.get_child(i).add_child(stroke)
 			info.stroke_count += 1
