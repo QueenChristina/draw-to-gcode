@@ -46,7 +46,8 @@ func create_custom_palette(palette_name: String) -> Palette:
 	palette.builtin = false
 	palette.uuid = Utils.generate_uuid(UUID_LENGTH)
 	palette.colors = PoolColorArray([Color.white, Color.black])
-	palette.axes = ["Z", "A"]
+	# TODO: customize axis -- match GCodeExporter file axis_order
+	palette.axes = ["A,Z", "Z", "A"]
 	palettes.append(palette)
 	_sort()
 	

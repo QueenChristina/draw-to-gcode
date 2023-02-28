@@ -39,22 +39,30 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	var layer_count = 0
 	var layer_height = Settings.get_value(Settings.LAYER_HEIGHT, Config.DEFAULT_LAYER_HEIGHT)
 	var unit = Settings.get_value(Settings.UNIT, Config.DEFAULT_UNIT)
-	var first_axis = "Z" 
-	if layers[0].size() > 0:
-		first_axis = layers[0][0].axis
-	# TODO: order of axis printing per layer
-	var axis_order = ["Z", "A"]
+
+	# Order of axis printing per layer
+	var nozzle_axes = ["Z", "A"]
+	var axis_order = ["A,Z", "Z", "A"]
 	var axis_extruder = {"Z" : "C", "A" : "B"}
-	var axis_offset = {"Z" : Vector2(0, 0), "A" : Vector2(33, 0)} # Per axis_order
-	var last_axis = "Z" # The last axis used
+	# TODO: scale these constants if converting between units
+	var extruder_coeffs = {"C" : 2.5, "B" : 2.5}
+	var extruder_nozzle_diam = {"C" : 0.25, "B" : 0.25}
+	var extruder_syringe_diam = {"C" : 4.6, "B" : 4.6}
+	var axis_offset = {"Z" : Vector2(0, 0), "A" : Vector2(33.75, 0)} # Per axis_order
+	var last_axis = "Z" # The last axis/axes used
 	
-	# Start file with setting units to mm and set current X,Y as origin
+	# Add header
+	var gcode_header = "F300"
+	if gcode_header != "":
+		file.store_string(gcode_header + "\n")
+	
+	# Start file with setting units to mm and set to relative coordinates
 	if unit.to_lower() == "inch":
-		file.store_string("G91\nG20\nG92 X0.0 Y0.0\nG90\n")
+		# G92 X0.0 Y0.0\n # set current X,Y as origin(?)
+		file.store_string("G20\n")
 	else:
-		file.store_string("G91\nG21\nG92 X0.0 Y0.0\nG90\n")
-		
-#	_gcode_start(file, origin, size, first_axis)
+		file.store_string("G21\n")
+	
 	for i in range(layers.size()):
 		for _j in range(layers_info[i].dup_amount): # Repeat this layer by dup_amount of times
 			
@@ -68,35 +76,37 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 			for axis in axis_order:
 				# Draw each stroke in layer, of the same axis first
 				if axis in strokes_by_axis:
-					# TODO: Ensure nozzle in correct layer height + OFFSET X,Y depending on space between
-					#  + possibly move nozzle up/down so not collide
 					# Translate to new nozzle (axis) - untranslate back to origin, then translate to new nozzle; take negative as image coordinates is flipped of real coordinates
 					var offset = -1 * (axis_offset.get(axis, Vector2(0, 0)) - axis_offset.get(last_axis, Vector2(0, 0)))
 					if offset != Vector2(0, 0):
 						file.store_string("G0 X%.2f Y%.2f ;Translate to nozzle of %s axis\n" % [offset.x, offset.y, axis])
 					last_axis = axis
-					# Set axis extruder. TODO: set extrusion rate
-					# TODO: this is for if process in python file after -- delete this later if process here
-					var extruder = axis_extruder[axis]
-					file.store_string(extruder + ";Set current extruder axis to " + extruder + " \n")
-					# Move axis to correct layer height. This line may be duplicate for first_axis
-					file.store_string("G90\nG0 " + axis + str(layer_count * layer_height) + "\nG91\n")
+					# Set axis extruder(s).
+					var list_axes = axis.split(",", false)
+					var extruders = []
+					for a in list_axes:
+						extruders.append(axis_extruder[a])
+					# Move axis to correct layer height. This line may be duplicate of below. TODO: remove one?
+					file.store_string("(Move " + axis + " to layer " + str(layer_count) + ")\n")
+					file.store_string("G90\nG0") # absolute
+					for a in list_axes:
+						file.store_string(" " + a + str(layer_count * layer_height))
+					file.store_string("\nG91\n\n") # switch back to relative
 					
 					# Draw each stroke
 					for stroke in strokes_by_axis[axis]:
-						_gcode_polyline(file, stroke)
-			
+						_gcode_polyline(file, stroke, extruders, extruder_coeffs, extruder_nozzle_diam, extruder_syringe_diam)
 			# End layer
-			# Move up a bit for each layer by size of layer, assuming relative coord
-			file.store_string("G0")
 			
-			for axis in axis_order:
-#				file.store_string(" %s%.2f" % [axis, 0.25]) # Move to layer height
-				file.store_string(" %s%.2f" % [axis, 3 * layer_height]) # Move above layer height so not get in the way
+			# Move up a bit for each layer by size of layer, assuming relative coord, so not collide
+			file.store_string("(Move all nozzles up a layer)\n")
+			file.store_string("G0")
+			for axis in nozzle_axes:
+				file.store_string(" %s%.2f" % [axis, layer_height]) # Move to new layer height
 			file.store_string("\n")
 			
 			layer_count += 1
-	_gcode_end(file, axis_order, layer_height)
+	_gcode_end(file, nozzle_axes, layer_height)
 	print("EXPORTED ", layer_count, " layers.")
 	
 	# Flush and close the file
@@ -105,21 +115,21 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	print("Exported %s in %d ms" % [path, (OS.get_ticks_msec() - start_time)])
 
 # -------------------------------------------------------------------------------------------------
-func _gcode_start(file: File, origin: Vector2, size: Vector2, first_axis : String) -> void:
-	file.store_string("G90\nG0 " + first_axis + "0\nG91\n")
-
-# -------------------------------------------------------------------------------------------------
-func _gcode_end(file: File, axis_order: Array, layer_height: float) -> void:
+func _gcode_end(file: File, nozzle_axes: Array, layer_height: float) -> void:
 	# Move all nozzles up slightly so out of the way
-	for axis in axis_order:
-		file.store_string("G0 " + axis + str(3 * layer_height) + "\n") 
+	file.store_string("(Move all nozzles up to end.)\n")
+	file.store_string("G0")
+	for axis in nozzle_axes:
+		# TODO: better ending height
+		file.store_string(" " + axis + str(min(3 * layer_height, 3))) 
+	file.store_string("\n")
 
 # -------------------------------------------------------------------------------------------------
-func _gcode_polyline(file: File, stroke: BrushStroke) -> void:
+func _gcode_polyline(file: File, stroke: BrushStroke, extruders : Array, extruder_coeffs : Dictionary, extruder_nozzle_diam : Dictionary, extruder_syringe_diam : Dictionary) -> void:
 	# Stroke: Color, Size, [Points]
 	var rel_offset = stroke.points[0] - curr_point_abs
 	# Negate x to flip - from image coordinates to real coordinates
-	file.store_string("G0 X%.2f Y%.2f\n" % [-1 * rel_offset.x / 10.0, rel_offset.y / 10.0])
+	file.store_string("G0 X%.3f Y%.3f\n" % [-1 * rel_offset.x / 10.0, rel_offset.y / 10.0])
 	curr_point_abs = stroke.points[0]
 	var idx := 0
 	var point_count := stroke.points.size()
@@ -128,6 +138,12 @@ func _gcode_polyline(file: File, stroke: BrushStroke) -> void:
 			var point = stroke.points[i]
 			rel_offset = point - curr_point_abs
 			curr_point_abs = point
-			file.store_string("G1 X%.2f Y%.2f\n" % [-1 * rel_offset.x / 10.0, rel_offset.y / 10.0])
+			
+			var extrusion_amts = []
+			for extruder in extruders:
+				var extrusion_amt = (extruder_coeffs.get(extruder, 1) * rel_offset.length() * pow(extruder_nozzle_diam.get(extruder, 0.25), 2)) / pow(extruder_syringe_diam.get(extruder, 4.6), 2)
+				extrusion_amts.append(extruder + str(stepify(extrusion_amt,0.001)))
+			var extrusions = PoolStringArray(extrusion_amts).join(" ")
+			file.store_string("G1 X%.3f Y%.3f %s\n" % [-1 * rel_offset.x / 10.0, rel_offset.y / 10.0, extrusions])
 			idx += 1
 	file.store_string("\n")
