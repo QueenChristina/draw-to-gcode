@@ -76,7 +76,9 @@ static func save_project(project: Project) -> void:
 	print("Saved %s in %d ms" % [project.filepath, (OS.get_ticks_msec() - start_time)])
 
 # -------------------------------------------------------------------------------------------------
-static func load_project(project: Project) -> void:
+# Returns a string of whether project succesfully loaded ("OK") or error message
+# "There was an error opening the file. Double check you have the correct version of software."
+static func load_project(project: Project) -> String:
 	var start_time := OS.get_ticks_msec()
 
 	# Open file
@@ -84,7 +86,7 @@ static func load_project(project: Project) -> void:
 	var err = file.open_compressed(project.filepath, File.READ, COMPRESSION_METHOD)
 	if err != OK:
 		print_debug("Failed to load file: %s" % project.filepath)
-		return
+		return "Failed to load file: %s" % project.filepath
 	
 	# Clear potential previous data
 	project.strokes.clear()
@@ -99,7 +101,7 @@ static func load_project(project: Project) -> void:
 	
 	# Layers
 	var layers_count = file.get_16() # number of layers
-	print("There are ", layers_count, " layers.")
+#	print("There are ", layers_count, " layers.")
 	for _layer_idx in range(layers_count):
 		# Layer information
 		# Current layer index
@@ -108,15 +110,17 @@ static func load_project(project: Project) -> void:
 		# Duplicate amount of this layer
 		project.layers_info.append({})
 		var dup_amt = file.get_16()
+		if layer_index >= layers_count:
+			return "Attemped to get layer index %s greater than layer count %s" % [layer_index, layers_count]
 		project.layers_info[layer_index].dup_amount = dup_amt
 		
-		print("------------------------------------------------")
-		print("Loading layer ", layer_index, " of dup amount ", dup_amt)
+#		print("------------------------------------------------")
+#		print("Loading layer ", layer_index, " of dup amount ", dup_amt)
 		
 		var strokes_count = file.get_16()
-		print("Adding strokes of amount  ", strokes_count)
+#		print("Adding strokes of amount  ", strokes_count)
 		# Brush strokes at this layer
-		for _i in range(strokes_count):
+		for i in range(strokes_count):
 			# Type
 			var type := file.get_8()
 			
@@ -138,10 +142,10 @@ static func load_project(project: Project) -> void:
 						
 					# Number of points
 					var point_count := file.get_16()
-					print("-Adding stroke of points ", point_count)
+#					print("-Adding stroke of points ", point_count)
 					
 					# Points
-					for i in point_count:
+					for j in point_count:
 						var x := file.get_float()
 						var y := file.get_float()
 						var pressure := file.get_8()
@@ -156,12 +160,35 @@ static func load_project(project: Project) -> void:
 					printerr("Invalid type")
 			
 			# are we done yet?
+			if (file.get_position() >= file.get_len()-1 || file.eof_reached()) \
+					and (layer_index < layers_count - 1 or i < strokes_count - 1):
+				# ended before finishing loading
+				return "Was not able to load the whole file -- amount of layers %s and strokes %s loaded under expected count %s, and %s." % [layer_index, i, layers_count, strokes_count]
 			if file.get_position() >= file.get_len()-1 || file.eof_reached():
+				# natural end
 				break
 	
 	# Done
 	file.close()
 	print("Loaded %s in %d ms" % [project.filepath, (OS.get_ticks_msec() - start_time)])
+	return _validate_project_data(project)
+	
+# -------------------------------------------------------------------------------------------------
+# Returns error message or OK -- TODO: not a perfect check
+static func _validate_project_data(project) -> String:
+	for layer_idx in range(project.layers.size()):
+		if project.layers[layer_idx] == null:
+			return "Was not able to load layer"
+		if project.layers[layer_idx].size() > 0:
+			for stroke in project.layers[layer_idx]:
+				if stroke == null:
+					return "Was not able to load stroke"
+				for point in stroke.points:
+					if point == null:
+						return "Was not able to load stroke point"
+		if project.layers_info[layer_idx].dup_amount == null:
+			return "Was not able to load layer dup amount"
+	return "OK"
 
 # -------------------------------------------------------------------------------------------------
 static func _dict_to_metadata_str(d: Dictionary) -> String:

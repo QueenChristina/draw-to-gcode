@@ -4,15 +4,23 @@ extends Node
 var _open_projects: Array # Array<Project>
 var _active_project: Project
 
+signal error_encountered(message)
+
 # -------------------------------------------------------------------------------------------------
 func read_project_list() -> void:
 	pass
 
 # -------------------------------------------------------------------------------------------------
-func make_project_active(project: Project) -> void:
+# Returns if successfully made project active
+func make_project_active(project: Project) -> bool:
 	if !project.loaded:
-		_load_project(project)
+		var err = _load_project(project)
+		if err != "OK":
+			var error_mssg = "Error opening project: \n    %s\nError Message:\n    %s\nCheck you are using the correct version of software. If so, please contact the developers." % [project.filepath, err]
+			emit_signal("error_encountered", error_mssg)
+			return false
 	_active_project = project
+	return true
 
 # -------------------------------------------------------------------------------------------------
 func get_active_project() -> Project:
@@ -67,12 +75,18 @@ func save_all_projects() -> void:
 			save_project(p)
 
 # -------------------------------------------------------------------------------------------------
-func _load_project(project: Project) -> void:
+# Returns error message or OK if loaded ok
+func _load_project(project: Project) -> String:
 	if !project.loaded:
-		Serializer.load_project(project)
-		project.loaded = true
+		var err = Serializer.load_project(project)
+		if err == "OK":
+			project.loaded = true
+		else:
+			print_debug("Error loading project because " + err)
+			return err
 	else:
 		print_debug("Trying to load already loaded project")
+	return "OK"
 
 # -------------------------------------------------------------------------------------------------
 func get_open_project_by_filepath(filepath: String) -> Project:

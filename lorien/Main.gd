@@ -19,6 +19,7 @@ onready var _new_palette_dialog: NewPaletteDialog = $NewPaletteDialog
 onready var _delete_palette_dialog: DeletePaletteDialog = $DeletePaletteDialog
 onready var _edit_palette_dialog: EditPaletteDialog = $EditPaletteDialog
 onready var _layerbar := $LayerBar
+onready var _error_dialog : WindowDialog = $ErrorDialog
 
 var _ui_visible := true 
 var _player_enabled := false
@@ -39,6 +40,7 @@ func _ready():
 	# Signals
 	get_tree().connect("files_dropped", self, "_on_files_dropped")
 	
+	ProjectManager.connect("error_encountered", self, "_on_error_encountered")
 	_toolbar.connect("undo_action", self, "_on_undo_action")
 	_toolbar.connect("redo_action", self, "_on_redo_action")
 	_toolbar.connect("clear_canvas", self, "_on_clear_canvas")
@@ -231,20 +233,26 @@ func _on_files_dropped(files: PoolStringArray, screen: int) -> void:
 			_on_open_project(file)
 
 # -------------------------------------------------------------------------------------------------
-func _make_project_active(project: Project) -> void:
-	ProjectManager.make_project_active(project)
-	_canvas.use_project(project)
+# Return if successful
+func _make_project_active(project: Project) -> bool:
+	var success = ProjectManager.make_project_active(project)
+	if success:
+		_canvas.use_project(project)
 	
-	if !_menubar.has_tab(project):
-		_menubar.make_tab(project)
-	_menubar.set_tab_active(project)
-	
-	_layerbar.make_layers(project)
-	
-	# TODO: find a better way to apply the color to the picker
-	var default_canvas_color = Config.DEFAULT_CANVAS_COLOR.to_html()
-	_background_color_picker.color = Color(project.meta_data.get(ProjectMetadata.CANVAS_COLOR, default_canvas_color))
-
+		if !_menubar.has_tab(project):
+			_menubar.make_tab(project)
+		_menubar.set_tab_active(project)
+		
+		_layerbar.make_layers(project)
+		
+		# TODO: find a better way to apply the color to the picker
+		var default_canvas_color = Config.DEFAULT_CANVAS_COLOR.to_html()
+		_background_color_picker.color = Color(project.meta_data.get(ProjectMetadata.CANVAS_COLOR, default_canvas_color))
+	else:
+		print_debug("Error making project active.")
+		return false
+	return true
+		
 # -------------------------------------------------------------------------------------------------
 func _is_mouse_on_ui() -> bool:
 	var on_ui := Utils.is_mouse_in_control(_menubar)
@@ -285,7 +293,7 @@ func _on_create_new_project() -> void:
 # -------------------------------------------------------------------------------------------------
 func _on_project_selected(project_id: int) -> void:
 	var project: Project = ProjectManager.get_project_by_id(project_id)
-	_make_project_active(project)
+	var success = _make_project_active(project)
 
 # -------------------------------------------------------------------------------------------------
 func _on_project_closed(project_id: int) -> void:
@@ -315,7 +323,7 @@ func _close_project(project_id: int) -> void:
 		else:
 			var new_project_id: int = _menubar.get_first_project_id()
 			var new_project: Project = ProjectManager.get_project_by_id(new_project_id)
-			_make_project_active(new_project)
+			var success = _make_project_active(project)
 
 # -------------------------------------------------------------------------------------------------
 func _show_autosave_not_implemented_alert() -> void:
@@ -359,13 +367,24 @@ func _on_open_project(filepath: String) -> bool:
 		return true
 	
 	# Remove/Replace active project if not changed and unsaved (default project)
+	var removed_empty_prjct = false
 	if active_project.filepath.empty() && !active_project.dirty:
 		ProjectManager.remove_project(active_project)
 		_menubar.remove_tab(active_project)
+		removed_empty_prjct = true
 	
 	# Create and open it
 	project = ProjectManager.add_project(filepath)
-	_make_project_active(project)
+	var success = _make_project_active(project)
+	if not success:
+		# Make old project active again
+		if removed_empty_prjct:
+			_create_active_default_project()
+		else:
+			_make_project_active(active_project)
+		# Close old project
+		_close_project(project.id)
+		return false
 	
 	return true
 	
@@ -584,3 +603,8 @@ func _on_platform_size_changed() -> void:
 	var platform_size : Vector2 = Settings.get_value(Settings.PLATFORM_SIZE, Config.DEFAULT_PLATORM_SIZE)
 
 	_canvas.set_platform_size(platform_size)
+
+# ------------------------
+func _on_error_encountered(error_text):
+	_error_dialog.dialog_text = error_text
+	_error_dialog.popup_centered()
