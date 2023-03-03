@@ -1,16 +1,30 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://UI/Themes/theme_dark.tres" type="Theme" id=1]
 [ext_resource path="res://UI/Dialogs/SettingsDialog.gd" type="Script" id=2]
 [ext_resource path="res://UI/Components/DelayedSpinBox.gd" type="Script" id=3]
 [ext_resource path="res://UI/Dialogs/KeyBindingsList.gd" type="Script" id=4]
 [ext_resource path="res://UI/Dialogs/AddKeyDialog.tscn" type="PackedScene" id=5]
+[ext_resource path="res://UI/Dialogs/AxisOffsetRow.tscn" type="PackedScene" id=6]
+[ext_resource path="res://UI/Components/FlatTextureButton.gd" type="Script" id=7]
+[ext_resource path="res://Assets/Icons/plus.png" type="Texture" id=8]
+[ext_resource path="res://Assets/Icons/info_circle_smol.png" type="Texture" id=9]
+[ext_resource path="res://UI/Dialogs/NozzleSettings.gd" type="Script" id=10]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
 [sub_resource type="StyleBoxEmpty" id=2]
 
 [sub_resource type="StyleBoxEmpty" id=3]
+
+[sub_resource type="StyleBoxFlat" id=4]
+bg_color = Color( 0, 0, 0, 0.54902 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0, 0, 0, 0.745098 )
+
+[sub_resource type="StyleBoxFlat" id=6]
+bg_color = Color( 0, 0, 0, 0.113725 )
 
 [node name="SettingsDialog" type="WindowDialog"]
 margin_right = 520.0
@@ -566,6 +580,144 @@ step = 0.01
 value = 0.25
 allow_greater = true
 align = 1
+
+[node name="ExtrusionCoeff" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_top = 87.0
+margin_right = 496.0
+margin_bottom = 108.0
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ExtrusionCoeff"]
+margin_top = 2.0
+margin_right = 420.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Extrusion Coefficient"
+
+[node name="Coeff" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ExtrusionCoeff"]
+margin_left = 424.0
+margin_right = 496.0
+margin_bottom = 21.0
+hint_tooltip = "Default factor times exact extrusion volume.
+
+Use more than 1 to account for sagging."
+min_value = 0.01
+step = 0.01
+value = 1.5
+allow_greater = true
+align = 1
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_top = 112.0
+margin_right = 496.0
+margin_bottom = 116.0
+
+[node name="Nozzle Axes Info" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_top = 120.0
+margin_right = 496.0
+margin_bottom = 138.0
+
+[node name="Nozzle Axes Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Nozzle Axes Info"]
+margin_right = 82.0
+margin_bottom = 17.0
+text = "Nozzle Axes"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Info" type="TextureButton" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Nozzle Axes Info"]
+modulate = Color( 1, 1, 1, 0.247059 )
+margin_left = 86.0
+margin_right = 104.0
+margin_bottom = 18.0
+hint_tooltip = "Use commas (,) to separate axes if specifying for multiple axes moved at once. 
+Specify the extruders in the same order, comma separated, OR 
+leave blank and specify cooresponding axis with extruders separately on new lines."
+texture_normal = ExtResource( 9 )
+script = ExtResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+hover_tint = Color( 0.588235, 0.588235, 0.588235, 1 )
+pressed_tint = Color( 0.615686, 0.615686, 0.615686, 1 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_top = 142.0
+margin_right = 496.0
+margin_bottom = 219.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 10 )
+
+[node name="AxesOffsets" type="VBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer"]
+margin_right = 496.0
+margin_bottom = 49.0
+size_flags_horizontal = 3
+
+[node name="Axis Offset" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets" instance=ExtResource( 6 )]
+
+[node name="Add Axis" type="Button" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets"]
+margin_top = 25.0
+margin_right = 496.0
+margin_bottom = 49.0
+rect_min_size = Vector2( 0, 24 )
+custom_styles/hover = SubResource( 4 )
+custom_styles/pressed = SubResource( 5 )
+custom_styles/focus = SubResource( 5 )
+custom_styles/normal = SubResource( 6 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets/Add Axis"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 5
+custom_constants/margin_top = 3
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets/Add Axis/MarginContainer"]
+margin_left = 5.0
+margin_top = 3.0
+margin_right = 491.0
+margin_bottom = 21.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Container" type="Container" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets/Add Axis/MarginContainer/HBoxContainer"]
+visible = false
+margin_right = 330.0
+margin_bottom = 18.0
+size_flags_horizontal = 3
+
+[node name="TextureButton" type="TextureButton" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets/Add Axis/MarginContainer/HBoxContainer"]
+modulate = Color( 0.678431, 0.678431, 0.678431, 0.356863 )
+margin_right = 18.0
+margin_bottom = 18.0
+rect_min_size = Vector2( 18, 0 )
+hint_tooltip = "Add nozzle"
+mouse_filter = 1
+size_flags_vertical = 3
+texture_normal = ExtResource( 8 )
+expand = true
+stretch_mode = 5
+script = ExtResource( 7 )
+hover_tint = Color( 0.603922, 1, 0.905882, 1 )
+pressed_tint = Color( 0, 1, 0.717647, 1 )
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets/Add Axis/MarginContainer/HBoxContainer"]
+modulate = Color( 1, 1, 1, 0.411765 )
+margin_left = 22.0
+margin_right = 131.0
+margin_bottom = 17.0
+text = "Add New Nozzle"
 
 [connection signal="value_changed" from="MarginContainer/TabContainer/General/VBoxContainer/PressureSensitivity/PressureSensitivity" to="." method="_on_PressureSensitivity_value_changed"]
 [connection signal="value_changed" from="MarginContainer/TabContainer/General/VBoxContainer/DefaultBrushSize/DefaultBrushSize" to="." method="_on_DefaultBrushSize_value_changed"]

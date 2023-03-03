@@ -1,6 +1,7 @@
 extends Node
 
 # -------------------------------------------------------------------------------------------------
+# Keys to save the setting values under
 const DEFAULT_SECTION 					:= "settings"
 const SHORTCUTS_SECTION 				:= "shortcuts"
 const GENERAL_PRESSURE_SENSITIVITY 		:= "general_pressure_sensitvity"
@@ -19,6 +20,9 @@ const COLOR_PALETTE_UUID_LAST_USED		:= "color_palette_uuid_last_used"
 const UNIT 								:= "unit"
 const PLATFORM_SIZE						:= "platform_size"
 const LAYER_HEIGHT						:= "layer_height"
+
+const CURR_PRINTER_NAME					:= "curr_printer_name" # key value to pritner settings
+const PRINTER_SETTINGS					:= "printer_settings"
 # -------------------------------------------------------------------------------------------------
 var _config_file := ConfigFile.new()
 var _i18n := I18nParser.new()

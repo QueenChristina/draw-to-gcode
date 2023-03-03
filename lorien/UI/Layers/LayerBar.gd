@@ -56,7 +56,6 @@ func _add_layer_to_menu(index, name, dup_amount = 1):
 	_layer_box.move_child(layer, child_index)
 	layer.layer_button.group = layer_button_group
 	
-	var active_project: Project = ProjectManager.get_active_project()
 	layer.text = name
 	layer.dup_edit.value = dup_amount
 	layer.connect("switch_layers", self, "_on_switch_layers")

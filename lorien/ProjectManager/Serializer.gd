@@ -14,6 +14,8 @@ const TYPE_BRUSH_STROKE := 0
 const TYPE_ERASER_STROKE_DEPRECATED := 1 # Deprecated since v0; will be ignored when read; structually the same as normal brush stroke
 
 # -------------------------------------------------------------------------------------------------
+# A save file that has very small file size. TODO: option to save as text file instead, to
+# allow for compatibility with Git version control
 static func save_project(project: Project) -> void:
 	var start_time := OS.get_ticks_msec()
 	
@@ -98,7 +100,7 @@ static func load_project(project: Project) -> void:
 	# Layers
 	var layers_count = file.get_16() # number of layers
 	print("There are ", layers_count, " layers.")
-	for layer in range(layers_count):
+	for _layer_idx in range(layers_count):
 		# Layer information
 		# Current layer index
 		project.layers.append([])

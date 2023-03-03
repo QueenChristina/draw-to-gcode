@@ -35,7 +35,7 @@ onready var _language_options: OptionButton = $MarginContainer/TabContainer/Gene
 onready var _brush_rounding_options: OptionButton = $MarginContainer/TabContainer/Rendering/VBoxContainer/BrushRounding/OptionButton
 onready var _ui_scale_options: OptionButton = $MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer/UIScaleOptions
 onready var _ui_scale: SpinBox = $MarginContainer/TabContainer/Appearance/VBoxContainer/UIScale/HBoxContainer/UIScale
-
+# Bioprinting variables
 onready var _platform_width : SpinBox = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer/Width
 onready var _platform_height : SpinBox = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer/Height
 onready var _layer_height : SpinBox = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/LayerHeight/Height
@@ -241,7 +241,7 @@ func _on_UIScale_value_changed(value: float):
 		emit_signal("ui_scale_changed")
 		popup_centered()
 
-
+# Bioprinting Settings
 func _on_Unit_item_selected(index):
 	print("SELECTED UNIT ITEM ", index, _unit.get_item_text(index))
 	Settings.set_value(Settings.UNIT, _unit.get_item_text(index))

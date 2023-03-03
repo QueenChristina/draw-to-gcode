@@ -114,6 +114,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://UI/Dialogs/NewPaletteDialog.gd"
 }, {
+"base": "HBoxContainer",
+"class": "NozzleRow",
+"language": "GDScript",
+"path": "res://UI/Dialogs/AxisOffsetRow.gd"
+}, {
 "base": "Resource",
 "class": "Palette",
 "language": "GDScript",
@@ -211,6 +216,7 @@ _global_script_class_icons={
 "MainMenu": "",
 "Menubar": "",
 "NewPaletteDialog": "",
+"NozzleRow": "",
 "Palette": "",
 "PaletteButton": "",
 "Player": "",
