@@ -44,6 +44,19 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	print("Exported %s in %d ms" % [path, (OS.get_ticks_msec() - start_time)])
 	
 # -------------------------------------------------------------------------------------------------
+# TODO: place in Utils instead. Copied func in GCodeExporter.gd and PrinterSettings.gd
+# Standarized way of using list as string
+func list_to_string(list : Array):
+	list.sort()
+	var text = PoolStringArray(list).join(",")
+	text = text.replace(" ", "")
+	return text
+	
+# Turn string of list into standarized string
+func standarize(text):
+	var arr = text.split(",", false)
+	return list_to_string(arr)
+	
 # Returns gcode as a string
 # NOTE: everything in relative right now. TODO: do it all in absolute instead.
 # It's easier AND errors (due to rounding) won't compound so more accurate than relative.
@@ -57,17 +70,22 @@ func get_gcode(layers: Array, layers_info : Array) -> String:
 	var layer_height = Settings.get_value(Settings.LAYER_HEIGHT, Config.DEFAULT_LAYER_HEIGHT)
 	var unit = Settings.get_value(Settings.UNIT, Config.DEFAULT_UNIT)
 	var gcode_header = ""
-	var jog_speed = "F200"
-	var print_speed = "F200"
-	var nozzle_axes = ["Z", "A"] # Order of axis printing per layer
-	var axis_order = ["A,Z", "Z", "A"]
-	var axis_extruder = {"Z" : "B", "A" : "C"}
-	var extruder_coeffs = {"C" : 1.5, "B" : 1.5}
-	var extruder_nozzle_diam = {"C" :0.9798, "B" :  0.4} # Diameter of circle with equivalent area extruded from the nozzle
-	var extruder_syringe_diam = {"C" : 4.6, "B" : 4.6} # Diameter of barrel
-	var axis_offset = {"Z" : Vector2(0, 0), "A" : Vector2(33.75, 0)} # keys per axis_order
-	var last_axis = "Z" # The last axis/axes used
-	var pre_extrude_amt = {"B" : 0.2, "C" : 0.2} # Optional pre-extrude amounts to "pressurize" nozzle in mm syringe moves
+	# Get printer settings
+	var printer_settings = Settings.get_value(Settings.PRINTER_SETTINGS, Config.DEFAULT_PRINTER_SETTINGS)
+	var curr_printer =  Settings.get_value(Settings.CURR_PRINTER_NAME, Config.DEFAULT_CURR_PRINTER_NAME)
+	var curr_printer_settings = printer_settings[curr_printer]
+
+	var jog_speed = curr_printer_settings.jog_speed
+	var print_speed = curr_printer_settings.print_speed
+	var nozzle_axes = curr_printer_settings.nozzle_axes
+	var axis_order = curr_printer_settings.axis_order
+	var axis_extruder = curr_printer_settings.axis_extruder
+	var extruder_coeffs = curr_printer_settings.extruder_coeffs
+	var extruder_nozzle_diam = curr_printer_settings.extruder_nozzle_diam
+	var extruder_syringe_diam = curr_printer_settings.extruder_syringe_diam
+	var axis_offset = curr_printer_settings.axis_offset
+	var pre_extrude_amt = curr_printer_settings.pre_extrude_amt
+	var last_axis = nozzle_axes[0] # The last axis/axes used
 	
 	gcode += _gcode_start(layers, layers_info, axis_order, unit, jog_speed, print_speed, pre_extrude_amt, layer_count, layer_height, gcode_header)
 	# Draw layers
@@ -76,9 +94,23 @@ func get_gcode(layers: Array, layers_info : Array) -> String:
 			# Preprocessing - separate by axis in layer
 			var strokes_by_axis = {} # For a single layer
 			for stroke in layers[i]:
-				if not strokes_by_axis.has(stroke.axis):
-					strokes_by_axis[stroke.axis] = []
-				strokes_by_axis[stroke.axis].append(stroke)
+				var a_key = standarize(stroke.axis)
+				if not strokes_by_axis.has(a_key):
+					strokes_by_axis[a_key] = []
+				strokes_by_axis[a_key].append(stroke)
+				# Validation of stroke axis.
+				if not a_key in axis_order:
+					# Add to axis list order; implicitly defined.
+					var err = "%s axis strokes was not in print order list %s. Added implicitly to print at end, per layer." % [a_key, axis_order]
+					print_debug(err)
+					axis_order.append(a_key)
+				var list_a = a_key.split(",", false)
+				for a in list_a:
+					if not a in nozzle_axes:
+						# Missing nozzle information!!!!
+						var err = "Stroke of %s axis is not listed in printer settings %s. Cannot print without nozzle information." % [a, nozzle_axes]
+						print_debug("ERROR: " + err)
+						return "Could not convert to GCode, with error: " + err
 				
 			# Move ALL nozzles to one layer heigher than draw layer so no collisions
 			# TODO: best distance up to jog between strokes to avoid collision?

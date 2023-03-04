@@ -511,7 +511,7 @@ func _on_export_confirmed(path: String):
 				var background := _canvas.get_background_color()
 				var svg := SvgExporter.new()
 				svg.export_svg(project.strokes, background, path)
-		"txt":
+		"txt", "gcode":
 			var project: Project = ProjectManager.get_active_project()
 			if project != null:
 				var gcode := GCodeExporter.new()
@@ -521,7 +521,7 @@ func _on_export_confirmed(path: String):
 
 # --------------------------------------------------------------------------------------------------
 func _export_svg() -> void:
-	_export_dialog.filters = ["*.svg ; Scalable Vector graphics", "*.txt ; GCode as Text File"]
+	_export_dialog.filters = ["*.svg ; Scalable Vector graphics", "*.txt ; GCode as Text File",  "*.gcode"]
 	# TODO: fix file extension text replacement when click on another extension
 	# https://github.com/godotengine/godot/issues/38195
 	_export_dialog.current_file = "lorien.svg"

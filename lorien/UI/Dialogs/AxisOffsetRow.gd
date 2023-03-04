@@ -16,12 +16,6 @@ var extruders = []
 var offset = Vector2(0, 0)
 
 signal deleted(node)
-#signal axes_changed(node, prev_axes, new_axes)
-#signal extruders_changed(node, prev_extruders, new_extruders)
-#signal offset_changed(node, new_offset)
-#signal diam_nozzle_changed(node, extruders, new_diam)
-#signal diam_barrel_changed(node, extruders, new_diam)
-#signal preextrusion_changed(node, extruders, new_val)
 
 # Initialize values
 # axes_val - []
@@ -56,37 +50,25 @@ func _on_DeleteButton_pressed():
 
 func _on_AxisLineEdit_text_changed(new_text):
 	var new_axes = make_list(new_text)
-#	emit_signal("axes_changed", self, axes, new_axes)
 	axes = new_axes
 	
 	_set_extruder_editability(new_axes)
 
 func _on_ExtruderLineEdit_text_changed(new_text):
 	var new_extruders = make_list(new_text)
-#	emit_signal("extruders_changed", self, axes, new_extruders)
 	extruders = new_extruders
 
 func _on_OffsetX_value_changed(value):
 	offset.x = value
-#	emit_signal("offset_changed", self, offset)
 
 func _on_OffsetY_value_changed(value):
 	offset.y = value
-#	emit_signal("offset_changed", self, offset)
 	
 func make_list(text) -> Array:
 	text.replace(" ", "")
 	return text.split(",", false)
-
-#func _on_DiamNozzle_value_changed(value):
-#	emit_signal("diam_nozzle_changed", self, extruders, value)
-#
-#func _on_DiamBarrel_value_changed(value):
-#	emit_signal("diam_barrel_changed", self, extruders, value)
-#
-#func _on_Preextrusion_value_changed(value):
-#	emit_signal("preextrusion_changed", self, extruders, value)
 	
+# Do not make extruder values editable if specify multiple axes
 func _toggle_extruder_row(enabled : bool):
 	diam_barrel.editable = enabled
 	diam_nozzle.editable = enabled
@@ -102,6 +84,3 @@ func _toggle_extruder_row(enabled : bool):
 		extruders_line_edit.modulate.a = 1
 		$HBox/Label4.modulate.a = 1
 		e_row.modulate.a = 1
-#
-#func _on_Coeff_value_changed(value):
-#	pass # Replace with function body.

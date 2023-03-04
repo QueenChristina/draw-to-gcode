@@ -13,6 +13,9 @@ var strokes: Array # Array<BrushStroke> # Current layer strokes [TODO: reference
 var curr_layer : int = 0 setget set_curr_layer # Current layer we are on, as index of layers
 var layers : Array  = [[]] # Array<Array<BrushStroke>> # Array of strokes, 0 = bottom-most layer
 var layers_info : Array = [{"dup_amount" : 1}] # Array<Dict{dup_amount: #, etc.}>
+# Print settings specific for project. TODO: save these values in project file
+var print_offset = Vector3(0, 0, 0)	# Overall print offset
+var print_scale = 1
 # -------------------------------------------------------------------------------------------------
 func _init():
 	undo_redo = UndoRedo.new()

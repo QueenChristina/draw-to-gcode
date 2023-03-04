@@ -260,5 +260,6 @@ func _on_LayerHeight_value_changed(value):
 
 
 func _on_SettingsDialog_popup_hide():
+	# TODO: inform user must exit dialog to save settings.
 	print("Confirmed settings dialog. Saving...")
 	_printer_settings.save_settings()
