@@ -21,8 +21,8 @@ const UNIT 								:= "unit"
 const PLATFORM_SIZE						:= "platform_size"
 const LAYER_HEIGHT						:= "layer_height"
 
-const CURR_PRINTER_NAME					:= "curr_printer_name" # key value to pritner settings
-const PRINTER_SETTINGS					:= "printer_settings"
+const CURR_PRINTER_NAME					:= "curr_printer_name" # key value to printer settings
+const PRINTER_SETTINGS					:= "printer_settings" # dictionary of printer values
 # -------------------------------------------------------------------------------------------------
 var _config_file := ConfigFile.new()
 var _i18n := I18nParser.new()

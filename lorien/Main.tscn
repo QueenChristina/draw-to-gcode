@@ -95,10 +95,10 @@ margin_bottom = 202.0
 custom_styles/panel = SubResource( 1 )
 
 [node name="ColorPicker" type="ColorPicker" parent="BackgroundColorPickerPopup/PanelContainer"]
-margin_left = 308.0
-margin_top = 308.0
-margin_right = 617.0
-margin_bottom = 712.0
+margin_left = 344.0
+margin_top = 344.0
+margin_right = 653.0
+margin_bottom = 748.0
 edit_alpha = false
 presets_enabled = false
 presets_visible = false
@@ -231,8 +231,9 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 margin_left = -260.0
 margin_top = -135.0
-margin_right = 260.0
-margin_bottom = 135.0
+margin_right = 300.0
+margin_bottom = 315.0
+rect_min_size = Vector2( 560, 450 )
 
 [node name="ErrorDialog" type="AcceptDialog" parent="."]
 anchor_left = 0.5

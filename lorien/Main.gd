@@ -482,11 +482,11 @@ func _on_close_file_with_changes_discarded(project_ids: Array) -> void:
 
 # -------------------------------------------------------------------------------------------------
 func _on_open_about_dialog() -> void:
-	_about_dialog.popup()
+	_about_dialog.popup_centered()
 
 # -------------------------------------------------------------------------------------------------
 func _on_open_settings_dialog() -> void:
-	_settings_dialog.popup()
+	_settings_dialog.popup_centered()
 
 # -------------------------------------------------------------------------------------------------
 func _on_open_url(url: String) -> void:

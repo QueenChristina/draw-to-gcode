@@ -40,6 +40,7 @@ onready var _platform_width : SpinBox = $MarginContainer/TabContainer/Bioprintin
 onready var _platform_height : SpinBox = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer/Height
 onready var _layer_height : SpinBox = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/LayerHeight/Height
 onready var _unit : OptionButton = $MarginContainer/TabContainer/Bioprinting/VBoxContainer/Units/OptionButton
+onready var _printer_settings : Control = $MarginContainer/TabContainer/Bioprinting
 # -------------------------------------------------------------------------------------------------
 func _ready():
 	_set_values()
@@ -256,3 +257,8 @@ func _on_PlatformHeight_value_changed(value):
 	
 func _on_LayerHeight_value_changed(value):
 	Settings.set_value(Settings.LAYER_HEIGHT, value)
+
+
+func _on_SettingsDialog_popup_hide():
+	print("Confirmed settings dialog. Saving...")
+	_printer_settings.save_settings()

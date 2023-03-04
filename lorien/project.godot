@@ -114,7 +114,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://UI/Dialogs/NewPaletteDialog.gd"
 }, {
-"base": "HBoxContainer",
+"base": "VBoxContainer",
 "class": "NozzleRow",
 "language": "GDScript",
 "path": "res://UI/Dialogs/AxisOffsetRow.gd"

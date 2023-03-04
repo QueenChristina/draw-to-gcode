@@ -1,15 +1,14 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://UI/Themes/theme_dark.tres" type="Theme" id=1]
 [ext_resource path="res://UI/Dialogs/SettingsDialog.gd" type="Script" id=2]
 [ext_resource path="res://UI/Components/DelayedSpinBox.gd" type="Script" id=3]
 [ext_resource path="res://UI/Dialogs/KeyBindingsList.gd" type="Script" id=4]
 [ext_resource path="res://UI/Dialogs/AddKeyDialog.tscn" type="PackedScene" id=5]
-[ext_resource path="res://UI/Dialogs/AxisOffsetRow.tscn" type="PackedScene" id=6]
 [ext_resource path="res://UI/Components/FlatTextureButton.gd" type="Script" id=7]
 [ext_resource path="res://Assets/Icons/plus.png" type="Texture" id=8]
 [ext_resource path="res://Assets/Icons/info_circle_smol.png" type="Texture" id=9]
-[ext_resource path="res://UI/Dialogs/NozzleSettings.gd" type="Script" id=10]
+[ext_resource path="res://UI/Dialogs/PrinterSettings.gd" type="Script" id=10]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -27,12 +26,14 @@ bg_color = Color( 0, 0, 0, 0.745098 )
 bg_color = Color( 0, 0, 0, 0.113725 )
 
 [node name="SettingsDialog" type="WindowDialog"]
-margin_right = 520.0
-margin_bottom = 250.0
+visible = true
+margin_right = 563.0
+margin_bottom = 478.0
 rect_min_size = Vector2( 520, 270 )
 theme = ExtResource( 1 )
 popup_exclusive = true
 window_title = "SETTINGS_TITLE"
+resizable = true
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -52,13 +53,14 @@ __meta__ = {
 [node name="TabContainer" type="TabContainer" parent="MarginContainer"]
 margin_left = 12.0
 margin_top = 12.0
-margin_right = 508.0
-margin_bottom = 258.0
+margin_right = 551.0
+margin_bottom = 466.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="General" type="Control" parent="MarginContainer/TabContainer"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 27.0
@@ -71,28 +73,28 @@ __meta__ = {
 }
 
 [node name="HSeparator3" type="HSeparator" parent="MarginContainer/TabContainer/General/VBoxContainer"]
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 12.0
 custom_styles/separator = SubResource( 1 )
 custom_constants/separation = 12
 
 [node name="PressureSensitivity" type="HBoxContainer" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_top = 16.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 37.0
 size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/General/VBoxContainer/PressureSensitivity"]
 margin_top = 2.0
-margin_right = 246.0
+margin_right = 267.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 size_flags_vertical = 6
 text = "SETTINGS_PRESSURE_SENSITIVITY"
 
 [node name="PressureSensitivity" type="SpinBox" parent="MarginContainer/TabContainer/General/VBoxContainer/PressureSensitivity"]
-margin_left = 250.0
-margin_right = 496.0
+margin_left = 271.0
+margin_right = 539.0
 margin_bottom = 21.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -103,21 +105,21 @@ value = 1.0
 
 [node name="DefaultBrushSize" type="HBoxContainer" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_top = 41.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 62.0
 size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/General/VBoxContainer/DefaultBrushSize"]
 margin_top = 2.0
-margin_right = 246.0
+margin_right = 267.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 size_flags_vertical = 6
 text = "SETTINGS_BRUSH_SIZE"
 
 [node name="DefaultBrushSize" type="SpinBox" parent="MarginContainer/TabContainer/General/VBoxContainer/DefaultBrushSize"]
-margin_left = 250.0
-margin_right = 496.0
+margin_left = 271.0
+margin_right = 539.0
 margin_bottom = 21.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -127,20 +129,20 @@ allow_greater = true
 
 [node name="DefaultCanvasColor" type="HBoxContainer" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_top = 66.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 83.0
 size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/General/VBoxContainer/DefaultCanvasColor"]
-margin_right = 246.0
+margin_right = 267.0
 margin_bottom = 17.0
 size_flags_horizontal = 3
 size_flags_vertical = 6
 text = "SETTINGS_CANVAS_COLOR"
 
 [node name="DefaultCanvasColor" type="ColorPickerButton" parent="MarginContainer/TabContainer/General/VBoxContainer/DefaultCanvasColor"]
-margin_left = 250.0
-margin_right = 496.0
+margin_left = 271.0
+margin_right = 539.0
 margin_bottom = 17.0
 size_flags_horizontal = 3
 custom_styles/hover = SubResource( 2 )
@@ -154,21 +156,21 @@ edit_alpha = false
 
 [node name="DefaultSaveDir" type="HBoxContainer" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_top = 87.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 108.0
 size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/General/VBoxContainer/DefaultSaveDir"]
 margin_top = 2.0
-margin_right = 246.0
+margin_right = 267.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 size_flags_vertical = 6
 text = "SETTINGS_PROJECT_FOLDER"
 
 [node name="DefaultSaveDir" type="LineEdit" parent="MarginContainer/TabContainer/General/VBoxContainer/DefaultSaveDir"]
-margin_left = 250.0
-margin_right = 496.0
+margin_left = 271.0
+margin_right = 539.0
 margin_bottom = 21.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -177,34 +179,34 @@ placeholder_alpha = 0.5
 
 [node name="HSeparator4" type="HSeparator" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_top = 112.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 136.0
 custom_constants/separation = 24
 
 [node name="Language" type="HBoxContainer" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_top = 140.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 165.0
 size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/General/VBoxContainer/Language"]
 margin_top = 4.0
-margin_right = 246.0
+margin_right = 267.0
 margin_bottom = 21.0
 size_flags_horizontal = 3
 size_flags_vertical = 6
 text = "SETTINGS_LANGUAGE"
 
 [node name="OptionButton" type="OptionButton" parent="MarginContainer/TabContainer/General/VBoxContainer/Language"]
-margin_left = 250.0
-margin_right = 496.0
+margin_left = 271.0
+margin_right = 539.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 text = "English"
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/TabContainer/General/VBoxContainer"]
 margin_top = 169.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 181.0
 custom_styles/separator = SubResource( 3 )
 custom_constants/separation = 12
@@ -473,10 +475,10 @@ window_title = "KEYBINDING_DIALOG_REBIND_WINDOW_NAME"
 dialog_autowrap = true
 
 [node name="Bioprinting" type="Control" parent="MarginContainer/TabContainer"]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 27.0
+script = ExtResource( 10 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/TabContainer/Bioprinting"]
 anchor_right = 1.0
@@ -488,24 +490,24 @@ __meta__ = {
 }
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 4.0
 
 [node name="Units" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
 margin_top = 8.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 33.0
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Units"]
 margin_top = 4.0
-margin_right = 444.0
+margin_right = 487.0
 margin_bottom = 21.0
 size_flags_horizontal = 3
 text = "Units"
 
 [node name="OptionButton" type="OptionButton" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Units"]
-margin_left = 448.0
-margin_right = 496.0
+margin_left = 491.0
+margin_right = 539.0
 margin_bottom = 25.0
 text = "mm"
 items = [ "mm", null, false, 0, null, "inch", null, false, 1, null ]
@@ -513,19 +515,19 @@ selected = 0
 
 [node name="PrintBedSize" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
 margin_top = 37.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 58.0
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize"]
 margin_top = 2.0
-margin_right = 250.0
+margin_right = 293.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 text = "Platform Size"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize"]
-margin_left = 254.0
-margin_right = 496.0
+margin_left = 297.0
+margin_right = 539.0
 margin_bottom = 21.0
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer"]
@@ -561,19 +563,19 @@ align = 1
 
 [node name="LayerHeight" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
 margin_top = 62.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 83.0
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/LayerHeight"]
 margin_top = 2.0
-margin_right = 420.0
+margin_right = 463.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 text = "Layer Height"
 
 [node name="Height" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/LayerHeight"]
-margin_left = 424.0
-margin_right = 496.0
+margin_left = 467.0
+margin_right = 539.0
 margin_bottom = 21.0
 min_value = 0.01
 step = 0.01
@@ -581,21 +583,88 @@ value = 0.25
 allow_greater = true
 align = 1
 
-[node name="ExtrusionCoeff" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+[node name="Print Offset" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
 margin_top = 87.0
-margin_right = 496.0
+margin_right = 539.0
 margin_bottom = 108.0
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Print Offset"]
+margin_top = 2.0
+margin_right = 463.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Height Offset"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Print Offset"]
+margin_left = 467.0
+margin_right = 539.0
+margin_bottom = 21.0
+
+[node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Print Offset/HBoxContainer"]
+visible = false
+margin_top = 2.0
+margin_right = 12.0
+margin_bottom = 19.0
+text = "X"
+
+[node name="X" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Print Offset/HBoxContainer"]
+visible = false
+margin_right = 72.0
+margin_bottom = 21.0
+max_value = 2000.0
+step = 0.01
+allow_greater = true
+align = 1
+
+[node name="Label2" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Print Offset/HBoxContainer"]
+visible = false
+margin_top = 2.0
+margin_right = 13.0
+margin_bottom = 19.0
+text = "Y"
+
+[node name="Y" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Print Offset/HBoxContainer"]
+visible = false
+margin_right = 72.0
+margin_bottom = 21.0
+max_value = 2000.0
+step = 0.01
+allow_greater = true
+align = 1
+
+[node name="Label3" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Print Offset/HBoxContainer"]
+visible = false
+margin_top = 2.0
+margin_right = 51.0
+margin_bottom = 19.0
+text = "Vertical"
+
+[node name="Z" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Print Offset/HBoxContainer"]
+margin_right = 72.0
+margin_bottom = 21.0
+hint_tooltip = "Offset of print layer heights.
+
+By default, print starts one layer higher than origin height."
+max_value = 2000.0
+step = 0.01
+allow_greater = true
+align = 1
+
+[node name="ExtrusionCoeff" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_top = 112.0
+margin_right = 539.0
+margin_bottom = 133.0
 
 [node name="Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ExtrusionCoeff"]
 margin_top = 2.0
-margin_right = 420.0
+margin_right = 463.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 text = "Extrusion Coefficient"
 
 [node name="Coeff" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ExtrusionCoeff"]
-margin_left = 424.0
-margin_right = 496.0
+margin_left = 467.0
+margin_right = 539.0
 margin_bottom = 21.0
 hint_tooltip = "Default factor times exact extrusion volume.
 
@@ -606,15 +675,69 @@ value = 1.5
 allow_greater = true
 align = 1
 
+[node name="Speed" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
+margin_top = 137.0
+margin_right = 539.0
+margin_bottom = 158.0
+
+[node name="SpeedLabel" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Speed"]
+margin_top = 2.0
+margin_right = 319.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Speed"
+
+[node name="PrintLabel" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Speed"]
+margin_left = 323.0
+margin_top = 2.0
+margin_right = 356.0
+margin_bottom = 19.0
+text = "Print"
+align = 2
+
+[node name="Print" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Speed"]
+margin_left = 360.0
+margin_right = 432.0
+margin_bottom = 21.0
+hint_tooltip = "Speed of print (F)"
+min_value = 0.01
+max_value = 1000.0
+step = 0.01
+value = 200.0
+allow_greater = true
+align = 1
+
+[node name="JogLabel" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Speed"]
+margin_left = 436.0
+margin_top = 2.0
+margin_right = 463.0
+margin_bottom = 19.0
+text = "Jog"
+align = 2
+
+[node name="Jog" type="SpinBox" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Speed"]
+margin_left = 467.0
+margin_right = 539.0
+margin_bottom = 21.0
+hint_tooltip = "Speed of jogging (F)
+
+Speed printer moves between prints"
+min_value = 0.01
+max_value = 1000.0
+step = 0.01
+value = 200.0
+allow_greater = true
+align = 1
+
 [node name="HSeparator2" type="HSeparator" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
-margin_top = 112.0
-margin_right = 496.0
-margin_bottom = 116.0
+margin_top = 162.0
+margin_right = 539.0
+margin_bottom = 166.0
 
 [node name="Nozzle Axes Info" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
-margin_top = 120.0
-margin_right = 496.0
-margin_bottom = 138.0
+margin_top = 170.0
+margin_right = 539.0
+margin_bottom = 188.0
 
 [node name="Nozzle Axes Label" type="Label" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/Nozzle Axes Info"]
 margin_right = 82.0
@@ -630,8 +753,7 @@ margin_left = 86.0
 margin_right = 104.0
 margin_bottom = 18.0
 hint_tooltip = "Use commas (,) to separate axes if specifying for multiple axes moved at once. 
-Specify the extruders in the same order, comma separated, OR 
-leave blank and specify cooresponding axis with extruders separately on new lines."
+Specify cooresponding axis with extruders separately on new lines."
 texture_normal = ExtResource( 9 )
 script = ExtResource( 7 )
 __meta__ = {
@@ -641,25 +763,21 @@ hover_tint = Color( 0.588235, 0.588235, 0.588235, 1 )
 pressed_tint = Color( 0.615686, 0.615686, 0.615686, 1 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer"]
-margin_top = 142.0
-margin_right = 496.0
-margin_bottom = 219.0
+margin_top = 192.0
+margin_right = 539.0
+margin_bottom = 427.0
 mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource( 10 )
 
 [node name="AxesOffsets" type="VBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer"]
-margin_right = 496.0
-margin_bottom = 49.0
+margin_right = 539.0
+margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="Axis Offset" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets" instance=ExtResource( 6 )]
-
 [node name="Add Axis" type="Button" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets"]
-margin_top = 25.0
-margin_right = 496.0
-margin_bottom = 49.0
+margin_right = 539.0
+margin_bottom = 24.0
 rect_min_size = Vector2( 0, 24 )
 custom_styles/hover = SubResource( 4 )
 custom_styles/pressed = SubResource( 5 )
@@ -683,7 +801,7 @@ __meta__ = {
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets/Add Axis/MarginContainer"]
 margin_left = 5.0
 margin_top = 3.0
-margin_right = 491.0
+margin_right = 534.0
 margin_bottom = 21.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -719,6 +837,7 @@ margin_right = 131.0
 margin_bottom = 17.0
 text = "Add New Nozzle"
 
+[connection signal="popup_hide" from="." to="." method="_on_SettingsDialog_popup_hide"]
 [connection signal="value_changed" from="MarginContainer/TabContainer/General/VBoxContainer/PressureSensitivity/PressureSensitivity" to="." method="_on_PressureSensitivity_value_changed"]
 [connection signal="value_changed" from="MarginContainer/TabContainer/General/VBoxContainer/DefaultBrushSize/DefaultBrushSize" to="." method="_on_DefaultBrushSize_value_changed"]
 [connection signal="color_changed" from="MarginContainer/TabContainer/General/VBoxContainer/DefaultCanvasColor/DefaultCanvasColor" to="." method="_on_DefaultCanvasColor_color_changed"]
@@ -737,3 +856,4 @@ text = "Add New Nozzle"
 [connection signal="value_changed" from="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer/Width" to="." method="_on_PlatformWidth_value_changed"]
 [connection signal="value_changed" from="MarginContainer/TabContainer/Bioprinting/VBoxContainer/PrintBedSize/HBoxContainer/Height" to="." method="_on_PlatformHeight_value_changed"]
 [connection signal="value_changed" from="MarginContainer/TabContainer/Bioprinting/VBoxContainer/LayerHeight/Height" to="." method="_on_LayerHeight_value_changed"]
+[connection signal="pressed" from="MarginContainer/TabContainer/Bioprinting/VBoxContainer/ScrollContainer/AxesOffsets/Add Axis" to="MarginContainer/TabContainer/Bioprinting" method="_on_Add_Axis_pressed"]
