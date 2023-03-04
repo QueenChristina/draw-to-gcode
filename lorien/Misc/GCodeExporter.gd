@@ -9,7 +9,7 @@ var curr_point_abs = Vector2(0, 0) # Current point of nozzle in absolute coordin
 const EDGE_MARGIN := 0.025
 
 # -------------------------------------------------------------------------------------------------
-func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
+func export_gcode(layers: Array, layers_info : Array, print_offset : Vector3, path: String) -> void:
 	var start_time := OS.get_ticks_msec()
 	
 	# TODO: delete zero-length lines made by draw tool + fix line optimization
@@ -37,7 +37,7 @@ func export_gcode(layers: Array, layers_info : Array, path: String) -> void:
 	var origin := min_dim - margin_size
 	
 	# Write gcode to file - TODO: stress test max length of string in memory!!! May limit file length
-	file.store_string(get_gcode(layers, layers_info))
+	file.store_string(get_gcode(layers, layers_info, print_offset))
 	# Flush and close the file
 #	file.flush()
 	file.close()
@@ -61,7 +61,7 @@ func standarize(text):
 # NOTE: everything in relative right now. TODO: do it all in absolute instead.
 # It's easier AND errors (due to rounding) won't compound so more accurate than relative.
 # Just G92 the extruders to 0 at start!!!
-func get_gcode(layers: Array, layers_info : Array) -> String:
+func get_gcode(layers: Array, layers_info : Array, print_offset : Vector3) -> String:
 	var gcode = ""
 	curr_point_abs = Vector2(0, 0)
 	
@@ -85,9 +85,10 @@ func get_gcode(layers: Array, layers_info : Array) -> String:
 	var extruder_syringe_diam = curr_printer_settings.extruder_syringe_diam
 	var axis_offset = curr_printer_settings.axis_offset
 	var pre_extrude_amt = curr_printer_settings.pre_extrude_amt
+	var print_v_offset = print_offset.z
 	var last_axis = nozzle_axes[0] # The last axis/axes used
 	
-	gcode += _gcode_start(layers, layers_info, axis_order, unit, jog_speed, print_speed, pre_extrude_amt, layer_count, layer_height, gcode_header)
+	gcode += _gcode_start(layers, layers_info, axis_order, unit, jog_speed, print_speed, pre_extrude_amt, layer_count, layer_height, print_v_offset, gcode_header)
 	# Draw layers
 	for i in range(layers.size()):
 		for _j in range(layers_info[i].dup_amount): # Repeat this layer by dup_amount of times
@@ -114,7 +115,7 @@ func get_gcode(layers: Array, layers_info : Array) -> String:
 				
 			# Move ALL nozzles to one layer heigher than draw layer so no collisions
 			# TODO: best distance up to jog between strokes to avoid collision?
-			gcode += _move_to_layer_gcode(nozzle_axes, layer_count + 1, layer_height, jog_speed)
+			gcode += _move_to_layer_gcode(nozzle_axes, layer_count + 1, layer_height, jog_speed, print_v_offset)
 			
 			for axis in axis_order:
 				# Draw each stroke in layer, of the same axis first
@@ -135,9 +136,9 @@ func get_gcode(layers: Array, layers_info : Array) -> String:
 					for stroke in strokes_by_axis[axis]:
 						gcode += _gcode_polyline(stroke, list_axes, extruders, extruder_coeffs, 
 												extruder_nozzle_diam, extruder_syringe_diam, 
-												print_speed, jog_speed, layer_count, layer_height)
+												print_speed, jog_speed, layer_count, layer_height, print_v_offset)
 						# Jog up a bit so not collide with strokes moving between them
-						gcode += _move_to_layer_gcode(list_axes, layer_count + 1, layer_height, jog_speed)
+						gcode += _move_to_layer_gcode(list_axes, layer_count + 1, layer_height, jog_speed, print_v_offset)
 			# End layer
 			layer_count += 1
 			
@@ -155,7 +156,7 @@ func _move_to_layer_gcode(list_axes, layer_count, layer_height, jog_speed, v_off
 	return gcode
 
 # -------------------------------------------------------------------------------------------------
-func _gcode_start(layers, layer_info, axis_order, unit, jog_speed, print_speed, pre_extrude_amt, layer_count, layer_height, gcode_header = ""):
+func _gcode_start(layers, layer_info, axis_order, unit, jog_speed, print_speed, pre_extrude_amt, layer_count, layer_height, print_v_offset, gcode_header = ""):
 	# Add header
 	var gcode = ""
 	if gcode_header != "":
@@ -169,7 +170,7 @@ func _gcode_start(layers, layer_info, axis_order, unit, jog_speed, print_speed, 
 	# Go to first layer and pre-extrude some amount at point of first stroke
 	if layers[0].size() > 0 and layers[0][0].points.size() > 0:
 		var l_first_axes = axis_order[0].split(",", false)
-		gcode += _move_to_layer_gcode(l_first_axes, layer_count, layer_height, jog_speed)
+		gcode += _move_to_layer_gcode(l_first_axes, layer_count, layer_height, jog_speed, print_v_offset)
 		gcode += "(Move to first point of first stroke.)\n"
 		var first_stroke_point = layers[0][0].points[0]
 		gcode += "G0 X%.3f Y%.3f\n" % [-1 * first_stroke_point.x / 10.0, first_stroke_point.y / 10.0]
@@ -202,13 +203,13 @@ func _gcode_end(nozzle_axes: Array, layer_height: float, axis_offset : Vector2) 
 func _gcode_polyline(stroke: BrushStroke, list_axes : Array, extruders : Array, 
 					extruder_coeffs : Dictionary, extruder_nozzle_diam : Dictionary, 
 					extruder_syringe_diam : Dictionary, print_speed : String, 
-					jog_speed : String, layer_count : int, layer_height : float) -> String:
+					jog_speed : String, layer_count : int, layer_height : float, print_v_offset : float) -> String:
 	var gcode = ""
 	var rel_offset = stroke.points[0] - curr_point_abs
 	# Move to first point. Negate x to flip - from image coordinates to real coordinates
 	gcode += "G0 X%.3f Y%.3f %s\n" % [-1 * rel_offset.x / 10.0, rel_offset.y / 10.0, jog_speed]
 	# Move drawing axes to draw layer height
-	gcode += _move_to_layer_gcode(list_axes, layer_count, layer_height, jog_speed)
+	gcode += _move_to_layer_gcode(list_axes, layer_count, layer_height, jog_speed, print_v_offset)
 	curr_point_abs = stroke.points[0]
 	
 	# Draw each point in stroke
