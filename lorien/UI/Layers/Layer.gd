@@ -3,6 +3,7 @@ extends HBoxContainer
 # Layer information. TODO: save information, for undo/redo too
 export var text = "Layer 0" setget set_layer_text
 var is_layer_visible = true
+var thumbnail = null setget set_thumbnail# Texture to set for button icon (thumbnail of layer)
 
 onready var layer_button = $Button
 onready var dup_edit = $DuplicateAmountEdit
@@ -37,3 +38,7 @@ func toggle_layer_visibility():
 func _on_DuplicateAmountEdit_value_changed(value):
 	# TODO: undo redo
 	emit_signal("dups_amount_changed", self, value)
+
+func set_thumbnail(tex : Texture):
+	thumbnail = tex
+	layer_button.icon = tex

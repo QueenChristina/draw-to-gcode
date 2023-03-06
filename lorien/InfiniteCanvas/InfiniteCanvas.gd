@@ -37,6 +37,8 @@ var _optimizer: BrushStrokeOptimizer
 var _scale := Config.DEFAULT_UI_SCALE
 var _onion_skin_enabled = true # TODO: setting to save?
 
+signal refresh_layer_thumbnail
+
 # -------------------------------------------------------------------------------------------------
 func _ready():
 	_optimizer = BrushStrokeOptimizer.new()
@@ -197,11 +199,11 @@ func start_stroke() -> void:
 	_optimizer.reset()
 	
 # -------------------------------------------------------------------------------------------------
-func add_stroke(stroke: BrushStroke, _layer: int) -> void:
+func add_stroke(stroke: BrushStroke, layer: int) -> void:
 	if _current_project != null:
-		_current_project.layers[_layer].append(stroke) # TODO: make sure not repeat with in Project.gd. 
-		if _current_project.curr_layer == _layer:
-			_current_project.strokes = _current_project.layers[_layer]
+		_current_project.layers[layer].append(stroke) # TODO: make sure not repeat with in Project.gd. 
+		if _current_project.curr_layer == layer:
+			_current_project.strokes = _current_project.layers[layer]
 		_strokes_parent.add_child(stroke)
 		info.point_count += stroke.points.size()
 		info.stroke_count += 1
@@ -277,6 +279,7 @@ func add_strokes(strokes: Array) -> void:
 
 func add_stroke_to_layer(stroke, index):
 	_layers_container.get_child(index).add_child(stroke)
+	_refresh_layer_thumbnail(index)
 	
 # -------------------------------------------------------------------------------------------------
 func use_project(project: Project) -> void:
@@ -326,6 +329,7 @@ func undo_last_stroke(undo_layer : int) -> void:
 			info.stroke_count -= 1
 			
 #			stroke.queue_free() # Can't queue free here as redo wouldn't work - TODO: handle this?
+			_refresh_layer_thumbnail(undo_layer)
 		else:
 			print_debug("ERROR! Attempted to undo stroke in layer ", _past_strokes_parent, " with no strokes left.")
 			print("Layers: ")
@@ -396,6 +400,8 @@ func _do_delete_stroke(stroke: BrushStroke, layer_index) -> void:
 	# TODO: investigate why changing project.strokes doesn't change project.layers -> fix references to strokes
 	_current_project.strokes = _current_project.layers[_current_project.curr_layer]
 	
+	_refresh_layer_thumbnail(layer_index)
+	
 # FIXME: this adds strokes at the back and does not preserve stroke order; not sure how to do that except saving before
 # and after versions of the stroke arrays which is a nogo.
 # -------------------------------------------------------------------------------------------------
@@ -408,6 +414,7 @@ func _undo_delete_stroke(stroke: BrushStroke, undo_layer : int) -> void:
 	info.point_count += stroke.points.size()
 	info.stroke_count += 1
 	
+	_refresh_layer_thumbnail(undo_layer)
 
 # -------------------------------------------------------------------------------------------------
 func _on_window_resized() -> void:
@@ -447,6 +454,8 @@ func _on_undo_delete_layer(index, strokes):
 		_layers_container.get_child(index).add_child(stroke)
 	# Also re-add to project layers
 	_current_project.layers[index].append_array(strokes)
+	
+	_refresh_layer_thumbnail(index)
 	
 func _on_swap_layer(index1, index2):
 	_layers_container.move_child(_layers_container.get_child(index1), index2)
@@ -490,6 +499,8 @@ func _on_copy_layer(from_index, to_index):
 		
 		info.point_count += stroke.points.size()
 		info.stroke_count += 1
+		
+		_refresh_layer_thumbnail(to_index)
 
 # ------------------------------------------------------------------------------------------------
 # (COPIED FROM SELECTIONTOOL.gd) TODO: refactor into a Utils.gd
@@ -512,3 +523,7 @@ func _on_toggle_onion_skin(enabled):
 	_onion_skin_enabled = enabled
 	
 	modulate_layers_opacity(_strokes_parent.get_index())
+	
+# Refresh layer of index (index based on project layers)
+func _refresh_layer_thumbnail(index):
+	emit_signal("refresh_layer_thumbnail", _viewport, _layers_container.get_child(index), index)

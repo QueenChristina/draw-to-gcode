@@ -96,10 +96,10 @@ margin_bottom = 202.0
 custom_styles/panel = SubResource( 1 )
 
 [node name="ColorPicker" type="ColorPicker" parent="BackgroundColorPickerPopup/PanelContainer"]
-margin_left = 452.0
-margin_top = 452.0
-margin_right = 761.0
-margin_bottom = 856.0
+margin_left = 476.0
+margin_top = 476.0
+margin_right = 785.0
+margin_bottom = 880.0
 edit_alpha = false
 presets_enabled = false
 presets_visible = false
@@ -270,6 +270,7 @@ __meta__ = {
 }
 
 [node name="SerialCommunication" parent="." instance=ExtResource( 17 )]
+visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -282,6 +283,7 @@ rect_min_size = Vector2( 400, 200 )
 
 [connection signal="mouse_entered" from="InfiniteCanvas" to="." method="_on_InfiniteCanvas_mouse_entered"]
 [connection signal="mouse_exited" from="InfiniteCanvas" to="." method="_on_InfiniteCanvas_mouse_exited"]
+[connection signal="refresh_layer_thumbnail" from="InfiniteCanvas" to="LayerBar" method="_on_refresh_layer_thumbnail"]
 [connection signal="layers_menu_toggle" from="Topbar/Toolbar" to="LayerBar" method="_on_Toolbar_layers_menu_toggle"]
 [connection signal="add_layer" from="LayerBar" to="InfiniteCanvas" method="_on_add_layer"]
 [connection signal="copy_layer" from="LayerBar" to="InfiniteCanvas" method="_on_copy_layer"]
