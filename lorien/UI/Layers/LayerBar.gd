@@ -230,9 +230,15 @@ func _on_refresh_layer_thumbnail(viewport : Viewport, layer_strokes : Node2D, la
 	var top_left = dims[0]
 	var bottom_right = dims[1]
 	# Capture all strokes: min and max of strokes
-	fake_viewport.size = bottom_right - top_left 
+	var size = bottom_right - top_left 
 	# Offset all strokes so top_left starts at 0,0
 	cpy_layer_strokes.position = -top_left
+	# For now, thumbnail should be square (and not squished/scaled to square). TODO: set to aspect ratio of canvas instead
+	var square_size = max(size.x, size.y)
+	fake_viewport.size = Vector2(square_size, square_size)
+	# Everything starts at topleft, but center instead
+	cpy_layer_strokes.position += -size/2 + fake_viewport.size/2
+	
 	# Add offset so offscreen and not visible
 	fake_viewport_parent.position = Vector2(get_viewport_rect().position.x + get_viewport_rect().size.x + 1000, get_viewport_rect().position.y + get_viewport_rect().size.y +1000)
 	
@@ -246,12 +252,13 @@ func _on_refresh_layer_thumbnail(viewport : Viewport, layer_strokes : Node2D, la
 		# Flip it on the y-axis (because it's flipped). + Set to size 32x32
 		if img != null: # Error that pops up when you call this function too much too quickly
 			img.flip_y()
-			img.resize(32, 32)
+			var layer = _layer_box.get_child(index)
+			img.resize(35, 35)
 			# Create a texture for it.
 			var tex = ImageTexture.new()
 			tex.create_from_image(img)
 			# Set the texture to the captured image node.
-			_layer_box.get_child(index).thumbnail = tex
+			layer.thumbnail = tex
 		else:
 			print_debug("Image returned was null...viewport might still be active?")
 		

@@ -5,12 +5,13 @@
 [ext_resource path="res://Assets/Icons/show_layer.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Icons/hide_layer.png" type="Texture" id=4]
 
-[sub_resource type="OpenSimplexNoise" id=1]
+[sub_resource type="OpenSimplexNoise" id=4]
+octaves = 1
 
 [sub_resource type="NoiseTexture" id=2]
-width = 32
-height = 32
-noise = SubResource( 1 )
+width = 35
+height = 35
+noise = SubResource( 4 )
 
 [sub_resource type="Theme" id=3]
 LineEdit/colors/clear_button_color = Color( 0.88, 0.88, 0.88, 1 )
@@ -31,15 +32,21 @@ SpinBox/icons/updown = null
 
 [node name="Layer" type="HBoxContainer"]
 margin_right = 246.0
-margin_bottom = 38.0
+margin_bottom = 41.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Container" type="Container" parent="."]
+margin_right = 5.0
+margin_bottom = 41.0
+rect_min_size = Vector2( 5, 0 )
+
 [node name="Hide" type="TextureButton" parent="."]
-margin_right = 24.0
-margin_bottom = 38.0
+margin_left = 9.0
+margin_right = 33.0
+margin_bottom = 41.0
 rect_min_size = Vector2( 24, 0 )
 hint_tooltip = "Layer Visibility"
 toggle_mode = true
@@ -52,9 +59,9 @@ hover_tint = Color( 0.745098, 0.992157, 1, 1 )
 pressed_tint = Color( 0.392157, 0.901961, 1, 1 )
 
 [node name="Button" type="Button" parent="."]
-margin_left = 28.0
+margin_left = 37.0
 margin_right = 192.0
-margin_bottom = 38.0
+margin_bottom = 41.0
 size_flags_horizontal = 3
 toggle_mode = true
 text = "Layer 0"
@@ -63,7 +70,7 @@ icon = SubResource( 2 )
 [node name="DuplicateAmountEdit" type="SpinBox" parent="."]
 margin_left = 196.0
 margin_right = 246.0
-margin_bottom = 38.0
+margin_bottom = 41.0
 rect_min_size = Vector2( 30, 0 )
 hint_tooltip = "Repeat Layer"
 size_flags_vertical = 3

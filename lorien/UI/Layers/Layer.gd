@@ -14,7 +14,7 @@ signal dups_amount_changed(node, value)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	thumbnail = layer_button.icon
 
 func set_layer_text(layer_text):
 	text = layer_text
