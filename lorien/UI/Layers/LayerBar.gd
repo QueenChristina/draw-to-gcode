@@ -268,7 +268,7 @@ func _on_refresh_layer_thumbnail(viewport : Viewport, layer_strokes : Node2D, la
 	loading_thumbnail = false
 	
 # Returns [TOP LEFT corner, BOTTOM RIGHT corner] with fractional empty margin
-func _get_min_max_dimension(strokes, EDGE_MARGIN := 0.1):
+func _get_min_max_dimension(strokes, EDGE_MARGIN := 0.2):
 	# Calculate total canvas dimensions
 	var max_dim := BrushStroke.MIN_VECTOR2
 	var min_dim := BrushStroke.MAX_VECTOR2

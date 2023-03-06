@@ -1,17 +1,9 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://UI/Layers/Layer.gd" type="Script" id=1]
 [ext_resource path="res://UI/Components/FlatTextureButton.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Icons/show_layer.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Icons/hide_layer.png" type="Texture" id=4]
-
-[sub_resource type="OpenSimplexNoise" id=4]
-octaves = 1
-
-[sub_resource type="NoiseTexture" id=2]
-width = 35
-height = 35
-noise = SubResource( 4 )
 
 [sub_resource type="Theme" id=3]
 LineEdit/colors/clear_button_color = Color( 0.88, 0.88, 0.88, 1 )
@@ -40,13 +32,13 @@ __meta__ = {
 
 [node name="Container" type="Container" parent="."]
 margin_right = 5.0
-margin_bottom = 41.0
+margin_bottom = 45.0
 rect_min_size = Vector2( 5, 0 )
 
 [node name="Hide" type="TextureButton" parent="."]
 margin_left = 9.0
 margin_right = 33.0
-margin_bottom = 41.0
+margin_bottom = 45.0
 rect_min_size = Vector2( 24, 0 )
 hint_tooltip = "Layer Visibility"
 toggle_mode = true
@@ -61,16 +53,28 @@ pressed_tint = Color( 0.392157, 0.901961, 1, 1 )
 [node name="Button" type="Button" parent="."]
 margin_left = 37.0
 margin_right = 192.0
-margin_bottom = 41.0
+margin_bottom = 45.0
+rect_min_size = Vector2( 0, 45 )
 size_flags_horizontal = 3
 toggle_mode = true
 text = "Layer 0"
-icon = SubResource( 2 )
+
+[node name="NameEdit" type="LineEdit" parent="Button"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+align = 1
+max_length = 15
+placeholder_text = "Layer name"
+caret_blink = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="DuplicateAmountEdit" type="SpinBox" parent="."]
 margin_left = 196.0
 margin_right = 246.0
-margin_bottom = 41.0
+margin_bottom = 45.0
 rect_min_size = Vector2( 30, 0 )
 hint_tooltip = "Repeat Layer"
 size_flags_vertical = 3
@@ -83,4 +87,5 @@ align = 1
 
 [connection signal="pressed" from="Hide" to="." method="_on_Hide_pressed"]
 [connection signal="pressed" from="Button" to="." method="_on_LayerButton_pressed"]
+[connection signal="text_entered" from="Button/NameEdit" to="." method="_on_NameEdit_text_entered"]
 [connection signal="value_changed" from="DuplicateAmountEdit" to="." method="_on_DuplicateAmountEdit_value_changed"]

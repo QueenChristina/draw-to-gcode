@@ -449,21 +449,20 @@ margin_right = 260.0
 margin_bottom = 977.0
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer2"]
-margin_left = 20.0
 margin_right = 260.0
 margin_bottom = 943.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="LayersVBox" type="VBoxContainer" parent="VBoxContainer2/ScrollContainer"]
-margin_right = 240.0
+margin_right = 260.0
 margin_bottom = 943.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Layer" parent="VBoxContainer2/ScrollContainer/LayersVBox" instance=ExtResource( 2 )]
-margin_right = 240.0
-margin_bottom = 53.0
+margin_right = 260.0
+margin_bottom = 40.0
 
 [node name="Tools" type="HBoxContainer" parent="VBoxContainer2"]
 margin_top = 947.0
@@ -568,6 +567,7 @@ __meta__ = {
 
 [node name="FakeScreenGrabber" type="Viewport" parent="Node2D/ViewportContainer"]
 size = Vector2( 500, 500 )
+transparent_bg = true
 handle_input_locally = false
 render_target_update_mode = 3
 
