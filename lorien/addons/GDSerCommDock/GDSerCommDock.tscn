@@ -1,12 +1,17 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://addons/GDSerCommDock/MenuLogic.gd" type="Script" id=1]
 [ext_resource path="res://addons/GDSerCommDock/Com.gd" type="Script" id=2]
 [ext_resource path="res://addons/GDSerCommDock/Stylebox.tres" type="StyleBox" id=3]
 [ext_resource path="res://Assets/Icons/duplicate_layer.png" type="Texture" id=4]
 [ext_resource path="res://UI/Components/FlatTextureButton.gd" type="Script" id=5]
+[ext_resource path="res://Assets/Icons/left_arrow.png" type="Texture" id=6]
+[ext_resource path="res://Assets/Icons/right_arrow.png" type="Texture" id=7]
+[ext_resource path="res://Assets/Icons/up_arrow.png" type="Texture" id=8]
+[ext_resource path="res://Assets/Icons/down_arrow.png" type="Texture" id=9]
 
 [node name="SerialCommunication" type="WindowDialog"]
+visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 window_title = "Send to Printer"
@@ -22,6 +27,7 @@ script = ExtResource( 2 )
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 1
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10
 custom_constants/margin_left = 10
@@ -146,9 +152,259 @@ margin_right = 1900.0
 margin_bottom = 1060.0
 size_flags_horizontal = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer2"]
 margin_right = 948.0
-margin_bottom = 44.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 0, 200 )
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
+margin_right = 90.0
+margin_bottom = 200.0
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer2"]
+margin_right = 90.0
+margin_bottom = 14.0
+hint_tooltip = "Amount to move by"
+text = "Move Amount"
+
+[node name="MoveAmount" type="SpinBox" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer2"]
+margin_top = 18.0
+margin_right = 90.0
+margin_bottom = 42.0
+min_value = 0.01
+max_value = 50.0
+step = 0.01
+value = 0.01
+allow_greater = true
+align = 2
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
+margin_left = 94.0
+margin_right = 294.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 200, 0 )
+columns = 3
+
+[node name="Container" type="Container" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer"]
+margin_right = 64.0
+margin_bottom = 64.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="YPos" type="TextureButton" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer"]
+margin_left = 68.0
+margin_right = 132.0
+margin_bottom = 64.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 8 )
+expand = true
+stretch_mode = 5
+script = ExtResource( 5 )
+hover_tint = Color( 0, 0.929412, 1, 1 )
+pressed_tint = Color( 0, 1, 0.623529, 1 )
+
+[node name="Container2" type="Container" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer"]
+margin_left = 136.0
+margin_right = 200.0
+margin_bottom = 64.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="XNeg" type="TextureButton" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer"]
+margin_top = 68.0
+margin_right = 64.0
+margin_bottom = 132.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 6 )
+expand = true
+stretch_mode = 5
+script = ExtResource( 5 )
+hover_tint = Color( 0, 0.882353, 1, 1 )
+pressed_tint = Color( 0, 1, 0.741176, 1 )
+
+[node name="Container3" type="GridContainer" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer"]
+margin_left = 68.0
+margin_top = 68.0
+margin_right = 132.0
+margin_bottom = 132.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 3
+
+[node name="Container" type="Container" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/Container3"]
+margin_right = 18.0
+margin_bottom = 18.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/Container3"]
+margin_left = 22.0
+margin_top = 2.0
+margin_right = 40.0
+margin_bottom = 16.0
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "+y"
+align = 1
+valign = 1
+
+[node name="Container2" type="Container" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/Container3"]
+margin_left = 44.0
+margin_right = 62.0
+margin_bottom = 18.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label2" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/Container3"]
+margin_top = 24.0
+margin_right = 18.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "-x"
+align = 1
+valign = 1
+
+[node name="Container3" type="Container" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/Container3"]
+margin_left = 22.0
+margin_top = 22.0
+margin_right = 40.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label3" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/Container3"]
+margin_left = 44.0
+margin_top = 24.0
+margin_right = 62.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "+x"
+align = 1
+valign = 1
+
+[node name="Container4" type="Container" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/Container3"]
+margin_top = 44.0
+margin_right = 18.0
+margin_bottom = 62.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label4" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/Container3"]
+margin_left = 22.0
+margin_top = 46.0
+margin_right = 40.0
+margin_bottom = 60.0
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "-y"
+align = 1
+valign = 1
+
+[node name="XPos" type="TextureButton" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer"]
+margin_left = 136.0
+margin_top = 68.0
+margin_right = 200.0
+margin_bottom = 132.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 7 )
+expand = true
+stretch_mode = 5
+script = ExtResource( 5 )
+hover_tint = Color( 0, 0.882353, 1, 1 )
+pressed_tint = Color( 0, 1, 0.741176, 1 )
+
+[node name="Container4" type="Container" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer"]
+margin_top = 136.0
+margin_right = 64.0
+margin_bottom = 200.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="YNeg" type="TextureButton" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer"]
+margin_left = 68.0
+margin_top = 136.0
+margin_right = 132.0
+margin_bottom = 200.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 9 )
+expand = true
+stretch_mode = 5
+script = ExtResource( 5 )
+hover_tint = Color( 0, 0.882353, 1, 1 )
+pressed_tint = Color( 0, 1, 0.741176, 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
+margin_left = 298.0
+margin_right = 948.0
+margin_bottom = 200.0
+size_flags_horizontal = 3
+
+[node name="ZPos" type="TextureButton" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer"]
+margin_right = 650.0
+margin_bottom = 86.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 8 )
+expand = true
+stretch_mode = 5
+script = ExtResource( 5 )
+hover_tint = Color( 0.968627, 0.572549, 1, 1 )
+pressed_tint = Color( 1, 0.203922, 0.631373, 1 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer"]
+margin_top = 90.0
+margin_right = 650.0
+margin_bottom = 110.0
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer/HBoxContainer"]
+margin_left = 287.0
+margin_top = 3.0
+margin_right = 322.0
+margin_bottom = 17.0
+text = "Axis: "
+
+[node name="VAxis" type="OptionButton" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer/HBoxContainer"]
+margin_left = 326.0
+margin_right = 363.0
+margin_bottom = 20.0
+mouse_filter = 1
+text = "Z"
+items = [ "Z", null, false, 0, null ]
+selected = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ZNeg" type="TextureButton" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer"]
+margin_top = 114.0
+margin_right = 650.0
+margin_bottom = 200.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture_normal = ExtResource( 9 )
+expand = true
+stretch_mode = 5
+script = ExtResource( 5 )
+hover_tint = Color( 0.968627, 0.572549, 1, 1 )
+pressed_tint = Color( 1, 0.203922, 0.631373, 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/VBoxContainer2"]
+margin_top = 204.0
+margin_right = 948.0
+margin_bottom = 248.0
 
 [node name="GenerateGCode" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer"]
 margin_right = 948.0
@@ -162,7 +418,7 @@ margin_bottom = 44.0
 text = "Send Below"
 
 [node name="TextEdit" type="TextEdit" parent="MarginContainer/HBoxContainer/VBoxContainer2"]
-margin_top = 48.0
+margin_top = 252.0
 margin_right = 948.0
 margin_bottom = 1060.0
 size_flags_horizontal = 3
@@ -175,7 +431,6 @@ draw_tabs = true
 breakpoint_gutter = true
 fold_gutter = true
 smooth_scrolling = true
-wrap_enabled = true
 
 [node name="CopyText" type="TextureButton" parent="MarginContainer/HBoxContainer/VBoxContainer2/TextEdit"]
 modulate = Color( 1, 1, 1, 0.654902 )
@@ -195,6 +450,7 @@ __meta__ = {
 hover_tint = Color( 0.592157, 1, 0.960784, 1 )
 pressed_tint = Color( 0, 1, 0.858824, 1 )
 
+[connection signal="about_to_show" from="." to="." method="_on_SerialCommunication_about_to_show"]
 [connection signal="gui_input" from="MarginContainer/HBoxContainer/VBoxContainer/SendVBoxContainer/LineEdit" to="." method="_on_LineEdit_gui_input"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer/SendVBoxContainer/SendHBoxContainer/SendButton" to="." method="_on_SendButton_pressed"]
 [connection signal="item_selected" from="MarginContainer/HBoxContainer/VBoxContainer/PortHBoxContainer/PortOptionButton" to="." method="_on_PortOptionButton_item_selected"]
@@ -203,6 +459,13 @@ pressed_tint = Color( 0, 1, 0.858824, 1 )
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/ClearButton" to="." method="_on_ClearButton_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/DisconnectButton" to="." method="_on_DisconnectButton_pressed"]
 [connection signal="toggled" from="MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/CheckBox" to="." method="_on_CheckBox_toggled"]
+[connection signal="value_changed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer2/MoveAmount" to="." method="_on_MoveAmount_value_changed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/YPos" to="." method="_on_YPos_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/XNeg" to="." method="_on_XNeg_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/XPos" to="." method="_on_XPos_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/YNeg" to="." method="_on_YNeg_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer/ZPos" to="." method="_on_ZPos_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer/ZNeg" to="." method="_on_ZNeg_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/GenerateGCode" to="." method="_on_GenerateGCode_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/VBoxContainer/SendTextEdit" to="." method="_on_SendTextEdit_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/TextEdit/CopyText" to="." method="_on_CopyText_pressed"]
