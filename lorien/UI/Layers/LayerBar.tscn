@@ -559,21 +559,16 @@ pressed_tint = Color( 0.0392157, 0.819608, 1, 1 )
 position = Vector2( 1000, 0 )
 
 [node name="ViewportContainer" type="ViewportContainer" parent="Node2D"]
-margin_right = 1000.0
+margin_right = 1164.0
 margin_bottom = 977.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="FakeScreenGrabber" type="Viewport" parent="Node2D/ViewportContainer"]
-size = Vector2( 300, 300 )
+size = Vector2( 500, 500 )
 handle_input_locally = false
 render_target_update_mode = 3
-
-[node name="Line2D" type="Line2D" parent="Node2D/ViewportContainer/FakeScreenGrabber"]
-points = PoolVector2Array( -206.671, 212.968, -249.049, 187.541, -318.974, -39.1842, -365.59, -64.6113, -435.515, -232.006, -429.158, -299.812, -274.477, -306.169, 577.332, -26.4706, 299.752, 238.395, -117.676, 429.099, -306.26, 513.856, -961.792, 128.239, -901.86, -354.216, 437.627, -411.151, 938.062, 236.117, 33.084, 907.359, -949.806, 856.417, 32.0701, -39.0148, 490.681, -253.201, 845.979, -411.951, 2045.42, 739.616, 2524.19, -49.0944, 1932.03, -132.249, 1349.95, 774.894, 1732.96, -157.448, 1813.6, 1137.75, 2723.26, -437.15, 2564.51, 1220.91 )
-
-[node name="Camera2D" type="Camera2D" parent="Node2D/ViewportContainer/FakeScreenGrabber"]
 
 [connection signal="pressed" from="VBoxContainer2/Tools/AddLayer" to="." method="_on_AddLayer_pressed"]
 [connection signal="pressed" from="VBoxContainer2/Tools/DuplicateLayer" to="." method="_on_DuplicateLayer_pressed"]

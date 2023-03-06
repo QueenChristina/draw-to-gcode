@@ -1,13 +1,17 @@
 extends PanelContainer
 
+# -------------------------------------------------------------------------------------------------
+const BRUSH_STROKE = preload("res://BrushStroke/BrushStroke.tscn")
 const LAYER = preload("res://UI/Layers/Layer.tscn")
 
 onready var _canvas = get_parent().get_node("InfiniteCanvas") # TODO: better way referene
 onready var _layer_box = $VBoxContainer2/ScrollContainer/LayersVBox
-var layer_button_group : ButtonGroup
 onready var curr_layer = $VBoxContainer2/ScrollContainer/LayersVBox/Layer
 onready var fake_viewport = $"Node2D/ViewportContainer/FakeScreenGrabber"
 onready var fake_viewport_parent = $Node2D
+
+var layer_button_group : ButtonGroup
+var loading_thumbnail = false
 
 signal layers_swap(layer1, layer2) # Indices of layer swap
 signal add_layer(index)
@@ -215,63 +219,81 @@ func _on_OnionSkin_toggled(enabled):
 # ----------------------------------------------------------------------------
 # Set layer thumbnails - NOTE: layer index in terms of project layers, not layer_box index
 func _on_refresh_layer_thumbnail(viewport : Viewport, layer_strokes : Node2D, layer_index : int):
+	# TODO: limit refresh rate -- only update once in a while, and not when drawing
 	var index = _layer_box.get_child_count() - 1 - layer_index
 	
-	# Save viewport info
-	# TODO: not hardcode these paths
-#	var _grid = viewport.get_node("Grid")
-#	var _platform = viewport.get_node("Platform")
-#	var _center_pt = viewport.get_node("CenterPoint")
-#	var hide_nodes = [_grid, _platform, _center_pt]
-#	var visibilities = []
-#	for node in hide_nodes:
-#		visibilities.append(node.visible)
-#		# Temporarily standarize viewport for "snapping" a pic
-#		node.visible = false
-#	var fake_viewport = Viewport.new()
-#	fake_viewport.size = viewport.size()
 	fake_viewport_parent.show()
-	fake_viewport.remove_child(fake_viewport.get_child(0)) # Clear previous strokes
-	fake_viewport.add_child(layer_strokes)
-	fake_viewport.move_child(layer_strokes, 0)
-	var dims = _get_min_max_dimension(layer_strokes.get_children())
+	var cpy_layer_strokes = copy_layer(layer_strokes)
+	fake_viewport.add_child(cpy_layer_strokes)
+	fake_viewport.move_child(cpy_layer_strokes, 0)
+	var dims = _get_min_max_dimension(cpy_layer_strokes.get_children())
 	var top_left = dims[0]
 	var bottom_right = dims[1]
-	var origin = Vector2(top_left.x + 1000, top_left.x + 1000) # Due to image coordinates, this is the origin. Add offset so offscreen
-	fake_viewport.size = Vector2(bottom_right.x - top_left.x, bottom_right.y - top_left.y) # min and max of strokes
-	fake_viewport_parent.position = origin
-	# Must add to scene tree to render...so we'll add to outside the visible area
+	# Capture all strokes: min and max of strokes
+	fake_viewport.size = bottom_right - top_left 
+	# Offset all strokes so top_left starts at 0,0
+	cpy_layer_strokes.position = -top_left
+	# Add offset so offscreen and not visible
+	fake_viewport_parent.position = Vector2(get_viewport_rect().position.x + get_viewport_rect().size.x + 1000, get_viewport_rect().position.y + get_viewport_rect().size.y +1000)
 	
 	# Wait until the frame has finished before getting the texture.
 	yield(VisualServer, "frame_post_draw")
 
 	# Retrieve the captured image.
-	var img = viewport.get_texture().get_data()
-	# Flip it on the y-axis (because it's flipped). + Set to size 32x32
-	img.flip_y()
-	img.resize(32, 32)
-	# Create a texture for it.
-	var tex = ImageTexture.new()
-	tex.create_from_image(img)
-	# Set the texture to the captured image node.
-	_layer_box.get_child(index).thumbnail = tex
-	
+	if !loading_thumbnail: # Not sure if this does anything ... attempt to avoid overcapturing
+		loading_thumbnail = true
+		var img = fake_viewport.get_texture().get_data()
+		# Flip it on the y-axis (because it's flipped). + Set to size 32x32
+		if img != null: # Error that pops up when you call this function too much too quickly
+			img.flip_y()
+			img.resize(32, 32)
+			# Create a texture for it.
+			var tex = ImageTexture.new()
+			tex.create_from_image(img)
+			# Set the texture to the captured image node.
+			_layer_box.get_child(index).thumbnail = tex
+		else:
+			print_debug("Image returned was null...viewport might still be active?")
+		
 	fake_viewport_parent.hide()
-#
-#	# Restore viewport info
-#	for i in range(hide_nodes.size()):
-#		hide_nodes[i].visible = visibilities[i]
+	fake_viewport.remove_child(fake_viewport.get_child(0)) # Clear previous strokes
+	cpy_layer_strokes.queue_free()
+	loading_thumbnail = false
 	
-# Returns [TOP LEFT corner, BOTTOM RIGHT corner]
-func _get_min_max_dimension(strokes):
+# Returns [TOP LEFT corner, BOTTOM RIGHT corner] with fractional empty margin
+func _get_min_max_dimension(strokes, EDGE_MARGIN := 0.1):
 	# Calculate total canvas dimensions
 	var max_dim := BrushStroke.MIN_VECTOR2
 	var min_dim := BrushStroke.MAX_VECTOR2
+	if strokes.size() <= 0:
+		max_dim = Vector2(100, 100)
+		min_dim = Vector2(0, 0)
 	for stroke in strokes:
 		min_dim.x = min(min_dim.x, stroke.top_left_pos.x)
 		min_dim.y = min(min_dim.y, stroke.top_left_pos.y)
 		max_dim.x = max(max_dim.x, stroke.bottom_right_pos.x)
 		max_dim.y = max(max_dim.y, stroke.bottom_right_pos.y)
-#	var size := max_dim - min_dim
-	return [min_dim, max_dim]
+	var size := max_dim - min_dim
+	var margin_size := size * EDGE_MARGIN
+	return [min_dim - margin_size, max_dim + margin_size]
+	
+# (COPIED FROM SELECTIONTOOL.gd + Infinite canvas) TODO: refactor into a Utils.gd
+func copy_layer(layer_strokes):
+	# Copy strokes
+	var copy_strokes = Node2D.new()
+	for stroke in layer_strokes.get_children():
+		var dup := _duplicate_stroke(stroke, Vector2(0, 0))
+		copy_strokes.add_child(dup)
+	return copy_strokes
+	
+func _duplicate_stroke(stroke: BrushStroke, offset: Vector2) -> BrushStroke:	
+	var dup: BrushStroke = BRUSH_STROKE.instance()
+	dup.global_position = stroke.global_position
+	dup.size = stroke.size
+	dup.color = stroke.color
+	dup.axis = stroke.axis
+	dup.pressures = stroke.pressures.duplicate()
+	for point in stroke.points:
+		dup.points.append(point + offset)
+	return dup
 
