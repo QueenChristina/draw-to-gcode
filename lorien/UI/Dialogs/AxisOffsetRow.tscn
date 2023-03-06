@@ -17,7 +17,7 @@ margin_right = 516.0
 margin_bottom = 24.0
 
 [node name="DeleteButton" type="TextureButton" parent="HBox"]
-modulate = Color( 1, 0.6, 0.6, 0.627451 )
+modulate = Color( 0.643137, 0.466667, 0.466667, 0.54902 )
 margin_right = 18.0
 margin_bottom = 24.0
 hint_tooltip = "Delete nozzle"

@@ -4,6 +4,9 @@ onready var nozzle_settings_row = preload("res://UI/Dialogs/AxisOffsetRow.tscn")
 onready var _nozzle_rows : VBoxContainer = $VBoxContainer/ScrollContainer/AxesOffsets
 onready var _p_speed : SpinBox = $VBoxContainer/Speed/Print
 onready var _j_speed : SpinBox = $VBoxContainer/Speed/Jog
+onready var _name_line_edit : LineEdit = $"VBoxContainer/Name/PrinterNameLineEdit"
+onready var _printer_option : OptionButton = $"VBoxContainer/SelectPrinter/PrinterOption"
+onready var _del_printer : TextureButton = $VBoxContainer/SelectPrinter/DeletePrinter
 # TODO: save project-specific print setttings as part of metadata
 # AND have this in popup dialog before exporting GCode or other settings, NOT here
 onready var _print_offset_z : SpinBox = $VBoxContainer/PrintOffset/HBoxContainer/Z
@@ -20,17 +23,44 @@ func _ready():
 func _set_values() -> void:
 	printer_settings = Settings.get_value(Settings.PRINTER_SETTINGS, Config.DEFAULT_PRINTER_SETTINGS)
 	curr_printer =  Settings.get_value(Settings.CURR_PRINTER_NAME, Config.DEFAULT_CURR_PRINTER_NAME)
-	curr_printer_settings = printer_settings[curr_printer]
+	curr_printer_settings = printer_settings.get(curr_printer, Config.DEFAULT_PRINTER_SETTINGS["default"])
 
 	_p_speed.value = _to_speed_val(curr_printer_settings.print_speed)
 	_j_speed.value = _to_speed_val(curr_printer_settings.jog_speed)
 
-	var l_all_axes : Array = curr_printer_settings.nozzle_axes.duplicate()
+	# Clear existing settings
+	for nozzle in _nozzle_rows.get_children():
+		# Do not clear the last "Add Axis (new nozzle)" button
+		if nozzle.get_index() < _nozzle_rows.get_child_count() - 1:
+			nozzle.queue_free()
+	_printer_option.clear()
 
+	# Populate printer selection
+	_name_line_edit.text = curr_printer
+	for printer in printer_settings.keys():
+		_printer_option.add_item(printer)
+		
+	# Select the current printer
+	for i in _printer_option.get_item_count():
+		var text = _printer_option.get_item_text(i)
+		if text == curr_printer:
+			_printer_option.select(i)
+			break
+			
+	# Edge case for errors?
+	if _printer_option.text != curr_printer:
+		_printer_option.add_item(curr_printer)
+		_printer_option.select(_printer_option.get_item_count() - 1)
+		print_debug("Improper printer settings -- Missing current printer key value: ", curr_printer)
+	
+	_printer_option.add_separator()
+	_printer_option.add_item("Add new printer")
+	
+	# Populate nozzle settings
+	var l_all_axes : Array = curr_printer_settings.nozzle_axes.duplicate()
 	for axis in curr_printer_settings.axis_offset: # TODO: use axis order instead
 		if not axis in l_all_axes:
 			l_all_axes.append(axis)
-
 	for axis in l_all_axes:
 		var axis_row = nozzle_settings_row.instance()
 		axis_row.connect("deleted", self, "_on_row_deleted")
@@ -131,3 +161,48 @@ func save_settings():
 func _on_PrintOffsetZ_value_changed(value):
 	var active_project = ProjectManager.get_active_project()
 	active_project.print_offset.z = value
+
+# Select new printer
+func _on_PrinterOption_item_selected(index):
+	# Keep old data
+	save_settings()
+	# Now switch to new printer
+	_printer_option.select(index)
+	if index == _printer_option.get_item_count() - 1:
+		# Last item selected -- means add a new printer!!!
+		var default_name = "New Printer"
+		while printer_settings.has(default_name):
+			default_name = "New " + default_name
+		Settings.set_value(Settings.CURR_PRINTER_NAME, default_name)
+		_del_printer.visible = true
+	else:
+		# Switch to new existing printer
+		Settings.set_value(Settings.CURR_PRINTER_NAME, _printer_option.get_item_text(index))
+	_set_values()
+	
+# Set current printer to have new name
+func _on_PrinterNameLineEdit_text_changed(new_text):
+	if new_text != "" and !printer_settings.has(new_text):
+		printer_settings.erase(curr_printer)
+		curr_printer = new_text
+		Settings.set_value(Settings.CURR_PRINTER_NAME, new_text)
+		save_settings()
+		_printer_option.set_item_text(_printer_option.get_selected(), new_text)
+	else:
+		print_debug("Name taken. Cannot set to existing printer name -- names should be unique.")
+
+# TODO: prompt confirmation dialog first instead, as action cannot be undone
+func _on_DeletePrinter_pressed():
+	# Must always have at least one printer
+	if printer_settings.keys().size() > 1:
+		printer_settings.erase(curr_printer)
+		Settings.set_value(Settings.PRINTER_SETTINGS, printer_settings)
+		# Select new printer
+		var new_active_printer = printer_settings.keys()[0]
+		Settings.set_value(Settings.CURR_PRINTER_NAME, new_active_printer)
+		_set_values()
+		# Just disable delete button if only one printer left
+		if printer_settings.keys().size() <= 1:
+			_del_printer.visible = false
+	else:
+		print_debug("Cannot delete remaining single printer.")
