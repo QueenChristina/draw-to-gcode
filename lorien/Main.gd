@@ -20,6 +20,7 @@ onready var _delete_palette_dialog: DeletePaletteDialog = $DeletePaletteDialog
 onready var _edit_palette_dialog: EditPaletteDialog = $EditPaletteDialog
 onready var _layerbar := $LayerBar
 onready var _error_dialog : WindowDialog = $ErrorDialog
+onready var _connect_dialog : WindowDialog = $SerialCommunication
 
 var _ui_visible := true 
 var _player_enabled := false
@@ -61,6 +62,7 @@ func _ready():
 	_main_menu.connect("open_settings_dialog", self, "_on_open_settings_dialog")
 	_main_menu.connect("open_url", self, "_on_open_url")
 	_main_menu.connect("export_svg", self, "_export_svg")
+	_main_menu.connect("connect_to_printer", self, "_on_connect_to_printer")
 	_main_menu.connect("open_project", self, "_on_open_project")
 	_main_menu.connect("save_project", self, "_on_save_project")
 	_main_menu.connect("save_project_as", self, "_on_save_project_as")
@@ -299,6 +301,10 @@ func _on_project_selected(project_id: int) -> void:
 func _on_project_closed(project_id: int) -> void:
 	# Ask the user to save changes
 	var project: Project = ProjectManager.get_project_by_id(project_id)
+#	if not project:
+#		# TODO: fix null project on tab close -- open_projects not synced
+#		print_debug("ERROR: Attempted to close null project of id: ", project_id)
+#		return
 	if project.dirty:
 		_unsaved_changes_dialog.project_ids.clear()
 		_unsaved_changes_dialog.project_ids.append(project_id)
@@ -323,7 +329,7 @@ func _close_project(project_id: int) -> void:
 		else:
 			var new_project_id: int = _menubar.get_first_project_id()
 			var new_project: Project = ProjectManager.get_project_by_id(new_project_id)
-			var success = _make_project_active(project)
+			var success = _make_project_active(new_project)
 
 # -------------------------------------------------------------------------------------------------
 func _show_autosave_not_implemented_alert() -> void:
@@ -377,11 +383,11 @@ func _on_open_project(filepath: String) -> bool:
 	project = ProjectManager.add_project(filepath)
 	var success = _make_project_active(project)
 	if not success:
-		# Make old project active again
-		if removed_empty_prjct:
-			_create_active_default_project()
-		else:
-			_make_project_active(active_project)
+		# Make old project active again -- handled by close_project
+#		if removed_empty_prjct:
+#			_create_active_default_project()
+#		else:
+#			_make_project_active(active_project)
 		# Close old project
 		_close_project(project.id)
 		return false
@@ -608,3 +614,9 @@ func _on_platform_size_changed() -> void:
 func _on_error_encountered(error_text):
 	_error_dialog.dialog_text = error_text
 	_error_dialog.popup_centered()
+	
+# ---------
+func _on_connect_to_printer():
+	_connect_dialog.popup_centered()
+
+

@@ -85,6 +85,7 @@ func standarize(text):
 # Set values when nozzle settings change
 func _on_row_deleted(node):
 	_nozzle_rows.remove_child(node)
+	node.queue_free()
 
 # Saves settings based on all nozzle rows
 func save_settings():

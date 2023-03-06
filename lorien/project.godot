@@ -80,6 +80,11 @@ _global_script_classes=[ {
 "path": "res://Misc/GCodeExporter.gd"
 }, {
 "base": "Reference",
+"class": "GDSerComm",
+"language": "NativeScript",
+"path": "res://addons/GDSerCommDock/bin/GDSerComm.gdns"
+}, {
+"base": "Reference",
 "class": "I18nParser",
 "language": "GDScript",
 "path": "res://Misc/I18nParser.gd"
@@ -209,6 +214,7 @@ _global_script_class_icons={
 "EditPaletteDialog": "",
 "EraserTool": "",
 "GCodeExporter": "",
+"GDSerComm": "",
 "I18nParser": "",
 "InfiniteCanvas": "",
 "InfiniteCanvasGrid": "",
@@ -273,6 +279,10 @@ window/size/test_width=1440
 window/size/test_height=810
 window/dpi/allow_hidpi=true
 window/vsync/use_vsync=false
+
+[editor_plugins]
+
+enabled=PoolStringArray( "GDSerCommDock" )
 
 [input]
 

@@ -21,6 +21,7 @@ func _compare_second_element(a: Array, b: Array) -> bool:
 func _populate_input_list() -> void:
 	for c in _grid.get_children():
 		_grid.remove_child(c)
+		c.queue_free() # TODO: check this doesn't break anything
 	
 	var collected_keybinding_args := []
 	for action in Utils.bindable_actions():
@@ -56,6 +57,7 @@ func _new_keybinding_entry(action_name: String, readable_name: String, events: A
 			child.connect("modified_binding", self, "_modify_keybinding", [action_name])
 		if child.has_signal("bind_new_key"):
 			child.connect("bind_new_key", self, "_bind_new_key", [action_name])
+	new_line.queue_free()
 
 # -------------------------------------------------------------------------------------------------
 func _modify_keybinding(bindings_data: Dictionary, action_name: String) -> void:

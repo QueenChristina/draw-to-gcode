@@ -9,6 +9,7 @@ signal open_project(filepath)
 signal save_project
 signal save_project_as
 signal export_svg
+signal connect_to_printer
 
 # -------------------------------------------------------------------------------------------------
 const ITEM_OPEN 		:= 0
@@ -19,6 +20,7 @@ const ITEM_SETTINGS 	:= 4
 const ITEM_MANUAL 		:= 5
 const ITEM_BUG_TRACKER 	:= 6
 const ITEM_ABOUT 		:= 7
+const ITEM_PRINT		:= 8
 
 const ITEM_VIEW_1 		:= 100
 const ITEM_VIEW_2 		:= 101
@@ -46,6 +48,7 @@ func _apply_language() -> void:
 	add_item(tr("MENU_SAVE"), ITEM_SAVE)
 	add_item(tr("MENU_SAVE_AS"), ITEM_SAVE_AS)
 	add_item(tr("MENU_EXPORT"), ITEM_EXPORT)
+	add_item(tr("MENU_PRINT"), ITEM_PRINT)
 	add_item(tr("MENU_SETTINGS"), ITEM_SETTINGS)
 	add_separator()
 	add_item(tr("MENU_MANUAL"), ITEM_MANUAL)
@@ -59,6 +62,7 @@ func _on_MainMenu_id_pressed(id: int):
 		ITEM_SAVE: emit_signal("save_project")
 		ITEM_SAVE_AS: emit_signal("save_project_as")
 		ITEM_EXPORT: emit_signal("export_svg")
+		ITEM_PRINT: emit_signal("connect_to_printer")
 		ITEM_SETTINGS: emit_signal("open_settings_dialog")
 		ITEM_MANUAL: emit_signal("open_url", "https://github.com/mbrlabs/lorien/blob/main/docs/manuals/manual_v0.6.0.md")
 		ITEM_BUG_TRACKER: emit_signal("open_url", "https://github.com/mbrlabs/lorien/issues")

@@ -12,6 +12,7 @@ var _preloaded_image := preload("res://Assets/Icons/delete.png")
 func set_keybindings_data(bindings_data: Dictionary) -> void:
 	for child in get_children():
 		remove_child(child)
+		child.queue_free() # TODO: check this doesn't break anything
 
 	_bindings_data = bindings_data
 	for event in bindings_data["events"]:

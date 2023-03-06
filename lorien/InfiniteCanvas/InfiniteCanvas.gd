@@ -144,6 +144,7 @@ func enable_player(enable: bool) -> void:
 			_viewport.add_child(_player)
 		else:
 			_viewport.remove_child(_player)
+			# TODO: queue_free?
 
 # -------------------------------------------------------------------------------------------------
 func enable_grid(e: bool) -> void:
@@ -249,7 +250,7 @@ func end_stroke() -> void:
 			_current_project.undo_redo.create_action("Stroke")
 			_current_project.undo_redo.add_undo_method(self, "undo_last_stroke", _current_project.curr_layer)
 			_current_project.undo_redo.add_undo_reference(_current_stroke)
-#			_current_project.undo_redo.add_do_method(_strokes_parent, "add_child", _current_stroke) # FIX
+#			_current_project.undadd_stroke_to_layero_redo.add_do_method(_strokes_parent, "add_child", _current_stroke) # FIX
 			_current_project.undo_redo.add_do_method(self, "add_stroke_to_layer", _current_stroke, _current_project.curr_layer) 
 			_current_project.undo_redo.add_do_property(info, "stroke_count", info.stroke_count + 1)
 			_current_project.undo_redo.add_do_property(info, "point_count", info.point_count + _current_stroke.points.size())
@@ -265,7 +266,7 @@ func add_strokes(strokes: Array) -> void:
 	for stroke in strokes:
 		point_count += stroke.points.size()
 		_current_project.undo_redo.add_undo_method(self, "undo_last_stroke", _current_project.curr_layer)
-		_current_project.undo_redo.add_undo_reference(stroke)
+		_current_project.undo_redo.add_do_reference(stroke) # TODO: add undo_ref or do_red?
 #		_current_project.undo_redo.add_do_method(_strokes_parent, "add_child", stroke)
 		_current_project.undo_redo.add_do_method(self, "add_stroke_to_layer", stroke, _current_project.curr_layer) 
 		_current_project.undo_redo.add_do_method(_current_project, "add_stroke", stroke)
@@ -323,6 +324,8 @@ func undo_last_stroke(undo_layer : int) -> void:
 			_current_project.remove_last_stroke(undo_layer)
 			info.point_count -= stroke.points.size()
 			info.stroke_count -= 1
+			
+#			stroke.queue_free() # Can't queue free here as redo wouldn't work - TODO: handle this?
 		else:
 			print_debug("ERROR! Attempted to undo stroke in layer ", _past_strokes_parent, " with no strokes left.")
 			print("Layers: ")

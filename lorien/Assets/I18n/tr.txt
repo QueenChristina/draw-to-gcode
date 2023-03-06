@@ -12,6 +12,7 @@ MENU_MANUAL         Kullanım Kılauzu
 MENU_BUG_TRACKER    Hata İzleyici
 MENU_ABOUT          Hakkında
 MENU_EXPORT         ... Dışa Aktar
+MENU_PRINT         Connect to Printer
 
 # -----------------------------------------------------------------------------
 # Toolbar

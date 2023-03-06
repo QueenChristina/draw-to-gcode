@@ -12,6 +12,7 @@ MENU_MANUAL         Benutzeranleitung
 MENU_BUG_TRACKER    Bug Tracker
 MENU_ABOUT          Über
 MENU_EXPORT         Exportieren...
+MENU_PRINT		  Connect to Printer
 
 # -----------------------------------------------------------------------------
 # Toolbar
