@@ -9,6 +9,16 @@ onready var _layer_box = $VBoxContainer2/ScrollContainer/LayersVBox
 onready var curr_layer = $VBoxContainer2/ScrollContainer/LayersVBox/Layer
 onready var fake_viewport = $"Node2D/ViewportContainer/FakeScreenGrabber"
 onready var fake_viewport_parent = $Node2D
+# Reference image
+onready var _ref_settings = $"VBoxContainer2/VBoxContainer/MarginContainer"
+onready var _ref_opacity = $"VBoxContainer2/VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer/OpacitySlider"
+onready var _ref_offset_x = $"VBoxContainer2/VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer2/XOffset"
+onready var _ref_offset_y = $"VBoxContainer2/VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer2/YOffset"
+onready var _ref_scale = $"VBoxContainer2/VBoxContainer/MarginContainer/VBoxContainer/HBoxContainer2/Scale"
+onready var _ref_add_bttn = $"VBoxContainer2/VBoxContainer/AddRef"
+
+export var clear_ref_text = "Clear Reference"
+export var add_ref_text = "Add Reference Image"
 
 var layer_button_group : ButtonGroup
 var loading_thumbnail = false
@@ -21,6 +31,9 @@ signal undo_delete_layer(index, strokes)
 signal layer_visibility_changed(index, is_visible)
 signal copy_layer(from_index, to_index)
 signal toggle_onion_skin(enabled)
+signal clear_reference
+signal add_reference # Prompt for file of image to insert
+signal set_reference # change settings of current reference
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -30,6 +43,8 @@ func _ready():
 	layer_button_group = ButtonGroup.new()
 	curr_layer.layer_button.group = layer_button_group
 	curr_layer.layer_button.pressed = true
+	
+	_ref_add_bttn.text = add_ref_text
 
 # Make layers from the given project
 func make_layers(project, clear_layers = true):
@@ -304,3 +319,34 @@ func _duplicate_stroke(stroke: BrushStroke, offset: Vector2) -> BrushStroke:
 		dup.points.append(point + offset)
 	return dup
 
+# -------------------------------------------------------
+# Reference image stuff
+func _on_OpacitySlider_value_changed(value):
+	emit_signal("set_reference", _ref_opacity.value, Vector2(_ref_offset_x.value, _ref_offset_y.value), _ref_scale.value)
+
+func _on_XOffset_value_changed(value):
+	emit_signal("set_reference", _ref_opacity.value, Vector2(_ref_offset_x.value, _ref_offset_y.value), _ref_scale.value)
+
+func _on_YOffset_value_changed(value):
+	emit_signal("set_reference", _ref_opacity.value, Vector2(_ref_offset_x.value, _ref_offset_y.value), _ref_scale.value)
+
+func _on_Scale_value_changed(value):
+	emit_signal("set_reference", _ref_opacity.value, Vector2(_ref_offset_x.value, _ref_offset_y.value), _ref_scale.value)
+
+func _on_AddRef_pressed():
+	if _ref_add_bttn.text == add_ref_text:
+		# Add new reference
+		_ref_settings.visible = true
+		# Set default values
+		_ref_opacity.value = 1
+		_ref_offset_x.value = 0
+		_ref_offset_y.value =  0
+		_ref_scale.value = 1
+		# Toggle button function
+		_ref_add_bttn.text = clear_ref_text
+		emit_signal("add_reference", _ref_opacity.value, Vector2(_ref_offset_x.value, _ref_offset_y.value), _ref_scale.value)
+	else:
+		# Clear current reference
+		emit_signal("clear_reference")
+		_ref_add_bttn.text = add_ref_text
+		_ref_settings.visible = false

@@ -20,6 +20,7 @@ onready var _camera: Camera2D = $Viewport/Camera2D
 onready var _viewport: Viewport = $Viewport
 onready var _grid: InfiniteCanvasGrid = $Viewport/Grid
 onready var _platform : Node2D = $Viewport/Platform
+onready var _reference_image : Sprite = $"Viewport/ReferenceImage"
 
 var info := Types.CanvasInfo.new()
 var _is_enabled := false
@@ -527,3 +528,17 @@ func _on_toggle_onion_skin(enabled):
 # Refresh layer of index (index based on project layers)
 func _refresh_layer_thumbnail(index):
 	emit_signal("refresh_layer_thumbnail", _viewport, _layers_container.get_child(index), index)
+
+# -------------------------
+# Set reference images
+func _on_set_reference(opacity : float, offset : Vector2, scale : float):
+	_reference_image.modulate.a = opacity
+	_reference_image.offset = offset
+	_reference_image.scale = Vector2(scale, scale)
+	
+func add_reference(image : Texture, opacity : float, offset : Vector2, scale : float):
+	_reference_image.texture = image
+	_on_set_reference(opacity, offset, scale)
+
+func _on_clear_reference():
+	_reference_image.texture = null

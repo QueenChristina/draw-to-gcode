@@ -400,6 +400,7 @@ func _on_save_project_as() -> void:
 	_canvas.disable()
 	_file_dialog.mode = FileDialog.MODE_SAVE_FILE
 	_file_dialog.invalidate()
+	_file_dialog.filters = ["*.lorien"]
 	_file_dialog.current_file = active_project.filepath.get_file()
 	_file_dialog.connect("file_selected", self, "_on_file_selected_to_save_project")
 	_file_dialog.connect("popup_hide", self, "_on_file_dialog_closed")
@@ -412,6 +413,7 @@ func _on_save_project() -> void:
 		_canvas.disable()
 		_file_dialog.mode = FileDialog.MODE_SAVE_FILE
 		_file_dialog.invalidate()
+		_file_dialog.filters = ["*.lorien"]
 		_file_dialog.connect("file_selected", self, "_on_file_selected_to_save_project")
 		_file_dialog.connect("popup_hide", self, "_on_file_dialog_closed")
 		_file_dialog.popup_centered()
@@ -420,7 +422,10 @@ func _on_save_project() -> void:
 
 # -------------------------------------------------------------------------------------------------
 func _on_file_dialog_closed() -> void:
-	_file_dialog.disconnect("file_selected", self, "_on_file_selected_to_save_project")
+	if _file_dialog.is_connected("file_selected", self, "_on_file_selected_to_save_project"):
+		_file_dialog.disconnect("file_selected", self, "_on_file_selected_to_save_project")
+	if _file_dialog.is_connected("file_selected", self, "_on_file_selected_for_ref_img"):
+		_file_dialog.disconnect("file_selected", self, "_on_file_selected_for_ref_img")
 	_file_dialog.disconnect("popup_hide", self, "_on_file_dialog_closed")
 
 # -------------------------------------------------------------------------------------------------
@@ -620,3 +625,30 @@ func _on_connect_to_printer():
 	_connect_dialog.popup_centered()
 
 
+
+# -----
+var ref_settings = {}
+# Add reference image to canvas
+func _on_add_reference(opacity : float, offset : Vector2, scale : float):
+	ref_settings.opacity = opacity
+	ref_settings.offset = offset
+	ref_settings.scale = scale
+	# Prompt for image file
+	_canvas.disable()
+	_file_dialog.mode = FileDialog.MODE_OPEN_FILE
+	
+	_file_dialog.filters = ["*.jpg", "*.png", "*.tga", "*.webp", "*.svg", "*.bmp", "*.dds", "*.exr", "*.hdr", "*.jpeg", "*.svgz"]
+	_file_dialog.invalidate()
+	_file_dialog.connect("file_selected", self, "_on_file_selected_for_ref_img")
+	_file_dialog.connect("popup_hide", self, "_on_file_dialog_closed")
+	_file_dialog.popup_centered()
+
+func _on_file_selected_for_ref_img(filepath: String):
+	var image = Image.new()
+	var err = image.load(filepath)
+	if err != OK:
+		# Failed
+		print_debug("Unable to load reference image.")
+	var texture = ImageTexture.new()
+	texture.create_from_image(image, 0)
+	_canvas.add_reference(texture, ref_settings.opacity, ref_settings.offset, ref_settings.scale)

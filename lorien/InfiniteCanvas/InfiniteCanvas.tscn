@@ -102,6 +102,8 @@ script = ExtResource( 2 )
 script = ExtResource( 12 )
 camera_path = NodePath("../Camera2D")
 
+[node name="ReferenceImage" type="Sprite" parent="Viewport"]
+
 [node name="Layers" type="Node2D" parent="Viewport"]
 
 [node name="Strokes" type="Node2D" parent="Viewport/Layers"]

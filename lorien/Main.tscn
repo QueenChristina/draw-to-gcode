@@ -96,10 +96,10 @@ margin_bottom = 202.0
 custom_styles/panel = SubResource( 1 )
 
 [node name="ColorPicker" type="ColorPicker" parent="BackgroundColorPickerPopup/PanelContainer"]
-margin_left = 492.0
-margin_top = 492.0
-margin_right = 801.0
-margin_bottom = 896.0
+margin_left = 508.0
+margin_top = 508.0
+margin_right = 817.0
+margin_bottom = 912.0
 edit_alpha = false
 presets_enabled = false
 presets_visible = false
@@ -281,16 +281,21 @@ margin_right = 416.0
 margin_bottom = 290.5
 rect_min_size = Vector2( 400, 200 )
 
+[node name="Sprite" type="Sprite" parent="."]
+
 [connection signal="mouse_entered" from="InfiniteCanvas" to="." method="_on_InfiniteCanvas_mouse_entered"]
 [connection signal="mouse_exited" from="InfiniteCanvas" to="." method="_on_InfiniteCanvas_mouse_exited"]
 [connection signal="refresh_layer_thumbnail" from="InfiniteCanvas" to="LayerBar" method="_on_refresh_layer_thumbnail"]
 [connection signal="layers_menu_toggle" from="Topbar/Toolbar" to="LayerBar" method="_on_Toolbar_layers_menu_toggle"]
 [connection signal="add_layer" from="LayerBar" to="InfiniteCanvas" method="_on_add_layer"]
+[connection signal="add_reference" from="LayerBar" to="." method="_on_add_reference"]
+[connection signal="clear_reference" from="LayerBar" to="InfiniteCanvas" method="_on_clear_reference"]
 [connection signal="copy_layer" from="LayerBar" to="InfiniteCanvas" method="_on_copy_layer"]
 [connection signal="delete_layer" from="LayerBar" to="InfiniteCanvas" method="_on_delete_layer"]
 [connection signal="layer_visibility_changed" from="LayerBar" to="InfiniteCanvas" method="_on_layer_visibility_changed"]
 [connection signal="layers_swap" from="LayerBar" to="InfiniteCanvas" method="_on_swap_layer"]
 [connection signal="set_active_layer" from="LayerBar" to="InfiniteCanvas" method="_on_set_active_layer"]
+[connection signal="set_reference" from="LayerBar" to="InfiniteCanvas" method="_on_set_reference"]
 [connection signal="toggle_onion_skin" from="LayerBar" to="InfiniteCanvas" method="_on_toggle_onion_skin"]
 [connection signal="undo_delete_layer" from="LayerBar" to="InfiniteCanvas" method="_on_undo_delete_layer"]
 [connection signal="closed" from="BrushColorPicker" to="." method="_on_BrushColorPicker_closed"]
