@@ -1,26 +1,30 @@
-# 2D Drawing to GCode
+# DrawN'Gcode - 2D Drawing to GCode
 
 ## Based on Lorien, 2D Drawing Software Made By MBRLabs
+Draw and convert multiple 2D images into layered g-code for printing, with multi-material support for bioprinting, chocolate printing, 3D printing, and more! The only multi-layered software that converts multiple unique images into layered g-code with support for co-axial printing (mutliple nozzles printing at once and/or separately).
 
 ## Features
 Make drawings over multiple layers and with multiple materials, and convert it into GCode.
 - Vector layers
+- Set layer name
 - Layer system with undo-redo capatibility
 - Converts each layer into GCode, stacked on top of each other
 - Can set amount of times a layer is duplicated (stacked) in GCode
 - Onion skin feature to allow you to trace over past and future layers
 - Custom settings for printing, such as guide for size of print-bed, set units, and set layer height
+- Supports multiple nozzles moving synchronously, such as for use coaxial printing, or separately
+- Multimaterial support: any axes (not just Z or A), add offset between axes, and custom ordering
+- Custom saved settings for nozzles, pre-extrusion amount, and axes by printer
 
 ## Roadmap
-- Support multiple nozzles to move synchronously
 - Undo-redo with duplicate layer amount
 - Undo-redo with layer name
-- Set and save layer name
+- Save layer name
 - Better default palette
 - Better settings: custom onion skin settings (modulate color of above/below layers, opacity, number of layers visible), set color of printbed platform outline
+- Fix printbed size magnitude (10x)
 - Export GCode settings on export as extra dialog, not in settings
-- Multimaterial support: More axes (not just Z or A), add offset between axes, and custom ordering
-- Extrusion amount based on pressure sensitivity; or just export extrusion amount in GCode
+- Extrusion amount based on pressure sensitivity
 - Fill polygons with lattice structure and option to trace outline
 - Import images such as bitmap and svg types
 - Support raster layer
@@ -29,7 +33,8 @@ Make drawings over multiple layers and with multiple materials, and convert it i
 - Grid snap and ruler
 - Default brush/line width size to match real scale/width size (default of 2.5 mm width)
 - Solutions for embedded printing eg., allow for lines that are not parallel to XY plane to be traced (such as along Z-axis)
-- Error handling for opening projects of the incorrect version / failure to open projects on launch
+- Equation layers (print equations, not just images)
+- More error handling for opening projects of the incorrect version / failure to open projects on launch
 - Support language localization for the new features
 - Pan and Zoom tools (as tools, not shortcuts)
 - Support for touch (export to App store)
