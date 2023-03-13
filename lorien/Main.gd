@@ -30,7 +30,7 @@ func _ready():
 	# Init stuff
 	randomize()
 	Engine.target_fps = Settings.get_value(Settings.RENDERING_FOREGROUND_FPS, Config.DEFAULT_FOREGROUND_FPS)
-	OS.set_window_title("Lorien v%s" % Config.VERSION_STRING)
+	OS.set_window_title("DrawN'Gcode v%s" % Config.VERSION_STRING)
 	get_tree().set_auto_accept_quit(false)
 
 	_canvas.set_background_color(Config.DEFAULT_CANVAS_COLOR)
@@ -535,7 +535,8 @@ func _export_svg() -> void:
 	_export_dialog.filters = ["*.svg ; Scalable Vector graphics", "*.txt ; GCode as Text File",  "*.gcode"]
 	# TODO: fix file extension text replacement when click on another extension
 	# https://github.com/godotengine/godot/issues/38195
-	_export_dialog.current_file = "lorien.svg"
+#	_export_dialog.current_file = "lorien.svg"
+	_export_dialog.current_file = "drawngcode.gcode"
 	_export_dialog.popup()
 
 # --------------------------------------------------------------------------------------------------

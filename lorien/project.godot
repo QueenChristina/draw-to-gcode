@@ -242,7 +242,8 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Lorien"
+config/name="DrawN'gcode"
+config/description="Draw and convert multiple 2D images into layered g-code for printing, with multi-material support for bioprinting, chocolate printing, 3D printing, and more! The only multi-layered software that converts multiple unique images into layered g-code with support for co-axial printing (mutliple nozzles printing at once and/or separately)."
 run/main_scene="res://Main.tscn"
 run/low_processor_mode=true
 boot_splash/image="res://Assets/Textures/boot.png"

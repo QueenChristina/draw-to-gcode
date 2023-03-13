@@ -5,12 +5,13 @@ onready var _version_label: Label = $MarginContainer/VBoxContainer/HBoxContainer
 
 # -------------------------------------------------------------------------------------------------
 func _ready():
-	_version_label.text = "Lorien v%s" % Config.VERSION_STRING
+	_version_label.text = "DrawN'Gcode v%s" % Config.VERSION_STRING
 	rect_size.y = $MarginContainer.rect_size.y + 5
 
 # -------------------------------------------------------------------------------------------------
 func _on_GithubLinkButton_pressed():
-	OS.shell_open("https://github.com/mbrlabs/Lorien")
+	# Originally https://github.com/mbrlabs/Lorien
+	OS.shell_open("https://github.com/QueenChristina/draw-to-gcode")
 
 # -------------------------------------------------------------------------------------------------
 func _on_LicenseButton_pressed():
@@ -27,3 +28,7 @@ func _on_RemixIconsButton_pressed():
 # -------------------------------------------------------------------------------------------------
 func _on_KennyButton_pressed():
 	OS.shell_open("https://www.kenney.nl/assets/platformer-art-deluxe")
+
+
+func _on_LorienButton_pressed():
+	OS.shell_open("https://github.com/mbrlabs/Lorien")

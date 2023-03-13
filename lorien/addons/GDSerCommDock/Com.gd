@@ -5,7 +5,7 @@ extends Node
 var baud_list= [300,600,1200,2400,4800,9600,14400,19200,28800,38400,57600,115200]
 
 #the endline character, can be modified
-export (String) var endline= "\n"
+export (String) var endline = "\n"
 
 #byte size, to be used with open function (argument #4) and is optional
 enum  bytesz{

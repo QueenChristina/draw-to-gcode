@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://InfiniteCanvas/InfiniteCanvas.gd" type="Script" id=1]
 [ext_resource path="res://InfiniteCanvas/PanZoomCamera.gd" type="Script" id=2]
@@ -17,7 +17,27 @@
 [ext_resource path="res://InfiniteCanvas/DebugDraw.gd" type="Script" id=15]
 [ext_resource path="res://InfiniteCanvas/Guides/Platform.gd" type="Script" id=16]
 
-[sub_resource type="ShaderMaterial" id=1]
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform vec4 grid_color = vec4(0.5, 0.5, 0.5, 1);
+
+vec4 difference(vec4 base, vec4 blend){
+	return abs(base - blend);
+}
+
+void fragment() {
+	COLOR = textureLod(SCREEN_TEXTURE, SCREEN_UV, 0.0);
+    // COLOR = texture(TEXTURE, UV);
+    COLOR = difference(COLOR, grid_color);
+//	COLOR = grid_color;
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/grid_color = Plane( 0.3, 0.5, 0.9, 0.8 )
+
+[sub_resource type="ShaderMaterial" id=3]
 shader = ExtResource( 10 )
 shader_param/background_color = null
 
@@ -99,6 +119,7 @@ current = true
 script = ExtResource( 2 )
 
 [node name="Grid" type="Node2D" parent="Viewport"]
+material = SubResource( 2 )
 script = ExtResource( 12 )
 camera_path = NodePath("../Camera2D")
 
@@ -112,7 +133,7 @@ camera_path = NodePath("../Camera2D")
 script = ExtResource( 15 )
 
 [node name="SelectionRectangle" type="Node2D" parent="Viewport"]
-material = SubResource( 1 )
+material = SubResource( 3 )
 script = ExtResource( 9 )
 
 [node name="BrushCursor" parent="Viewport" instance=ExtResource( 4 )]

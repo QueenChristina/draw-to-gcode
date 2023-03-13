@@ -86,9 +86,10 @@ SETTINGS_RESTART_NOTICE  		Restart required to apply the new settings
 # -----------------------------------------------------------------------------
 
 ABOUT_DIALOG_TITLE              About
-ABOUT_DIALOG_COPYRIGHT          © 2021-2022 Marcus Brummer & contributors 
+ABOUT_DIALOG_COPYRIGHT          © 2023 Christina Qin 
+ABOUT_MADE_IN              Made with:
 ABOUT_DIALOG_LICSENSE           Lorien is licensed under:
-ABOUT_DIALOG_BASED_ON           Lorien is based on:
+ABOUT_DIALOG_BASED_ON           DrawN'Gcode is based on:
 ABOUT_DIALOG_EASTEREGG          Easteregg character:
 
 # -----------------------------------------------------------------------------

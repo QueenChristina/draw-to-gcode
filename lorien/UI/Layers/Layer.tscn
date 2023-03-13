@@ -5,7 +5,7 @@
 [ext_resource path="res://Assets/Icons/show_layer.png" type="Texture" id=3]
 [ext_resource path="res://Assets/Icons/hide_layer.png" type="Texture" id=4]
 
-[sub_resource type="Theme" id=32]
+[sub_resource type="Theme" id=1]
 LineEdit/colors/clear_button_color = Color( 0.88, 0.88, 0.88, 1 )
 LineEdit/colors/clear_button_color_pressed = Color( 1, 1, 1, 1 )
 LineEdit/colors/cursor_color = Color( 0.94, 0.94, 0.94, 1 )
@@ -78,7 +78,7 @@ margin_bottom = 45.0
 rect_min_size = Vector2( 30, 0 )
 hint_tooltip = "Repeat Layer"
 size_flags_vertical = 3
-theme = SubResource( 32 )
+theme = SubResource( 1 )
 min_value = 1.0
 max_value = 999.0
 value = 1.0

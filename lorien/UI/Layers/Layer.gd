@@ -1,9 +1,11 @@
 extends HBoxContainer
+enum {VECTOR, RASTER, ADJUSTMENT, EQUATION}
 
 # Layer information. TODO: save information, for undo/redo too
 export var text = "Layer 0" setget set_layer_text
 var is_layer_visible = true
-var thumbnail = null setget set_thumbnail# Texture to set for button icon (thumbnail of layer)
+var thumbnail = null setget set_thumbnail # Texture to set for button icon (thumbnail of layer)
+var type = VECTOR
 
 onready var layer_button = $Button
 onready var dup_edit = $DuplicateAmountEdit
@@ -52,7 +54,7 @@ func _on_Hide_pressed():
 	var active_project: Project = ProjectManager.get_active_project()
 	active_project.undo_redo.create_action("Toggle Layer Visibility")
 	active_project.undo_redo.add_undo_method(self, "toggle_layer_visibility")
-	active_project.undo_redo.add_do_method(self, "toggle_layer_visibility") # Re-add layer to the "top"/end of array, which is at this index
+	active_project.undo_redo.add_do_method(self, "toggle_layer_visibility")
 	active_project.undo_redo.commit_action()
 	
 func toggle_layer_visibility():
@@ -68,6 +70,13 @@ func set_thumbnail(tex : Texture):
 	layer_button.icon = tex
 
 func _on_NameEdit_text_entered(new_text):
+	# TODO: fix undo/redo -- commented out as not working with layer deletion redo,
+	# because LayerBar manages the layer, which gets deleted.
+#	var active_project: Project = ProjectManager.get_active_project()
+#	active_project.undo_redo.create_action("Set layer name")
+#	active_project.undo_redo.add_undo_method(self, "set_layer_text", text)
+#	active_project.undo_redo.add_do_method(self, "set_layer_text", new_text)
+#	active_project.undo_redo.commit_action()
 	set_layer_text(new_text)
 	name_edit.hide()
 	name_edit.editable = false

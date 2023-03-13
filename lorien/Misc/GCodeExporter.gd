@@ -4,6 +4,8 @@ extends Reference
 # TODOs
 # - Stroke width / pressue data
 var curr_point_abs = Vector2(0, 0) # Current point of nozzle in absolute coordinates, X, Y values only (image coordinates)
+var xy_offset = Vector2(0, 0) # TODO: replace w/ axis_offset
+var start_first_pt_here = true
 
 # -------------------------------------------------------------------------------------------------
 const EDGE_MARGIN := 0.025
@@ -115,7 +117,7 @@ func get_gcode(layers: Array, layers_info : Array, print_offset : Vector3) -> St
 				
 			# Move ALL nozzles to one layer heigher than draw layer so no collisions
 			# TODO: best distance up to jog between strokes to avoid collision?
-			gcode += _move_to_layer_gcode(nozzle_axes, layer_count + 1, layer_height, jog_speed, print_v_offset)
+			gcode += _move_to_layer_gcode(nozzle_axes, layer_count + 2, layer_height, jog_speed, print_v_offset)
 			
 			for axis in axis_order:
 				# Draw each stroke in layer, of the same axis first
@@ -138,7 +140,7 @@ func get_gcode(layers: Array, layers_info : Array, print_offset : Vector3) -> St
 												extruder_nozzle_diam, extruder_syringe_diam, 
 												print_speed, jog_speed, layer_count, layer_height, print_v_offset)
 						# Jog up a bit so not collide with strokes moving between them
-						gcode += _move_to_layer_gcode(list_axes, layer_count + 1, layer_height, jog_speed, print_v_offset)
+						gcode += _move_to_layer_gcode(list_axes, layer_count + 2, layer_height, jog_speed, print_v_offset)
 			# End layer
 			layer_count += 1
 			
@@ -169,12 +171,18 @@ func _gcode_start(layers, layer_info, axis_order, unit, jog_speed, print_speed, 
 	
 	# Go to first layer and pre-extrude some amount at point of first stroke
 	if layers[0].size() > 0 and layers[0][0].points.size() > 0:
-		var l_first_axes = axis_order[0].split(",", false)
+		var l_first_axes = layers[0][0].axis.split(",", false)
+		print(l_first_axes)
 		gcode += _move_to_layer_gcode(l_first_axes, layer_count, layer_height, jog_speed, print_v_offset)
 		gcode += "(Move to first point of first stroke.)\n"
 		var first_stroke_point = layers[0][0].points[0]
-		gcode += "G0 X%.3f Y%.3f\n" % [-1 * first_stroke_point.x / 10.0, first_stroke_point.y / 10.0]
 		curr_point_abs = first_stroke_point
+		# Start print here (set first point to draw here) instead of relative to origin (start pt)
+		if start_first_pt_here:
+			xy_offset = first_stroke_point #
+			first_stroke_point -= xy_offset #
+		gcode += "G0 X%.3f Y%.3f\n" % [-1 * first_stroke_point.x / 10.0, first_stroke_point.y / 10.0]
+		
 		if pre_extrude_amt.size() > 0:
 			gcode += "\n(Pre-extrude some amount to pressurize nozzles)\n"
 			gcode += "G91\n"

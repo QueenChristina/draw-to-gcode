@@ -138,6 +138,8 @@ func _on_DeleteLayer_pressed():
 	var active_project: Project = ProjectManager.get_active_project()
 	active_project.undo_redo.create_action("Delete Layer")
 	# TODO: save layer information eg., visibility
+	# ALSO -- instead of adding a new layer, should remove layer from tree and re-add same layer
+	# as otherwise, this method causes layer itself to lose undo/redo history (for naming layer)
 	active_project.undo_redo.add_undo_method(self, "_on_add_layer", index)
 	active_project.undo_redo.add_undo_method(self, "emit_signal", "undo_delete_layer", index, active_project.layers[index])
 	active_project.undo_redo.add_undo_property(active_project, "layers", active_project.layers) # TODO: What this does?
@@ -159,6 +161,7 @@ func _on_switch_layers(node):
 func _on_layer_visibility_changed(node, is_layer_visible):
 	emit_signal("layer_visibility_changed", _layer_box.get_child_count() - 1 - node.get_index(), is_layer_visible)
 
+# ----------- TODO: undo shifting layers broke!!! ---------------------
 # Shift current layer up and down
 func _on_ShiftUp_pressed():
 	var active_project: Project = ProjectManager.get_active_project()

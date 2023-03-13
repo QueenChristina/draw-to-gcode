@@ -30,7 +30,8 @@ func _on_viewport_size_changed() -> void: update()
 
 # -------------------------------------------------------------------------------------------------
 func set_canvas_color(c: Color) -> void:
-	_grid_color = c * 1.25
+#	_grid_color = c * 1.25
+	_grid_color = Color(0.2, 0.3, 0.55)
 
 # -------------------------------------------------------------------------------------------------
 func set_grid_scale(size: float):

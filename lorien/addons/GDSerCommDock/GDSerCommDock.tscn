@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://addons/GDSerCommDock/MenuLogic.gd" type="Script" id=1]
 [ext_resource path="res://addons/GDSerCommDock/Com.gd" type="Script" id=2]
@@ -10,8 +10,22 @@
 [ext_resource path="res://Assets/Icons/up_arrow.png" type="Texture" id=8]
 [ext_resource path="res://Assets/Icons/down_arrow.png" type="Texture" id=9]
 
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color( 0.780392, 0, 0, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
 [node name="SerialCommunication" type="WindowDialog"]
-visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 window_title = "Send to Printer"
@@ -174,9 +188,29 @@ margin_bottom = 42.0
 min_value = 0.01
 max_value = 50.0
 step = 0.01
-value = 0.01
+value = 0.1
 allow_greater = true
 align = 2
+
+[node name="SetOrigin" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer2"]
+margin_top = 46.0
+margin_right = 90.0
+margin_bottom = 66.0
+text = "Set Origin"
+
+[node name="Container" type="Container" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer2"]
+margin_top = 70.0
+margin_right = 90.0
+margin_bottom = 200.0
+size_flags_vertical = 3
+
+[node name="CancelPrint" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer2"]
+visible = false
+margin_top = 176.0
+margin_right = 90.0
+margin_bottom = 200.0
+custom_styles/normal = SubResource( 1 )
+text = "Cancel Print"
 
 [node name="GridContainer" type="GridContainer" parent="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
 margin_left = 94.0
@@ -460,6 +494,8 @@ pressed_tint = Color( 0, 1, 0.858824, 1 )
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/DisconnectButton" to="." method="_on_DisconnectButton_pressed"]
 [connection signal="toggled" from="MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/CheckBox" to="." method="_on_CheckBox_toggled"]
 [connection signal="value_changed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer2/MoveAmount" to="." method="_on_MoveAmount_value_changed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer2/SetOrigin" to="." method="_on_SetOrigin_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/VBoxContainer2/CancelPrint" to="." method="_on_CancelPrint_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/YPos" to="." method="_on_YPos_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/XNeg" to="." method="_on_XNeg_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GridContainer/XPos" to="." method="_on_XPos_pressed"]
