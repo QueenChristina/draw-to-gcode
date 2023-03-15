@@ -27,6 +27,7 @@ bg_color = Color( 0, 0, 0, 0.745098 )
 bg_color = Color( 0, 0, 0, 0.113725 )
 
 [node name="SettingsDialog" type="WindowDialog"]
+visible = true
 margin_right = 563.0
 margin_bottom = 478.0
 rect_min_size = Vector2( 520, 270 )
@@ -60,6 +61,7 @@ __meta__ = {
 }
 
 [node name="General" type="Control" parent="MarginContainer/TabContainer"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 27.0
@@ -474,7 +476,6 @@ window_title = "KEYBINDING_DIALOG_REBIND_WINDOW_NAME"
 dialog_autowrap = true
 
 [node name="Bioprinting" type="Control" parent="MarginContainer/TabContainer"]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 27.0

@@ -32,3 +32,7 @@ func _on_KennyButton_pressed():
 
 func _on_LorienButton_pressed():
 	OS.shell_open("https://github.com/mbrlabs/Lorien")
+
+
+func _on_GDSerCommButton_pressed():
+	OS.shell_open("https://github.com/NangiDev/GDSerCommPlugin")

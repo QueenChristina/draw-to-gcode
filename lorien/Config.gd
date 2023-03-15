@@ -35,7 +35,7 @@ const DEFAULT_PRINTER_SETTINGS		:= {"default" :
 											"axis_order" : ["A,Z", "Z", "A"], 	# print order
 											"axis_extruder" : {"Z" : "B", "A" : "C"},
 											"extruder_coeffs" : {"C" : 1.5, "B" : 1.5},
-											"extruder_nozzle_diam" : {"C" :0.9798, "B" :  0.4},
+											"extruder_nozzle_diam" : {"C" :0.25, "B" :  0.25},
 											"extruder_syringe_diam" : {"C" : 4.6, "B" : 4.6},
 											"axis_offset" : {"Z" : Vector2(0, 0), "A" : Vector2(33.75, 0)}, # Per axis_order as keys
 											"pre_extrude_amt" : {"B" : 0.2, "C" : 0.2},

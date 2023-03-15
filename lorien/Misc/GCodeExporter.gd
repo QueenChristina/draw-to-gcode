@@ -5,8 +5,10 @@ extends Reference
 # - Stroke width / pressue data
 var curr_point_abs = Vector2(0, 0) # Current point of nozzle in absolute coordinates, X, Y values only (image coordinates)
 var xy_offset = Vector2(0, 0) # TODO: replace w/ axis_offset
-var start_first_pt_here = true
-
+var start_first_pt_here = false
+var extra_jog_height = 8 # between layers
+var extra_stroke_jog_height = 2 # between strokes
+var pressurize_amt = 0.2 # Amount extruders move by to pressurize/unpressurize
 # -------------------------------------------------------------------------------------------------
 const EDGE_MARGIN := 0.025
 
@@ -93,45 +95,55 @@ func get_gcode(layers: Array, layers_info : Array, print_offset : Vector3) -> St
 	gcode += _gcode_start(layers, layers_info, axis_order, unit, jog_speed, print_speed, pre_extrude_amt, layer_count, layer_height, print_v_offset, gcode_header)
 	# Draw layers
 	for i in range(layers.size()):
+		# Preprocessing - separate by axis in layer
+		var strokes_by_axis = {} # For a single layer
+		for stroke in layers[i]:
+			var a_key = standarize(stroke.axis)
+			if not strokes_by_axis.has(a_key):
+				strokes_by_axis[a_key] = []
+			strokes_by_axis[a_key].append(stroke)
+			# Validation of stroke axis.
+			if not a_key in axis_order:
+				# Add to axis list order; implicitly defined.
+				var err = "%s axis strokes was not in print order list %s. Added implicitly to print at end, per layer." % [a_key, axis_order]
+				print_debug(err)
+				axis_order.append(a_key)
+			var list_a = a_key.split(",", false)
+			for a in list_a:
+				if not a in nozzle_axes:
+					# Missing nozzle information!!!!
+					var err = "Stroke of %s axis is not listed in printer settings %s. Cannot print without nozzle information." % [a, nozzle_axes]
+					print_debug("ERROR: " + err)
+					return "Could not convert to GCode, with error: " + err
+						
 		for _j in range(layers_info[i].dup_amount): # Repeat this layer by dup_amount of times
-			# Preprocessing - separate by axis in layer
-			var strokes_by_axis = {} # For a single layer
-			for stroke in layers[i]:
-				var a_key = standarize(stroke.axis)
-				if not strokes_by_axis.has(a_key):
-					strokes_by_axis[a_key] = []
-				strokes_by_axis[a_key].append(stroke)
-				# Validation of stroke axis.
-				if not a_key in axis_order:
-					# Add to axis list order; implicitly defined.
-					var err = "%s axis strokes was not in print order list %s. Added implicitly to print at end, per layer." % [a_key, axis_order]
-					print_debug(err)
-					axis_order.append(a_key)
-				var list_a = a_key.split(",", false)
-				for a in list_a:
-					if not a in nozzle_axes:
-						# Missing nozzle information!!!!
-						var err = "Stroke of %s axis is not listed in printer settings %s. Cannot print without nozzle information." % [a, nozzle_axes]
-						print_debug("ERROR: " + err)
-						return "Could not convert to GCode, with error: " + err
-				
-			# Move ALL nozzles to one layer heigher than draw layer so no collisions
-			# TODO: best distance up to jog between strokes to avoid collision?
-			gcode += _move_to_layer_gcode(nozzle_axes, layer_count + 2, layer_height, jog_speed, print_v_offset)
-			
+
 			for axis in axis_order:
+				# Move ALL nozzles to one layer heigher than draw layer so no collisions
+				# TODO: best distance up to jog between strokes to avoid collision?
+				gcode += _move_to_layer_gcode(nozzle_axes, layer_count + extra_jog_height, layer_height, jog_speed, print_v_offset)
+				
+				
 				# Draw each stroke in layer, of the same axis first
 				if axis in strokes_by_axis:
 					# Translate to new nozzle (axis) - untranslate back to origin, then translate to new nozzle; take negative as image coordinates is flipped of real coordinates
 					var offset = -1 * (axis_offset.get(axis, Vector2(0, 0)) - axis_offset.get(last_axis, Vector2(0, 0)))
 					if offset != Vector2(0, 0):
-						gcode += "G0 X%.2f Y%.2f %s;Translate to nozzle of %s axis\n" % [offset.x, offset.y, print_speed, axis]
+						gcode += "G0 X%.2f Y%.2f %s; Translate to nozzle of %s axis\n" % [offset.x, offset.y, print_speed, axis]
 					last_axis = axis
 					# Set axis extruder(s).
 					var list_axes : PoolStringArray = axis.split(",", false)
 					var extruders = []
+					gcode += "G0"
 					for a in list_axes:
-						extruders.append(axis_extruder[a])
+						var e = axis_extruder[a]
+						extruders.append(e)
+						
+						# Pressurize axis 
+						gcode += " %s%.2f" % [e, pressurize_amt]
+					gcode += " %s; Pressurize %s axis\n" % [print_speed, axis]
+
+#					gcode += _move_to_layer_gcode(list_axes, layer_count, layer_height, jog_speed, print_v_offset)
 
 					# Draw each stroke
 					gcode += "(Draw strokes for nozzle of axis " + axis + " )\n"
@@ -140,7 +152,15 @@ func get_gcode(layers: Array, layers_info : Array, print_offset : Vector3) -> St
 												extruder_nozzle_diam, extruder_syringe_diam, 
 												print_speed, jog_speed, layer_count, layer_height, print_v_offset)
 						# Jog up a bit so not collide with strokes moving between them
-						gcode += _move_to_layer_gcode(list_axes, layer_count + 2, layer_height, jog_speed, print_v_offset)
+						gcode += _move_to_layer_gcode(list_axes, layer_count + extra_stroke_jog_height, layer_height, jog_speed, print_v_offset)
+					
+					# Depressurize axis 
+					gcode += "G0"
+					for e in extruders:
+						# Pressurize axis 
+						gcode += " %s-%.2f" % [e, pressurize_amt]
+					gcode += " %s; Depressurize %s axis\n" % [print_speed, axis]
+			
 			# End layer
 			layer_count += 1
 			
