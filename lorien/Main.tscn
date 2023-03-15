@@ -96,10 +96,10 @@ margin_bottom = 202.0
 custom_styles/panel = SubResource( 1 )
 
 [node name="ColorPicker" type="ColorPicker" parent="BackgroundColorPickerPopup/PanelContainer"]
-margin_left = 84.0
-margin_top = 84.0
-margin_right = 393.0
-margin_bottom = 488.0
+margin_left = 88.0
+margin_top = 88.0
+margin_right = 397.0
+margin_bottom = 492.0
 edit_alpha = false
 presets_enabled = false
 presets_visible = false
