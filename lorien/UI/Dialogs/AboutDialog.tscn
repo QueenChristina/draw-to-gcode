@@ -6,7 +6,6 @@
 [sub_resource type="StyleBoxEmpty" id=1]
 
 [node name="AboutDialog" type="WindowDialog"]
-visible = true
 margin_right = 450.0
 margin_bottom = 205.0
 rect_min_size = Vector2( 450, 205 )

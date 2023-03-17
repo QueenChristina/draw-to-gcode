@@ -19,7 +19,9 @@ func _on_LicenseButton_pressed():
 
 # -------------------------------------------------------------------------------------------------
 func _on_GodotButton_pressed():
-	OS.shell_open("https://godotengine.org/")
+#	godotengine.org/license
+#	https://godotengine.org/
+	OS.shell_open("godotengine.org/license")
 
 # -------------------------------------------------------------------------------------------------
 func _on_RemixIconsButton_pressed():

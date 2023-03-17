@@ -42,6 +42,13 @@ Make drawings over multiple layers and with multiple materials, and convert it i
 <img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/gcode-demo.jpg" align="center"/>
 <img src="https://github.com/QueenChristina/draw-to-gcode/blob/main/images/layers-demo.jpg" align="center"/>
 
+## Credits
+* mbrlabs: https://github.com/mbrlabs/Lorien (MIT license)
+* NangiDev: https://github.com/NangiDev/GDSerCommPlugin (MIT license)
+* Godot: https://godotengine.org/license/ (MIT license)
+* Godot Engine Logo Copyright (c) 2017 Andrea Calabró
+This work is licensed under a Creative Commons Attribution 4.0 International License (CC-BY-4.0 International) https://creativecommons.org/licenses/by/4.0/. 
+
 ## About the original software
 <img src="https://raw.githubusercontent.com/mbrlabs/Lorien/main/images/lorien.png" align="left"/>
 <p>
