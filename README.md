@@ -8,13 +8,16 @@ Make drawings over multiple layers and with multiple materials, and convert it i
 - Vector layers
 - Set layer name
 - Layer system with undo-redo capatibility
-- Converts each layer into GCode, stacked on top of each other
-- Can set amount of times a layer is duplicated (stacked) in GCode
+- Converts each layer into G-Code, stacked on top of each other
+- Can set amount of times a layer is duplicated (stacked) in G-Code
 - Onion skin feature to allow you to trace over past and future layers
 - Custom settings for printing, such as guide for size of print-bed, set units, and set layer height
 - Supports multiple nozzles moving synchronously, such as for use coaxial printing, or separately
 - Multimaterial support: any axes (not just Z or A), add offset between axes, and custom ordering
 - Custom saved settings for nozzles, pre-extrusion amount, and axes by printer
+- Save unique custom settings for multiple different printers
+
+Note: Sending G-code and commands directly to the printer from Draw N' Gcode is a work in progress, but theoretically working! You can help me test it by using "Connect to Printer", then generate G-code and send to the printer. Use buttons to move axes of the printer. It supports moving any axes (vertical or extruder) defined in printer settings -- making this more versatile than typical printer software that assumes single nozzle. 
 
 ## Roadmap
 - Undo-redo with duplicate layer amount
