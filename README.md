@@ -3,6 +3,9 @@
 ## Based on Lorien, 2D Drawing Software Made By MBRLabs
 Draw and convert multiple 2D images into layered g-code for printing, with multi-material support for bioprinting, chocolate printing, 3D printing, and more! The only multi-layered software that converts multiple unique images into layered g-code with support for co-axial printing (mutliple nozzles printing at once and/or separately).
 
+## Try it Yourself
+Download at [https://eggcat.itch.io/draw-n-gcode](https://eggcat.itch.io/draw-n-gcode).
+
 ## Features
 Make drawings over multiple layers and with multiple materials, and convert it into GCode.
 - Vector layers
